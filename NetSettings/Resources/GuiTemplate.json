@@ -1,0 +1,84 @@
+{
+  "type": "root",
+  "subitems": [
+    {
+      "type": "menu",
+      "subitems": [
+        {
+          "type": "bool",
+          "subitems": null,
+          "name": "FullScreenEnabled",
+          "displayname": "Enable Fullscreen",
+          "description": "Enables working in exclusive mode",
+          "defaultvalue": false,
+          "value": true
+        },
+        {
+          "type": "text",
+          "subitems": null,
+          "name": "ForceMonitor",
+          "displayname": "Force working on specific monitor",
+          "description": "Force displaying the application on a named specific monitor (empty for deafault)",
+          "defaultvalue": null,
+          "value": "hello world"
+        },
+        {
+          "type": "bool",
+          "subitems": null,
+          "name": "UseFlipMode",
+          "displayname": "Enable Flip mode",
+          "description": "Enable Direct3D11 flip model(windows 8.1 and higher)",
+          "defaultvalue": true,
+          "value": false
+        }
+      ],
+      "name": null,
+      "displayname": "Graphics settings",
+      "description": null,
+      "defaultvalue": null,
+      "value": null
+    },
+    {
+      "type": "menu",
+      "subitems": [
+        {
+          "type": "bool",
+          "subitems": null,
+          "name": "EnableMouse",
+          "displayname": "Enable mouse",
+          "description": "set to enable input from mouse",
+          "defaultvalue": true,
+          "value": null
+        },
+        {
+          "type": "bool",
+          "subitems": null,
+          "name": "EnableDigitizer",
+          "displayname": "Enable digitizer",
+          "description": "Set to enable input from wacom digitizer",
+          "defaultvalue": null,
+          "value": null
+        },
+        {
+          "type": "bool",
+          "subitems": null,
+          "name": "EnableJoyStick",
+          "displayname": "Enable joystick",
+          "description": "Set to enable input for joystick/gamepad devices",
+          "defaultvalue": true,
+          "value": null
+        }
+      ],
+      "name": null,
+      "displayname": "Input settings",
+      "description": null,
+      "defaultvalue": null,
+      "value": null
+    }
+  ],
+  "name": null,
+  "displayname": null,
+  "description": null,
+  "defaultvalue": null,
+  "value": null
+}
