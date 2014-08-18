@@ -5,13 +5,44 @@
       "type": "menu",
       "subitems": [
         {
-          "type": "bool",
+            "type": "bool",
+            "subitems": null,
+            "name": "FullScreenEnabled",
+            "displayname": "Enable Fullscreen",
+            "description": "Enables working in exclusive mode",
+            "defaultvalue": false,
+            "value": true
+        },
+        {
+            "type": "color",
+            "name": "Color",
+            "displayname": "Color",
+            "description": "The Background's fill color",
+            "defaultvalue": "Gray",
+        },
+        {
+            "type": "image",
+            "name": "Image",
+            "displayname": "Image",
+            "description": "The image to display in the background"
+        },
+	   {
+          "type": "combo",
           "subitems": null,
-          "name": "FullScreenEnabled",
-          "displayname": "Enable Fullscreen",
-          "description": "Enables working in exclusive mode",
-          "defaultvalue": false,
-          "value": true
+          "name": "ImageRotation",
+          "displayname": "Image rotation",
+          "description": "The orientation of the image",
+          "defaultvalue": "0",
+          "values": "0;90;180;270"
+        },
+        {
+          "type": "image",
+          "subitems": null,
+          "name": "Backgroundimage",
+          "displayname": "Background image",
+          "description": "The background image to display",
+          "defaultvalue": null,
+          "value": "hello world"
         },
         {
           "type": "text",
@@ -32,7 +63,7 @@
           "value": false
         }
       ],
-      "name": null,
+      "name": "GraphicsSettings",
       "displayname": "Graphics settings",
       "description": null,
       "defaultvalue": null,
@@ -69,11 +100,8 @@
           "value": null
         }
       ],
-      "name": null,
+      "name": "InputSettings",
       "displayname": "Input settings",
-      "description": null,
-      "defaultvalue": null,
-      "value": null
     }
   ],
   "name": null,

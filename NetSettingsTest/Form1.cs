@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -29,14 +28,16 @@ namespace NetSettings
             fCreationParameters = new CreationParams();
             fCreationParameters.panel = splitContainer2.Panel1;
             fCreationParameters.descriptionPanel = splitContainer2.Panel2;
-            fCreationParameters.root = Item.FromFile(SettingsFilePath);
+            fCreationParameters.root = ItemTree.FromFile(SettingsFilePath);
+
+            Object a = fCreationParameters.root["inputsettings.enablemouse"];
+            
             settings.Create(fCreationParameters);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string text = JsonConvert.SerializeObject(fCreationParameters.root ,Formatting.Indented);
-            File.WriteAllText(SettingsFilePath, text);
+            fCreationParameters.root.ToFile(SettingsFilePath);
         }
     }
 }

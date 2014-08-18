@@ -1,24 +1,67 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NetSettings
 {
-    public class Item
+    [Serializable]
+    public class ItemTree
     {
+        //[JsonProperty(Order = 1)]
         //Json fields
         public string type;
-        public Item[] subitems;
         public string name;
         public string displayname;
         public string description;
         public object defaultvalue;
         public object value;
+        public string values;
+        public ItemTree[] subitems;
 
+        public object this [string key]
+        {
+            get
+            {
+                if (this.type != "root")
+                    throw new Exception("Operation valid only for root item");
+
+                if (QualifiedNames == null)
+                    ItemTree.BuildQualifiedNames(this);
+
+                ItemTree item;
+                if (QualifiedNames.TryGetValue(key, out item))
+                {
+                    return item.currentValue;
+                }
+                else
+                    return null;
+                
+                
+            }
+            set
+            {
+                if (this.type != "root")
+                    throw new Exception("Operation valid only for root item");
+
+
+                if (QualifiedNames == null)
+                    ItemTree.BuildQualifiedNames(this);
+
+                ItemTree item;
+                if (QualifiedNames.TryGetValue(key, out item))
+                {
+                    item.value = value;
+                }
+            }
+        }
+        
         [JsonIgnore]
         public string FullName;
         [JsonIgnore]
@@ -30,12 +73,102 @@ namespace NetSettings
             }
         }
 
-        public static Item FromFile(string aFileName)
+        [JsonIgnore]
+        public Dictionary<string, ItemTree> QualifiedNames;
+
+
+        public static ItemTree FromFile(string aFileName)
         {
             string text = File.ReadAllText(aFileName);
-            return (Item)Newtonsoft.Json.JsonConvert.DeserializeObject(text, typeof(Item));
-            //string json = Newtonsoft.Json.JsonConvert.SerializeObject(rootItem, Newtonsoft.Json.Formatting.Indented);
-
+            ItemTree root = (ItemTree)Newtonsoft.Json.JsonConvert.DeserializeObject(text, typeof(ItemTree));
+            return root;
         }
+        
+        private static void BuildQualifiedNames(Dictionary<string,ItemTree> aQualifiedNames, ItemTree item,ItemTree parent)
+        {
+            ItemTree currentParent = parent == null || parent.type == "root" ? null : parent;
+            if (item.type != "root")
+            {
+                if (currentParent == null)
+                {
+                    item.FullName = item.name;
+                }
+                else
+                {
+                    item.FullName = String.Format("{0}.{1}", currentParent.FullName, item.name);
+                }
+            }
+            if (item.subitems != null)
+                foreach (ItemTree subItem in item.subitems)
+                {
+                    BuildQualifiedNames(aQualifiedNames, subItem, item);
+
+                }
+
+            if (item.FullName != null)
+            {
+                aQualifiedNames.Add(item.FullName,item);
+            }
+        }
+
+        private static void BuildQualifiedNames(ItemTree aRoot)
+        {
+            if (aRoot.type == "root")
+            {
+                aRoot.QualifiedNames = new Dictionary<string, ItemTree>(StringComparer.OrdinalIgnoreCase);
+                BuildQualifiedNames(aRoot.QualifiedNames, aRoot, null);
+            }
+            
+        }
+        public void ToFile(string aFileName)
+        {
+            JsonSerializer d = JsonSerializer.Create();
+
+            string text = JsonConvert.SerializeObject(this,
+                new JsonSerializerSettings()
+                {
+                    Formatting = Formatting.Indented,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    
+                    
+                }
+                );
+
+            File.WriteAllText(aFileName, text);
+        }
+
+        public ItemTree DeepClone(ItemTree obj)
+        {
+            using (var ms = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(ms, obj);
+                ms.Position = 0;
+                return (ItemTree)formatter.Deserialize(ms);
+            }
+        }
+
+        void SerializationCallback(object o, StreamingContext context)
+        {
+            int k = 0;
+        }
+
+      [OnDeserialized]
+    internal void OnDeserializedMethod(StreamingContext context)
+    {
+          if (this.type == "color")
+          {
+              if (this.defaultvalue != null && this.defaultvalue is string)
+                  this.defaultvalue = System.Drawing.ColorTranslator.FromHtml(this.defaultvalue as string);
+
+              if (this.value != null && this.value is string)
+                  this.value = System.Drawing.ColorTranslator.FromHtml(this.value as string);
+                  //this.value = System.Drawing.Color.FromName(;
+
+          }
     }
+
+    }
+
+    
 }
