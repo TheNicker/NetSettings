@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace NetSettingsTest
+namespace NetSettings
 {
     public partial class ControlContainer : ScrollableControl
     {
@@ -16,6 +16,19 @@ namespace NetSettingsTest
         {
             DoubleBuffered = true;
             AutoScroll = true;
+            SetStyle(ControlStyles.OptimizedDoubleBuffer |
+             ControlStyles.AllPaintingInWmPaint, true);
+        }
+
+        public void StartUpdate()
+        {
+            this.SuspendLayout();
+            ControlHelper.SuspendDrawing(this);
+        }
+        public void EndUpdate()
+        {
+            this.ResumeLayout();
+            ControlHelper.ResumeDrawing(this);
         }
     }
 }

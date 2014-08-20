@@ -45,16 +45,9 @@ namespace NetSettings
         void fFilterTimer_Tick(object sender, EventArgs e)
         {
             fFilterTimer.Enabled = false;
-            
-            //customPanel1.Enable = false;
-            
-            userControl11.SuspendLayout();
+            userControl11.StartUpdate();
             settings.SetFilter(fSettingsFilter);
-
-            userControl11.ResumeLayout();
-            
-            //this.ResumeLayout();
-            //customPanel1.Enable = true;
+            userControl11.EndUpdate();
         }
 
         private void button1_Click(object sender, EventArgs e)

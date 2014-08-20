@@ -16,6 +16,19 @@ namespace NetSettings
         public Control descriptionPanel;
         public ItemTree root;
         public Filter filter;
+        public PlacementParams placement;
+    }
+
+    public class PlacementParams
+    {
+        public int LineSpacing = 25;
+        public int TitleMaxWidth = 150;
+        public int TitleSpacing = 30;
+        public int ControlMaxWidth = 80;
+        public int ControlSpacing = 20;
+        public int LineHeight = 20;
+        public int DefaultButtonWidth = 50;
+        public int HorizontalMArgin = 20;
     }
     
     public class MenuSettings
@@ -23,14 +36,7 @@ namespace NetSettings
         public event ItemChangedDelegate ItemChanged = delegate { };
         private Dictionary<string, Type> fStringToType;
         Point panelPosition;
-        const int LineSpacing = 25;
-        const int TitleMaxWidth = 150;
-        const int TitleSpacing = 30;
-        const int ControlMaxWidth = 80;
-        const int ControlSpacing = 20;
-        const int LineHeight = 20;
-        const int DefaultButtonWidth = 50;
-        const int HorizontalMArgin = 20;
+        
         int Nesting = 0;
         int currentRow;
         Control fDescriptionPanel;
@@ -152,33 +158,34 @@ namespace NetSettings
 
         private void AddControl(Control parent, ItemTree root, Type type)
         {
+            PlacementParams p = fParams.placement;
             bool isMenu = root.type == "menu";
             //Create parent container
             Control panel = new Control();
             parent.Controls.Add(panel);
-            panel.Width = TitleMaxWidth + TitleSpacing + ControlMaxWidth + ControlSpacing + DefaultButtonWidth;
-            panel.Height = LineSpacing ;
+            panel.Width = p.TitleMaxWidth + p.TitleSpacing + p.ControlMaxWidth + p.ControlSpacing + p.DefaultButtonWidth;
+            panel.Height = p.LineSpacing;
             panel.BackColor = isMenu ? Color.Yellow : currentRow % 2 == 0 ? Color.White : Color.LightGray;
             panel.MouseEnter +=l_MouseEnter;
-            panelPosition.X = HorizontalMArgin * Nesting;
-            panelPosition.Y += LineSpacing;
+            panelPosition.X = p.HorizontalMArgin * Nesting;
             panel.Location = panelPosition;
+            panelPosition.Y += p.LineSpacing;
             panel.Tag = root;
-            Point controlPosition = new Point(0, (LineSpacing - LineHeight) / 2 );
+            Point controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
             
             //Add label describing the entry
             
             Label label = new Label();
 
-            label.Width = TitleMaxWidth;
-            label.Height = LineHeight;
+            label.Width = p.TitleMaxWidth;
+            label.Height = p.LineHeight;
             label.Font = new Font("consolas", 10);
             label.Text = root.displayname;
             label.Tag = root;
             label.Location = controlPosition;
             //label.MouseEnter += l_MouseEnter;
             panel.Controls.Add(label);
-            controlPosition.X = TitleMaxWidth + TitleSpacing;
+            controlPosition.X = p.TitleMaxWidth + p.TitleSpacing;
             
             //Add the  control itself
             Control control = Activator.CreateInstance(type) as Control;
@@ -186,10 +193,10 @@ namespace NetSettings
             control.Location = controlPosition;
             control.Tag = root;
             //control.MouseEnter += l_MouseEnter;
-            control.Height = LineHeight;
-            control.Width = ControlMaxWidth;
-            
-            controlPosition.X += ControlMaxWidth + ControlSpacing;
+            control.Height = p.LineHeight;
+            control.Width = p.ControlMaxWidth;
+
+            controlPosition.X += p.ControlMaxWidth + p.ControlSpacing;
             
             //Add reference from the menu item to the control holding the values.
             root.control = control;
@@ -199,18 +206,19 @@ namespace NetSettings
             if (!isMenu)
             {
                 Button button = new Button();
-                button.Width = DefaultButtonWidth;
-                button.Height = LineHeight;
+                button.Width = p.DefaultButtonWidth;
+                button.Height = p.LineHeight;
                 panel.Controls.Add(button);
                 button.Text = "Default";
                 button.Location = controlPosition;
                 button.Click += button_Click;
                 button.Tag = root;
+                currentRow++;
             }
 
             ProceeControl(label, control, root);
 
-            currentRow++;
+            
 
         }
 
@@ -412,4 +420,5 @@ namespace NetSettings
             return aControl.Tag as ItemTree;
         }
     }
+
 }

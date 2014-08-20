@@ -180,6 +180,15 @@ namespace NetSettings
               if (this.value != null && this.value is string)
                   this.value = System.Drawing.ColorTranslator.FromHtml(this.value as string);
                   //this.value = System.Drawing.Color.FromName(;
+          }
+
+          if (this.type == "number")
+          {
+              if (this.defaultvalue == null)
+                  this.defaultvalue = 0.0;
+              else
+                  if (defaultvalue is Int64)
+                      defaultvalue = (double)(Int64)defaultvalue;
 
           }
     }
