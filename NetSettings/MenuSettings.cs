@@ -15,7 +15,9 @@ namespace NetSettings
         public Control panel;
         public Control descriptionPanel;
         public ItemTree root;
+        public Filter filter;
     }
+    
     public class MenuSettings
     {
         public event ItemChangedDelegate ItemChanged = delegate { };
@@ -31,9 +33,9 @@ namespace NetSettings
         const int HorizontalMArgin = 20;
         int Nesting = 0;
         int currentRow;
-        Graphics gfx;
         Control fDescriptionPanel;
         TextBox fDescriptionTextBox;
+        CreationParams fParams;
 
         PreviewForm previewForm;
         Point fLastCursorPosition;
@@ -47,15 +49,13 @@ namespace NetSettings
             fStringToType.Add("combo", typeof(ComboBox));
             fStringToType.Add("image", typeof(TextBox));
             fStringToType.Add("number", typeof(TextBox));
-            fStringToType.Add("color", typeof(Panel));
+            fStringToType.Add("color", typeof(Control));
         }
 
         public void Create(CreationParams aParams)
         {
-            panelPosition = new Point();
-            currentRow = 0;
-            gfx = Graphics.FromHwnd(aParams.panel.Handle);
-            fDescriptionPanel = aParams.descriptionPanel;
+            fParams = aParams;
+            fDescriptionPanel = fParams.descriptionPanel;
             TextBox t = new TextBox();
             t.Multiline = true;
             t.Dock = DockStyle.Fill;
@@ -64,14 +64,68 @@ namespace NetSettings
             t.Font = new Font("Lucida fax",10);
             fDescriptionTextBox = t;
             fDescriptionPanel.Controls.Add(t);
-            //root.Tag = menu;
-            AddControlRecursivly(aParams);
-
             previewForm = new PreviewForm();
             previewForm.PreviewTimer.Tick += PreviewTimer_Tick;
+            RefreshTree();
         }
 
-        
+        public void SetFilter(Filter aFilter)
+        {
+            fParams.filter = aFilter;
+            RefreshTree();
+        }
+
+        private void RefreshTree()
+        {
+            panelPosition = new Point();
+            currentRow = 0;
+            CleanControls(fParams);
+            ApplyFilterRecursively(fParams);
+            AddControlRecursivly(fParams);
+        }
+
+        private void CleanControls(CreationParams fParams)
+        {
+            fParams.panel.Controls.Clear();
+        }
+
+        private bool ApplyFilterRecursively(CreationParams aParams)
+        {
+            ItemTree item = aParams.root;
+            
+            if (aParams.filter == null || String.IsNullOrEmpty(aParams.filter.IncludeName) || String.IsNullOrWhiteSpace(aParams.filter.IncludeName))
+            {
+                item.IsVisible = true;
+            }
+            else
+            {
+                if (item.type == "menu" || item.type == "root")
+                {
+                    item.IsVisible = true;
+                }
+                else
+                if (item.displayname != null)
+                {
+                    item.IsVisible = item.displayname.ToLower().Contains(aParams.filter.IncludeName.ToLower());
+                }
+            }
+
+            if (item.subitems != null)
+            {
+                bool isVisible = false;
+                foreach (ItemTree subItem in item.subitems)
+                {
+                    aParams.root = subItem;
+                    isVisible |= ApplyFilterRecursively(aParams);
+                }
+                //if at least one of the childs is visible then the parent is visible as well.
+                item.IsVisible = isVisible;
+
+            }
+            return item.IsVisible;
+
+        }
+
         public void RaiseEvent(ItemTree aTreeItem)
         {
             ItemChanged(aTreeItem);
@@ -80,6 +134,8 @@ namespace NetSettings
         private void AddControlRecursivly(CreationParams  aParams)
         {
             ItemTree root = aParams.root;
+            if (!root.IsVisible)
+                return;
             Control control = aParams.panel;
             Type type;
             if (fStringToType.TryGetValue(root.type, out type))
@@ -97,17 +153,17 @@ namespace NetSettings
         private void AddControl(Control parent, ItemTree root, Type type)
         {
             bool isMenu = root.type == "menu";
-
             //Create parent container
-            Panel panel = new Panel();
+            Control panel = new Control();
+            parent.Controls.Add(panel);
             panel.Width = TitleMaxWidth + TitleSpacing + ControlMaxWidth + ControlSpacing + DefaultButtonWidth;
             panel.Height = LineSpacing ;
-            parent.Controls.Add(panel);
             panel.BackColor = isMenu ? Color.Yellow : currentRow % 2 == 0 ? Color.White : Color.LightGray;
-            
+            panel.MouseEnter +=l_MouseEnter;
             panelPosition.X = HorizontalMArgin * Nesting;
             panelPosition.Y += LineSpacing;
             panel.Location = panelPosition;
+            panel.Tag = root;
             Point controlPosition = new Point(0, (LineSpacing - LineHeight) / 2 );
             
             //Add label describing the entry
@@ -116,10 +172,11 @@ namespace NetSettings
 
             label.Width = TitleMaxWidth;
             label.Height = LineHeight;
+            label.Font = new Font("consolas", 10);
             label.Text = root.displayname;
             label.Tag = root;
             label.Location = controlPosition;
-            label.MouseEnter += l_MouseEnter;
+            //label.MouseEnter += l_MouseEnter;
             panel.Controls.Add(label);
             controlPosition.X = TitleMaxWidth + TitleSpacing;
             
@@ -128,15 +185,16 @@ namespace NetSettings
             panel.Controls.Add(control);
             control.Location = controlPosition;
             control.Tag = root;
-            control.MouseEnter += l_MouseEnter;
+            //control.MouseEnter += l_MouseEnter;
             control.Height = LineHeight;
             control.Width = ControlMaxWidth;
             
             controlPosition.X += ControlMaxWidth + ControlSpacing;
             
-            ProceeControl(label, control, root);
-            
+            //Add reference from the menu item to the control holding the values.
+            root.control = control;
 
+        
             //Add a default button 
             if (!isMenu)
             {
@@ -147,7 +205,11 @@ namespace NetSettings
                 button.Text = "Default";
                 button.Location = controlPosition;
                 button.Click += button_Click;
+                button.Tag = root;
             }
+
+            ProceeControl(label, control, root);
+
             currentRow++;
 
         }
@@ -158,10 +220,13 @@ namespace NetSettings
             ItemTree item = GetItemFromControl(c);
             if (item != null)
             {
-                item.value = item.defaultvalue;
+                if (item.defaultvalue != null)
+                {
+                    item.value = item.defaultvalue;
+                    RefreshControlValue(item);
+                    RaiseEvent(item);
+                }
             }
-            //Default button
-            
         }
 
         void l_MouseEnter(object sender, EventArgs e)
@@ -174,84 +239,88 @@ namespace NetSettings
             }
         }
 
-        private void ProceeControl(Control l, Control t, ItemTree root)
+        private void RefreshControlValue(ItemTree item)
         {
-            if (root.type == "menu")
+            Control aControl = item.control;
+            switch (item.type)
             {
-                (l as Label).Font = new Font("Arial", 10);
-                (l as Label).ForeColor = Color.Blue;
+                case "bool":
+                    bool val = false;
+                    if (item.currentValue != null)
+                        val = (bool)item.currentValue;
+                    (aControl as CheckBox).Checked = val;
+                    break;
+                case "text":
+                    (aControl as TextBox).Text = (string)item.currentValue;
+                    break;
+                case "number":
+                    (aControl as TextBox).Text = ((double)item.currentValue).ToString();
+                    break;
+                case "combo":
+                        string[] values = item.values.Split(';');
+                        foreach (string v in values)
+                            (aControl as ComboBox).Items.Add(v);
+                        (aControl as ComboBox).SelectedItem = item.currentValue;
+                    break;
+                case "image":
+                    (aControl as TextBox).Text = item.currentValue as string;
+                    break;
+                case "color":
+                    (aControl as Control).BackColor = (Color)item.currentValue;
+                    break;
             }
 
-            if (root.type == "bool")
+
+        }
+
+        private void ProceeControl(Control label, Control actualControl, ItemTree root)
+        {
+            RefreshControlValue(root);
+            ProcessEvents(label, actualControl, root);
+        }
+
+        private void ProcessEvents(Control l, Control t, ItemTree root)
+        {
+            switch (root.type)
             {
-
-                bool val = false;
-                if (root.currentValue != null)
-                    val = (bool)root.currentValue;
-
-                (t as CheckBox).Checked = val;
-
-                (t as CheckBox).CheckStateChanged += MenuSettings_CheckStateChanged;
-                
+                case "menu":
+                    (l as Label).Font = new Font("consolas", 12,FontStyle.Bold);
+                    (l as Label).ForeColor = Color.Blue;
+                    break;
+                case "bool":
+                    (t as CheckBox).CheckStateChanged += MenuSettings_CheckStateChanged;
+                    break;
+                case "text":
+                    (t as TextBox).TextChanged += MenuSettings_TextChanged;
+                    break;
+                case "number":
+                    (t as TextBox).TextChanged += MenuSettings_NumberChanged;
+                    break;
+                case "combo":
+                    (t as ComboBox).SelectedIndexChanged += c_SelectedIndexChanged;
+                    break;
+                case "image":
+                    (t as TextBox).TextChanged += MenuSettings_TextChanged;
+                    (t as TextBox).MouseDoubleClick += MenuSettings_MouseDoubleClick;
+                    (t as TextBox).MouseLeave += MenuSettings_MouseLeave;
+                    (t as TextBox).MouseHover += MenuSettings_MouseHover;
+                    break;
+                case "color":
+                    //(t as Control).BorderStyle = BorderStyle.FixedSingle;
+                    (t as Control).Click += MenuSettings_Click;
+                    break;
             }
 
-            if (root.type == "text")
-            {
-                (t as TextBox).TextChanged += MenuSettings_TextChanged;
-                (t as TextBox).Text = (string)root.currentValue;
-            }
-
-            if (root.type == "number")
-            {
-                (t as TextBox).TextChanged += MenuSettings_NumberChanged;
-                (t as TextBox).Text = ((double)root.currentValue).ToString();
-                
-            }
-
-            if (root.type == "combo")
-            {
-                ComboBox c = (t as ComboBox);
-                if (c != null)
-                {
-                    string[] values = root.values.Split(';');
-                    foreach (string v in values)
-                        c.Items.Add(v);
-                    c.SelectedItem = root.currentValue;
-                    c.SelectedIndexChanged += c_SelectedIndexChanged;
-                }
-                
-            }
-
-            if (root.type == "image")
-            {
-                (t as TextBox).Text = root.currentValue as string;
-                (t as TextBox).TextChanged += MenuSettings_TextChanged;
-                (t as TextBox).MouseDoubleClick += MenuSettings_MouseDoubleClick;
-                //(t as TextBox).MouseEnter += MenuSettings_MouseEnter;
-                (t as TextBox).MouseLeave += MenuSettings_MouseLeave;
-                (t as TextBox).MouseHover += MenuSettings_MouseHover;
-            }
-
-            if (root.type == "color")
-            {
-                //(t as Panel).Height = 20;
-                (t as Panel).Width = 50;
-                (t as Panel).BorderStyle = BorderStyle.FixedSingle;
-                (t as Panel).Click += MenuSettings_Click;
-
-
-                (t as Panel).BackColor = (Color)root.currentValue ;
-                
-            }
         }
 
         void MenuSettings_Click(object sender, EventArgs e)
         {
-            Panel p = sender as Panel;
+            Control p = sender as Control;
             ColorDialog dialog;
-            if ((dialog = new ColorDialog(){FullOpen = true}).ShowDialog() == DialogResult.OK)
+            ItemTree item = GetItemFromControl(p);
+            if ((dialog = new ColorDialog(){FullOpen = true,Color = (Color)item.currentValue }).ShowDialog() == DialogResult.OK)
             {
-                ItemTree item = GetItemFromControl(p);
+                
                 if (item != null)
                 {
                     item.value = p.BackColor = dialog.Color;

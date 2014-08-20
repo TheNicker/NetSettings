@@ -3,32 +3,39 @@
   "subitems": [
     {
       "type": "menu",
+      "name": "GraphicsSettings",
+      "displayname": "Graphics settings",
       "subitems": [
         {
-            "type": "bool",
-            "subitems": null,
-            "name": "FullScreenEnabled",
-            "displayname": "Enable Fullscreen",
-            "description": "Enables working in exclusive mode",
-            "defaultvalue": false,
-            "value": true
+          "type": "bool",
+          "name": "FullScreenEnabled",
+          "displayname": "Enable Fullscreen",
+          "description": "Enables working in exclusive mode",
+          "defaultvalue": false,
+          "value": true
         },
         {
-            "type": "color",
-            "name": "Color",
-            "displayname": "Color",
-            "description": "The Background's fill color",
-            "defaultvalue": "Gray",
+          "type": "color",
+          "name": "Color",
+          "displayname": "Color",
+          "description": "The Background's fill color",
+          "defaultvalue": "Gray"
         },
         {
-            "type": "image",
-            "name": "Image",
-            "displayname": "Image",
-            "description": "The image to display in the background"
+          "type": "color",
+          "name": "Color1",
+          "displayname": "Color1",
+          "description": "The Background's fill color",
+          "defaultvalue": "LightBlue"
         },
-	   {
+        {
+          "type": "image",
+          "name": "Image",
+          "displayname": "Image",
+          "description": "The image to display in the background"
+        },
+        {
           "type": "combo",
-          "subitems": null,
           "name": "ImageRotation",
           "displayname": "Image rotation",
           "description": "The orientation of the image",
@@ -37,76 +44,91 @@
         },
         {
           "type": "image",
-          "subitems": null,
           "name": "Backgroundimage",
           "displayname": "Background image",
           "description": "The background image to display",
-          "defaultvalue": null,
           "value": "hello world"
         },
         {
           "type": "text",
-          "subitems": null,
           "name": "ForceMonitor",
           "displayname": "Force working on specific monitor",
           "description": "Force displaying the application on a named specific monitor (empty for deafault)",
-          "defaultvalue": null,
           "value": "hello world"
         },
         {
           "type": "bool",
-          "subitems": null,
           "name": "UseFlipMode",
           "displayname": "Enable Flip mode",
           "description": "Enable Direct3D11 flip model(windows 8.1 and higher)",
           "defaultvalue": true,
           "value": false
         }
-      ],
-      "name": "GraphicsSettings",
-      "displayname": "Graphics settings",
-      "description": null,
-      "defaultvalue": null,
-      "value": null
+      ]
     },
     {
       "type": "menu",
+      "name": "InputSettings",
+      "displayname": "Input settings",
       "subitems": [
         {
           "type": "bool",
-          "subitems": null,
           "name": "EnableMouse",
           "displayname": "Enable mouse",
           "description": "set to enable input from mouse",
-          "defaultvalue": true,
-          "value": null
+          "defaultvalue": true
         },
         {
           "type": "bool",
-          "subitems": null,
           "name": "EnableDigitizer",
           "displayname": "Enable digitizer",
-          "description": "Set to enable input from wacom digitizer",
-          "defaultvalue": null,
-          "value": null
+          "description": "Set to enable input from wacom digitizer"
         },
         {
           "type": "bool",
-          "subitems": null,
           "name": "EnableJoyStick",
           "displayname": "Enable joystick",
-          "description": "Set to enable input for joystick/gamepad devices",
-          "defaultvalue": true,
-          "value": null
+          "description": "Set to enable input for joystick/gamepad devices"
+        },
+        {
+          "type": "bool",
+          "name": "EnableMouse1",
+          "displayname": "Enable mouse",
+          "description": "set to enable input from mouse",
+          "defaultvalue": true
+        },
+        {
+          "type": "bool",
+          "name": "EnableDigitizer1",
+          "displayname": "Enable digitizer",
+          "description": "Set to enable input from wacom digitizer"
+        },
+        {
+          "type": "bool",
+          "name": "EnableJoyStick1",
+          "displayname": "Enable joystick",
+          "description": "Set to enable input for joystick/gamepad devices"
+        },
+        {
+          "type": "bool",
+          "name": "EnableMouse2",
+          "displayname": "Enable mouse2",
+          "description": "set to enable input from mouse",
+          "defaultvalue": true
+        },
+        {
+          "type": "bool",
+          "name": "EnableDigitizer2",
+          "displayname": "Enable digitizer",
+          "description": "Set to enable input from wacom digitizer"
+        },
+        {
+          "type": "bool",
+          "name": "EnableJoyStick2",
+          "displayname": "Enable joystick",
+          "description": "Set to enable input for joystick/gamepad devices"
         }
-      ],
-      "name": "InputSettings",
-      "displayname": "Input settings",
+      ]
     }
-  ],
-  "name": null,
-  "displayname": null,
-  "description": null,
-  "defaultvalue": null,
-  "value": null
+  ]
 }

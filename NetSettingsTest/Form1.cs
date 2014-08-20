@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NetSettingsTest;
 
 namespace NetSettings
 {
@@ -16,6 +17,8 @@ namespace NetSettings
         const string SettingsFilePath = @"Resources\GuiTemplate.json";
         MenuSettings settings;
         CreationParams fCreationParameters;
+        Timer fFilterTimer;
+        Filter fSettingsFilter;
         public Form1()
         {
             InitializeComponent();
@@ -26,18 +29,48 @@ namespace NetSettings
         {
             settings = new MenuSettings();
             fCreationParameters = new CreationParams();
-            fCreationParameters.panel = splitContainer2.Panel1;
+            fCreationParameters.panel = userControl11;
             fCreationParameters.descriptionPanel = splitContainer2.Panel2;
             fCreationParameters.root = ItemTree.FromFile(SettingsFilePath);
 
             Object a = fCreationParameters.root["inputsettings.enablemouse"];
             
             settings.Create(fCreationParameters);
+
+            fFilterTimer = new Timer();
+            fFilterTimer.Tick += fFilterTimer_Tick;
+            fFilterTimer.Interval = 300;
+        }
+
+        void fFilterTimer_Tick(object sender, EventArgs e)
+        {
+            fFilterTimer.Enabled = false;
+            
+            //customPanel1.Enable = false;
+            
+            userControl11.SuspendLayout();
+            settings.SetFilter(fSettingsFilter);
+
+            userControl11.ResumeLayout();
+            
+            //this.ResumeLayout();
+            //customPanel1.Enable = true;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             fCreationParameters.root.ToFile(SettingsFilePath);
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            fSettingsFilter = new Filter()
+            {
+                IncludeName = (sender as TextBox).Text
+            };
+            fFilterTimer.Enabled = false;
+            fFilterTimer.Enabled = true;
+         
         }
     }
 }

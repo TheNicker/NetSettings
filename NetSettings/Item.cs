@@ -25,13 +25,25 @@ namespace NetSettings
         public string values;
         public ItemTree[] subitems;
 
+        private void RootVerify()
+        {
+            if (this.type != "root")
+                throw new Exception("Operation valid only for root item");
+        }
+
+
+        //TODO: move this to another class, it should confirm to the view model paradigm
+        //This class is the model MenuSettings is the view 
+        [JsonIgnore]
+        public bool IsVisible;
+
+        
         public object this [string key]
         {
             get
             {
-                if (this.type != "root")
-                    throw new Exception("Operation valid only for root item");
 
+                RootVerify();
                 if (QualifiedNames == null)
                     ItemTree.BuildQualifiedNames(this);
 
@@ -47,8 +59,7 @@ namespace NetSettings
             }
             set
             {
-                if (this.type != "root")
-                    throw new Exception("Operation valid only for root item");
+                RootVerify();
 
 
                 if (QualifiedNames == null)
@@ -75,6 +86,16 @@ namespace NetSettings
 
         [JsonIgnore]
         public Dictionary<string, ItemTree> QualifiedNames;
+        
+        [NonSerialized]
+        [JsonIgnore]
+        public System.Windows.Forms.Control control;
+
+        public void RefreshQualifiedNames()
+        {
+            if (QualifiedNames == null)
+                ItemTree.BuildQualifiedNames(this);
+        }
 
 
         public static ItemTree FromFile(string aFileName)
@@ -148,11 +169,6 @@ namespace NetSettings
             }
         }
 
-        void SerializationCallback(object o, StreamingContext context)
-        {
-            int k = 0;
-        }
-
       [OnDeserialized]
     internal void OnDeserializedMethod(StreamingContext context)
     {
@@ -168,6 +184,15 @@ namespace NetSettings
           }
     }
 
+
+      public List<string> GetSettingsNames()
+      {
+          RootVerify();
+
+          if (QualifiedNames == null)
+              BuildQualifiedNames(this);
+          return QualifiedNames.Keys.ToList();
+      }
     }
 
     
