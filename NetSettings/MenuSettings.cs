@@ -164,7 +164,9 @@ namespace NetSettings
             PlacementParams p = fParams.placement;
             bool isMenu = root.type == "menu";
             //Create parent container
-            Control panel = new Control();
+            ControlsGroup group = new ControlsGroup();
+            Control panel = group.parentContainer = new Control();
+             
             fParams.container.Controls.Add(panel);
             
             panel.Width = p.TitleMaxWidth + p.TitleSpacing + p.ControlMaxWidth + p.ControlSpacing + p.DefaultButtonWidth;
@@ -178,8 +180,8 @@ namespace NetSettings
             Point controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
             
             //Add label describing the entry
-            
-            Label label = new Label();
+
+            Label label = group.label = new Label();
 
             label.Width = p.TitleMaxWidth;
             label.Height = p.LineHeight;
@@ -192,7 +194,7 @@ namespace NetSettings
             controlPosition.X = p.TitleMaxWidth + p.TitleSpacing;
             
             //Add the  control itself
-            Control control = Activator.CreateInstance(type) as Control;
+            Control control = group.control = Activator.CreateInstance(type) as Control;
             panel.Controls.Add(control);
             control.Location = controlPosition;
             control.Tag = root;
@@ -203,13 +205,13 @@ namespace NetSettings
             controlPosition.X += p.ControlMaxWidth + p.ControlSpacing;
             
             //Add reference from the menu item to the control holding the values.
-            root.control = control;
+            root.control = group;
 
         
             //Add a default button 
             if (!isMenu)
             {
-                Button button = new Button();
+                Button button = group.defaultButton = new Button();
                 button.Width = p.DefaultButtonWidth;
                 button.Height = p.LineHeight;
                 panel.Controls.Add(button);
@@ -250,7 +252,7 @@ namespace NetSettings
 
         private void RefreshControlValue(ItemTree item)
         {
-            Control aControl = item.control;
+            Control aControl = item.control.control;
             switch (item.type)
             {
                 case "bool":

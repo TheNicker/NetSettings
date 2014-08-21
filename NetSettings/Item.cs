@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace NetSettings
 {
-    class ControlsGroup
+    public class ControlsGroup
     {
-        System.Windows.Forms.Label label;
-        System.Windows.Forms.Control parentContainer;
-        System.Windows.Forms.Control control;
-        System.Windows.Forms.Button defaultButton;
+        public System.Windows.Forms.Label label;
+        public System.Windows.Forms.Control parentContainer;
+        public System.Windows.Forms.Control control;
+        public System.Windows.Forms.Button defaultButton;
     }
 
     [Serializable]
@@ -97,7 +97,7 @@ namespace NetSettings
         
         [NonSerialized]
         [JsonIgnore]
-        public System.Windows.Forms.Control control;
+        public ControlsGroup control;
 
         public void RefreshQualifiedNames()
         {
