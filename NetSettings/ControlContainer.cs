@@ -19,6 +19,12 @@ namespace NetSettings
             SetStyle(ControlStyles.OptimizedDoubleBuffer |
              ControlStyles.AllPaintingInWmPaint, true);
         }
+        
+        public void Reset()
+        {
+            Controls.Clear();
+            HorizontalScroll.Value = VerticalScroll.Value = 0;
+        }
 
         public void StartUpdate()
         {

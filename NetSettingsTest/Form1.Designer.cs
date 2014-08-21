@@ -34,12 +34,14 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.userControl11 = new NetSettings.ControlContainer();
+            this.controlContainer1 = new NetSettings.ControlContainer();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -68,7 +70,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
             this.splitContainer1.Size = new System.Drawing.Size(606, 454);
-            this.splitContainer1.SplitterDistance = 214;
+            this.splitContainer1.SplitterDistance = 213;
             this.splitContainer1.TabIndex = 1;
             // 
             // label1
@@ -98,7 +100,11 @@
             // splitContainer2.Panel1
             // 
             this.splitContainer2.Panel1.Controls.Add(this.userControl11);
-            this.splitContainer2.Size = new System.Drawing.Size(388, 454);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.controlContainer1);
+            this.splitContainer2.Size = new System.Drawing.Size(389, 454);
             this.splitContainer2.SplitterDistance = 326;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -108,8 +114,18 @@
             this.userControl11.Dock = System.Windows.Forms.DockStyle.Fill;
             this.userControl11.Location = new System.Drawing.Point(0, 0);
             this.userControl11.Name = "userControl11";
-            this.userControl11.Size = new System.Drawing.Size(388, 326);
+            this.userControl11.Size = new System.Drawing.Size(389, 326);
             this.userControl11.TabIndex = 0;
+            // 
+            // controlContainer1
+            // 
+            this.controlContainer1.AutoScroll = true;
+            this.controlContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.controlContainer1.Location = new System.Drawing.Point(0, 0);
+            this.controlContainer1.Name = "controlContainer1";
+            this.controlContainer1.Size = new System.Drawing.Size(389, 124);
+            this.controlContainer1.TabIndex = 0;
+            this.controlContainer1.Text = "controlContainer1";
             // 
             // Form1
             // 
@@ -125,6 +141,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -139,5 +156,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
         private NetSettings.ControlContainer userControl11;
+        private ControlContainer controlContainer1;
     }
 }

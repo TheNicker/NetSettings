@@ -10,13 +10,13 @@ namespace NetSettings
 {
     public delegate void ItemChangedDelegate(ItemTree aItemTree);
 
-    public struct CreationParams
+    public class CreationParams
     {
-        public Control panel;
-        public Control descriptionPanel;
+        public ControlContainer container;
+        public ControlContainer descriptionContainer;
         public ItemTree root;
         public Filter filter;
-        public PlacementParams placement;
+        public PlacementParams placement = new PlacementParams();
     }
 
     public class PlacementParams
@@ -39,11 +39,11 @@ namespace NetSettings
         
         int Nesting = 0;
         int currentRow;
-        Control fDescriptionPanel;
+        ControlContainer fDescriptionPanel;
         TextBox fDescriptionTextBox;
         CreationParams fParams;
 
-        PreviewForm previewForm;
+        PreviewForm fPreviewForm;
         Point fLastCursorPosition;
 
         public MenuSettings()
@@ -61,45 +61,52 @@ namespace NetSettings
         public void Create(CreationParams aParams)
         {
             fParams = aParams;
-            fDescriptionPanel = fParams.descriptionPanel;
-            TextBox t = new TextBox();
-            t.Multiline = true;
-            t.Dock = DockStyle.Fill;
-            t.ReadOnly = true;
-            t.BorderStyle = BorderStyle.FixedSingle;
-            t.Font = new Font("Lucida fax",10);
-            fDescriptionTextBox = t;
-            fDescriptionPanel.Controls.Add(t);
-            previewForm = new PreviewForm();
-            previewForm.PreviewTimer.Tick += PreviewTimer_Tick;
+            fDescriptionPanel = fParams.descriptionContainer;
+            if (fDescriptionPanel != null)
+            {
+                fDescriptionPanel.Reset();
+                fDescriptionPanel.StartUpdate();
+                TextBox t = new TextBox();
+                t.Multiline = true;
+                t.Dock = DockStyle.Fill;
+                t.ReadOnly = true;
+                t.BorderStyle = BorderStyle.FixedSingle;
+                t.Font = new Font("Lucida fax", 10);
+                fDescriptionTextBox = t;
+                fDescriptionPanel.Controls.Add(t);
+                fDescriptionPanel.EndUpdate();
+            }
+
+            if (fPreviewForm != null)
+            {
+                fPreviewForm = new PreviewForm();
+                fPreviewForm.PreviewTimer.Tick += PreviewTimer_Tick;
+            }
             RefreshTree();
         }
 
         public void SetFilter(Filter aFilter)
         {
             fParams.filter = aFilter;
+            fParams.container.StartUpdate();
             RefreshTree();
+            fParams.container.EndUpdate();
         }
 
         private void RefreshTree()
         {
             panelPosition = new Point();
             currentRow = 0;
-            CleanControls(fParams);
-            ApplyFilterRecursively(fParams);
-            AddControlRecursivly(fParams);
+            fParams.container.Reset();
+            ApplyFilterRecursively(fParams.root);
+            AddControlRecursivly(fParams.root);
         }
-
-        private void CleanControls(CreationParams fParams)
+        
+        private bool ApplyFilterRecursively(ItemTree root)
         {
-            fParams.panel.Controls.Clear();
-        }
-
-        private bool ApplyFilterRecursively(CreationParams aParams)
-        {
-            ItemTree item = aParams.root;
+            ItemTree item = root;
             
-            if (aParams.filter == null || String.IsNullOrEmpty(aParams.filter.IncludeName) || String.IsNullOrWhiteSpace(aParams.filter.IncludeName))
+            if (fParams.filter == null || String.IsNullOrEmpty(fParams.filter.IncludeName) || String.IsNullOrWhiteSpace(fParams.filter.IncludeName))
             {
                 item.IsVisible = true;
             }
@@ -112,7 +119,7 @@ namespace NetSettings
                 else
                 if (item.displayname != null)
                 {
-                    item.IsVisible = item.displayname.ToLower().Contains(aParams.filter.IncludeName.ToLower());
+                    item.IsVisible = item.displayname.ToLower().Contains(fParams.filter.IncludeName.ToLower());
                 }
             }
 
@@ -120,10 +127,8 @@ namespace NetSettings
             {
                 bool isVisible = false;
                 foreach (ItemTree subItem in item.subitems)
-                {
-                    aParams.root = subItem;
-                    isVisible |= ApplyFilterRecursively(aParams);
-                }
+                    isVisible |= ApplyFilterRecursively(subItem);
+                
                 //if at least one of the childs is visible then the parent is visible as well.
                 item.IsVisible = isVisible;
 
@@ -134,35 +139,34 @@ namespace NetSettings
 
         public void RaiseEvent(ItemTree aTreeItem)
         {
+            
             ItemChanged(aTreeItem);
         }
 
-        private void AddControlRecursivly(CreationParams  aParams)
+        private void AddControlRecursivly(ItemTree aRoot)
         {
-            ItemTree root = aParams.root;
-            if (!root.IsVisible)
+            ItemTree item = aRoot;
+            if (!item.IsVisible)
                 return;
-            Control control = aParams.panel;
+            Control control = fParams.container;
             Type type;
-            if (fStringToType.TryGetValue(root.type, out type))
-                AddControl(control, root, type);
+            if (fStringToType.TryGetValue(item.type, out type))
+                AddControl(item,type);
 
             //Add children
-            if (root.subitems != null)
-                foreach (ItemTree item in root.subitems)
-                {
-                    aParams.root = item;
-                    AddControlRecursivly(aParams);
-                }
+            if (item.subitems != null)
+                foreach (ItemTree subItem in item.subitems)
+                    AddControlRecursivly(subItem);
         }
 
-        private void AddControl(Control parent, ItemTree root, Type type)
+        private void AddControl(ItemTree root, Type type)
         {
             PlacementParams p = fParams.placement;
             bool isMenu = root.type == "menu";
             //Create parent container
             Control panel = new Control();
-            parent.Controls.Add(panel);
+            fParams.container.Controls.Add(panel);
+            
             panel.Width = p.TitleMaxWidth + p.TitleSpacing + p.ControlMaxWidth + p.ControlSpacing + p.DefaultButtonWidth;
             panel.Height = p.LineSpacing;
             panel.BackColor = isMenu ? Color.Yellow : currentRow % 2 == 0 ? Color.White : Color.LightGray;
@@ -217,9 +221,6 @@ namespace NetSettings
             }
 
             ProceeControl(label, control, root);
-
-            
-
         }
 
         void button_Click(object sender, EventArgs e)
@@ -242,7 +243,7 @@ namespace NetSettings
             ItemTree item = (sender as Control).Tag as ItemTree;
             if (item != null)
             {
-                if (item.description != null)
+                if (item.description != null && fDescriptionTextBox != null)
                     fDescriptionTextBox.Text = item.description;
             }
         }
@@ -277,6 +278,8 @@ namespace NetSettings
                     (aControl as Control).BackColor = (Color)item.currentValue;
                     break;
             }
+
+            //if (item.va)
 
 
         }
@@ -348,13 +351,13 @@ namespace NetSettings
 
         void MenuSettings_MouseHover(object sender, EventArgs e)
         {
-            previewForm.ImageName = (sender as TextBox).Text;
+            fPreviewForm.ImageName = (sender as TextBox).Text;
         }
 
         void MenuSettings_MouseLeave(object sender, EventArgs e)
         {
-            if (Cursor.Position != fLastCursorPosition &&  previewForm != null)
-                previewForm.Hide();
+            if (Cursor.Position != fLastCursorPosition &&  fPreviewForm != null)
+                fPreviewForm.Hide();
                 
         }
 

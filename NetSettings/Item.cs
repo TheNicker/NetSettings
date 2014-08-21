@@ -11,6 +11,14 @@ using System.Threading.Tasks;
 
 namespace NetSettings
 {
+    class ControlsGroup
+    {
+        System.Windows.Forms.Label label;
+        System.Windows.Forms.Control parentContainer;
+        System.Windows.Forms.Control control;
+        System.Windows.Forms.Button defaultButton;
+    }
+
     [Serializable]
     public class ItemTree
     {

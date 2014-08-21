@@ -29,8 +29,8 @@ namespace NetSettings
         {
             settings = new MenuSettings();
             fCreationParameters = new CreationParams();
-            fCreationParameters.panel = userControl11;
-            fCreationParameters.descriptionPanel = splitContainer2.Panel2;
+            fCreationParameters.container = userControl11;
+            fCreationParameters.descriptionContainer = controlContainer1;
             fCreationParameters.root = ItemTree.FromFile(SettingsFilePath);
 
             Object a = fCreationParameters.root["inputsettings.enablemouse"];
@@ -45,9 +45,7 @@ namespace NetSettings
         void fFilterTimer_Tick(object sender, EventArgs e)
         {
             fFilterTimer.Enabled = false;
-            userControl11.StartUpdate();
             settings.SetFilter(fSettingsFilter);
-            userControl11.EndUpdate();
         }
 
         private void button1_Click(object sender, EventArgs e)
