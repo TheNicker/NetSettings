@@ -50,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColorControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ComboBoxDoubleClick.cs">
       <SubType>Component</SubType>
     </Compile>

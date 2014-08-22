@@ -41,7 +41,7 @@ namespace NetSettings
             fStringToType.Add("combo", typeof(ComboBoxDoubleClick));
             fStringToType.Add("image", typeof(TextBox));
             fStringToType.Add("number", typeof(TextBox));
-            fStringToType.Add("color", typeof(Control));
+            fStringToType.Add("color", typeof(ColorControl));
             labelNormal = new Font(labelFont, 10, FontStyle.Regular);
             labelBold = new Font(labelFont, 10, FontStyle.Bold);
         }
