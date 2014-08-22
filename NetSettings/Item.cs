@@ -105,16 +105,6 @@ namespace NetSettings
                 root.fQualifiedNames = value;
             }
         }
-        
-        [NonSerialized]
-        [JsonIgnore]
-        public ControlsGroup controlsGroup;
-
-        //public void RefreshQualifiedNames()
-        //{
-        //    if (root.QualifiedNames == null)
-        //        ItemTree.BuildQualifiedNames(root);
-        //}
 
 
         public static ItemTree FromFile(string aFileName)

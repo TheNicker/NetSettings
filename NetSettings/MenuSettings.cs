@@ -159,16 +159,16 @@ namespace NetSettings
 
         }
 
-        public void RaiseEvent(ItemTree aTreeItem)
+        public void RaiseEvent(VisualItem aVisualItem)
         {
-            CheckLabelColor(aTreeItem);
-            ItemChanged(aTreeItem);
+            CheckLabelColor(aVisualItem);
+            ItemChanged(aVisualItem.Item);
 
         }
 
-        private void CheckLabelColor(ItemTree aTreeItem)
+        private void CheckLabelColor(VisualItem aVisualItem)
         {
-            aTreeItem.controlsGroup.label.Font = GetLabelFont(aTreeItem);
+            aVisualItem.controlsGroup.label.Font = GetLabelFont(aVisualItem.Item);
         }
 
         private void AddControlRecursivly(VisualItem aRoot)
@@ -180,7 +180,7 @@ namespace NetSettings
             Control control = fParams.container;
             Type type;
             if (fStringToType.TryGetValue(item.type, out type))
-                AddControl(item,type);
+                AddControl(aRoot, type);
 
             //Add children
             if (visualItem.subitems != null)
@@ -188,8 +188,9 @@ namespace NetSettings
                     AddControlRecursivly(subItem);
         }
 
-        private void AddControl(ItemTree aItem, Type aType)
+        private void AddControl(VisualItem aVisualItem, Type aType)
         {
+            ItemTree aItem = aVisualItem.Item;
             PlacementParams p = fParams.placement;
             bool isMenu = aItem.type == "menu";
             //Create parent container
@@ -205,7 +206,7 @@ namespace NetSettings
             panelPosition.X = p.HorizontalMArgin * Nesting;
             panel.Location = panelPosition;
             panelPosition.Y += p.LineSpacing;
-            panel.Tag = aItem;
+            panel.Tag = aVisualItem;
             Point controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
             
             //Add label describing the entry
@@ -216,7 +217,7 @@ namespace NetSettings
             label.Height = p.LineHeight;
             label.Font = GetLabelFont(aItem);
             label.Text = aItem.displayname;
-            label.Tag = aItem;
+            label.Tag = aVisualItem;
             label.Location = controlPosition;
             
             panel.Controls.Add(label);
@@ -226,14 +227,14 @@ namespace NetSettings
             Control control = group.control = Activator.CreateInstance(aType) as Control;
             panel.Controls.Add(control);
             control.Location = controlPosition;
-            control.Tag = aItem;
+            control.Tag = aVisualItem;
             control.Height = p.LineHeight;
             control.Width = p.ControlMaxWidth;
 
             controlPosition.X += p.ControlMaxWidth + p.ControlSpacing;
             
             //Add reference from the menu item to the control holding the values.
-            aItem.controlsGroup = group;
+            aVisualItem.controlsGroup = group;
 
         
             //Add a default button 
@@ -246,11 +247,11 @@ namespace NetSettings
                 button.Text = "Default";
                 button.Location = controlPosition;
                 button.Click += button_Click;
-                button.Tag = aItem;
+                button.Tag = aVisualItem;
                 currentRow++;
             }
 
-            ProceeControl(label, control, aItem);
+            ProceeControl(label, control, aVisualItem);
         }
 
         private Font GetLabelFont(ItemTree aTreeItem)
@@ -262,12 +263,12 @@ namespace NetSettings
         void button_Click(object sender, EventArgs e)
         {
             Control c = sender as Control;
-            ItemTree item = GetItemFromControl(c);
+            VisualItem item = GetItemFromControl(c);
             if (item != null)
             {
-                if (item.defaultvalue != null)
+                if (item.Item.defaultvalue != null)
                 {
-                    item.SetValue( item.defaultvalue);
+                    item.Item.SetValue( item.Item.defaultvalue);
                     RefreshControlValue(item);
                     RaiseEvent(item);
                 }
@@ -284,20 +285,21 @@ namespace NetSettings
             }
         }
 
-        private void RefreshControlValueRecursivly(ItemTree aRoot)
+        private void RefreshControlValueRecursivly(VisualItem aRoot)
         {
             RefreshControlValue(aRoot);
             if (aRoot.subitems != null)
-                foreach (ItemTree subItem in aRoot.subitems)
+                foreach (VisualItem subItem in aRoot.subitems)
                     RefreshControlValueRecursivly(subItem);
 
         }
 
-        private void RefreshControlValue(ItemTree item)
+        private void RefreshControlValue(VisualItem aVisualItem)
         {
-            if (item.controlsGroup != null)
+            ItemTree item = aVisualItem.Item;
+            if (aVisualItem.controlsGroup != null)
             {
-                Control aControl = item.controlsGroup.control;
+                Control aControl = aVisualItem.controlsGroup.control;
                 switch (item.type)
                 {
                     case "bool":
@@ -325,11 +327,11 @@ namespace NetSettings
             }
         }
 
-        private void ProceeControl(Control label, Control actualControl, ItemTree aItem)
+        private void ProceeControl(Control label, Control actualControl, VisualItem aVisualItem)
         {
-            PrepareControl(label, actualControl, aItem);
-            RefreshControlValue(aItem);
-            ProcessEvents(label, actualControl, aItem);
+            PrepareControl(label, actualControl, aVisualItem.Item);
+            RefreshControlValue(aVisualItem);
+            ProcessEvents(label, actualControl, aVisualItem.Item);
         }
 
         private static void PrepareControl(Control label, Control actualControl, ItemTree aItem)
@@ -385,12 +387,12 @@ namespace NetSettings
         private void Combo_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
-            ItemTree item = GetItemFromControl(comboBox);
+            VisualItem item = GetItemFromControl(comboBox);
             if (item != null)
             {
                 comboBox.SelectedIndex = (comboBox.SelectedIndex + 1) % comboBox.Items.Count;
             }
-            item.SetValue(comboBox.SelectedItem);
+            item.Item.SetValue(comboBox.SelectedItem);
             RaiseEvent(item);
         }
 
@@ -398,12 +400,12 @@ namespace NetSettings
         {
             Control p = sender as Control;
             ColorDialog dialog;
-            ItemTree item = GetItemFromControl(p);
-            if ((dialog = new ColorDialog(){FullOpen = true,Color = (Color)item.currentValue }).ShowDialog() == DialogResult.OK)
+            VisualItem item = GetItemFromControl(p);
+            if ((dialog = new ColorDialog(){FullOpen = true,Color = (Color)item.Item.currentValue }).ShowDialog() == DialogResult.OK)
             {
                 if (item != null)
                 {
-                    item.SetValue(p.BackColor = dialog.Color);
+                    item.Item.SetValue(p.BackColor = dialog.Color);
                     RaiseEvent(item);
                 }
             }
@@ -412,11 +414,11 @@ namespace NetSettings
         private void MenuSettings_NumberChanged(object sender, EventArgs e)
         {
             TextBox textbox = sender as TextBox;
-            ItemTree item = GetItemFromControl(textbox);
+            VisualItem item = GetItemFromControl(textbox);
             double num;
             if (double.TryParse(textbox.Text, out num))
             {
-                item.SetValue(num);
+                item.Item.SetValue(num);
                 RaiseEvent(item);
             }
         }
@@ -462,42 +464,42 @@ namespace NetSettings
         {
             string imageName = ChooseFile(true, "", "");
             TextBox t = sender as TextBox;
-            ItemTree item = GetItemFromControl(t);
-            item.SetValue(t.Text = imageName);
+            VisualItem item = GetItemFromControl(t);
+            item.Item.SetValue(t.Text = imageName);
         }
         void c_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
-            ItemTree item = GetItemFromControl(comboBox);
+            VisualItem item = GetItemFromControl(comboBox);
             if (item != null)
-                item.SetValue(comboBox.SelectedItem);
+                item.Item.SetValue(comboBox.SelectedItem);
             RaiseEvent(item);
         }
 
         void MenuSettings_TextChanged(object sender, EventArgs e)
         {
             TextBox textbox = sender as TextBox;
-            ItemTree item = GetItemFromControl(textbox);
-            item.SetValue(textbox.Text);
+            VisualItem item = GetItemFromControl(textbox);
+            item.Item.SetValue(textbox.Text);
             RaiseEvent(item);
         }
 
         void MenuSettings_CheckStateChanged(object sender, EventArgs e)
         {
             CheckBox checkBox = sender as CheckBox;
-            ItemTree item = checkBox.Tag as ItemTree;
-            item.SetValue(checkBox.Checked);
+            VisualItem item = checkBox.Tag as VisualItem;
+            item.Item.SetValue(checkBox.Checked);
             RaiseEvent(item);
         }
 
-        ItemTree GetItemFromControl(Control aControl)
+        VisualItem GetItemFromControl(Control aControl)
         {
-            return aControl.Tag as ItemTree;
+            return aControl.Tag as VisualItem;
         }
 
         public void RefreshViewFromData()
         {
-            RefreshControlValueRecursivly(fParams.root);
+            RefreshControlValueRecursivly(rootVisualItem);
         }
     }
 
