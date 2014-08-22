@@ -33,22 +33,24 @@ namespace NetSettings
         public string values;
         public ItemTree[] subitems;
 
+
         private void RootVerify()
         {
             if (this.type != "root")
                 throw new Exception("Operation valid only for root item");
         }
 
-
         //TODO: move this to another class, it should confirm to the view model paradigm
         //This class is the model MenuSettings is the view 
         [JsonIgnore]
         public bool IsVisible;
 
+        [JsonIgnore]
+        ItemTree root;
         
         public T GetValue<T>(string key)
         {
-            object val = this[key];
+            object val = root[key];
             if (val != null)
             {
                 if (val is T)
@@ -63,13 +65,11 @@ namespace NetSettings
         {
             get
             {
-
-                RootVerify();
-                if (QualifiedNames == null)
-                    ItemTree.BuildQualifiedNames(this);
+                if (root.QualifiedNames == null)
+                    ItemTree.BuildQualifiedNames(root);
 
                 ItemTree item;
-                if (QualifiedNames.TryGetValue(key, out item))
+                if (root.QualifiedNames.TryGetValue(key, out item))
                 {
                     return item.currentValue;
                 }
@@ -80,11 +80,8 @@ namespace NetSettings
             }
             set
             {
-                RootVerify();
-
-
-                if (QualifiedNames == null)
-                    ItemTree.BuildQualifiedNames(this);
+                if (root.QualifiedNames == null)
+                    ItemTree.BuildQualifiedNames(root);
 
                 ItemTree item;
                 if (QualifiedNames.TryGetValue(key, out item))
@@ -106,7 +103,21 @@ namespace NetSettings
         }
 
         [JsonIgnore]
-        public Dictionary<string, ItemTree> QualifiedNames;
+        public Dictionary<string, ItemTree> fQualifiedNames;
+
+        [JsonIgnore]
+        public Dictionary<string, ItemTree> QualifiedNames
+        {
+            get
+            {
+                return root.fQualifiedNames;
+            }
+
+            set
+            {
+                root.fQualifiedNames = value;
+            }
+        }
         
         [NonSerialized]
         [JsonIgnore]
@@ -114,8 +125,8 @@ namespace NetSettings
 
         public void RefreshQualifiedNames()
         {
-            if (QualifiedNames == null)
-                ItemTree.BuildQualifiedNames(this);
+            if (root.QualifiedNames == null)
+                ItemTree.BuildQualifiedNames(root);
         }
 
 
@@ -123,11 +134,13 @@ namespace NetSettings
         {
             string text = File.ReadAllText(aFileName);
             ItemTree root = (ItemTree)Newtonsoft.Json.JsonConvert.DeserializeObject(text, typeof(ItemTree));
+            BuildQualifiedNames(root);
             return root;
         }
         
-        private static void BuildQualifiedNames(Dictionary<string,ItemTree> aQualifiedNames, ItemTree item,ItemTree parent)
+        private static void BuildQualifiedNames(ItemTree aRoot, Dictionary<string,ItemTree> aQualifiedNames, ItemTree item,ItemTree parent)
         {
+            item.root = aRoot;
             ItemTree currentParent = parent == null || parent.type == "root" ? null : parent;
             if (item.type != "root")
             {
@@ -143,7 +156,7 @@ namespace NetSettings
             if (item.subitems != null)
                 foreach (ItemTree subItem in item.subitems)
                 {
-                    BuildQualifiedNames(aQualifiedNames, subItem, item);
+                    BuildQualifiedNames(aRoot, aQualifiedNames, subItem, item);
 
                 }
 
@@ -157,11 +170,71 @@ namespace NetSettings
         {
             if (aRoot.type == "root")
             {
-                aRoot.QualifiedNames = new Dictionary<string, ItemTree>(StringComparer.OrdinalIgnoreCase);
-                BuildQualifiedNames(aRoot.QualifiedNames, aRoot, null);
+                aRoot.fQualifiedNames = new Dictionary<string, ItemTree>(StringComparer.OrdinalIgnoreCase);
+                BuildQualifiedNames(aRoot, aRoot.fQualifiedNames, aRoot, null);
             }
-            
         }
+
+        public void SetValue(object val)
+        {
+            this.value = val;
+            if (DataProvider != null)
+                DataProvider[FullName] = val;
+        }
+
+        [JsonIgnore]
+        private Dictionary<string, object> fDataProvider;
+        [JsonIgnore]
+        public Dictionary<string, object> DataProvider
+        {
+            get
+            {
+                return root.fDataProvider;
+            }
+            set
+            {
+                root.fDataProvider = value;
+                root.RefresOverrideData();
+            }
+        }
+
+        private void SetAlltoDefault()
+        {
+            foreach (string key in QualifiedNames.Keys)
+                QualifiedNames[key].ResetToDefault();
+
+        }
+
+        public Dictionary<string,object> GenerateDefaultOptionsSet()
+        {
+            Dictionary<string,object> result = new Dictionary<string,object>();
+            foreach (KeyValuePair<string, ItemTree> pair in root.QualifiedNames)
+                result.Add(pair.Key, pair.Value.defaultvalue);
+
+            return result;
+        }
+
+        private void ResetToDefault()
+        {
+            value = defaultvalue != null ? defaultvalue : null;
+        }
+
+        private void RefresOverrideData()
+        {
+            if (DataProvider != null)
+                foreach (string key in DataProvider.Keys)
+                {
+                    ItemTree item;
+
+                    if (root.QualifiedNames.TryGetValue(key, out item))
+                    {
+                        item.value = DataProvider[key];
+                        NormalizeItemValue(item);
+                    }
+                }
+        }
+      
+
         public void ToFile(string aFileName)
         {
             JsonSerializer d = JsonSerializer.Create();
@@ -171,8 +244,6 @@ namespace NetSettings
                 {
                     Formatting = Formatting.Indented,
                     NullValueHandling = NullValueHandling.Ignore,
-                    
-                    
                 }
                 );
 
@@ -193,35 +264,39 @@ namespace NetSettings
       [OnDeserialized]
     internal void OnDeserializedMethod(StreamingContext context)
     {
-          if (this.type == "color")
-          {
-              if (this.defaultvalue != null && this.defaultvalue is string)
-                  this.defaultvalue = System.Drawing.ColorTranslator.FromHtml(this.defaultvalue as string);
+        NormalizeItemValue(this);
+    }
 
-              if (this.value != null && this.value is string)
-                  this.value = System.Drawing.ColorTranslator.FromHtml(this.value as string);
-                  //this.value = System.Drawing.Color.FromName(;
+      private void NormalizeItemValue(ItemTree aItem)
+      {
+          if (aItem.type == "color")
+          {
+              if (aItem.defaultvalue != null && aItem.defaultvalue is string)
+                  aItem.defaultvalue = System.Drawing.ColorTranslator.FromHtml(aItem.defaultvalue as string);
+
+              if (aItem.value != null && aItem.value is string)
+                  aItem.value = System.Drawing.ColorTranslator.FromHtml(aItem.value as string);
           }
 
-          if (this.type == "number")
+          if (aItem.type == "number")
           {
-              if (this.defaultvalue == null)
-                  this.defaultvalue = 0.0;
+              if (aItem.defaultvalue == null)
+                  aItem.defaultvalue = 0.0;
               else
                   if (defaultvalue is Int64)
                       defaultvalue = (double)(Int64)defaultvalue;
 
           }
-    }
+      }
 
 
       public List<string> GetSettingsNames()
       {
-          RootVerify();
+          //RootVerify();
 
-          if (QualifiedNames == null)
-              BuildQualifiedNames(this);
-          return QualifiedNames.Keys.ToList();
+          if (root.QualifiedNames == null)
+              BuildQualifiedNames(root);
+          return root.QualifiedNames.Keys.ToList();
       }
     }
 

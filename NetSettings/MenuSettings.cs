@@ -9,10 +9,6 @@ using System.Windows.Forms;
 namespace NetSettings
 {
     public delegate void ItemChangedDelegate(ItemTree aItemTree);
-
-    
-
-  
     public class MenuSettings
     {
         const string labelFont = "calibri";
@@ -31,6 +27,8 @@ namespace NetSettings
 
         Font labelNormal;
         Font labelBold;
+
+        
 
         public MenuSettings()
         {
@@ -238,7 +236,7 @@ namespace NetSettings
             {
                 if (item.defaultvalue != null)
                 {
-                    item.value = item.defaultvalue;
+                    item.SetValue( item.defaultvalue);
                     RefreshControlValue(item);
                     RaiseEvent(item);
                 }
@@ -255,53 +253,75 @@ namespace NetSettings
             }
         }
 
+        private void RefreshControlValueRecursivly(ItemTree aRoot)
+        {
+            RefreshControlValue(aRoot);
+            if (aRoot.subitems != null)
+                foreach (ItemTree subItem in aRoot.subitems)
+                    RefreshControlValueRecursivly(subItem);
+
+        }
+
         private void RefreshControlValue(ItemTree item)
         {
-            Control aControl = item.controlsGroup.control;
-            switch (item.type)
+            if (item.controlsGroup != null)
             {
-                case "bool":
-                    bool val = false;
-                    if (item.currentValue != null)
-                        val = (bool)item.currentValue;
-                    (aControl as CheckBox).Checked = val;
-                    break;
-                case "text":
-                    (aControl as TextBox).Text = (string)item.currentValue;
-                    break;
-                case "number":
-                    (aControl as TextBox).Text = ((double)item.currentValue).ToString();
-                    break;
-                case "combo":
-                        string[] values = item.values.Split(';');
-                        foreach (string v in values)
-                            (aControl as ComboBox).Items.Add(v);
+                Control aControl = item.controlsGroup.control;
+                switch (item.type)
+                {
+                    case "bool":
+                        bool val = false;
+                        if (item.currentValue != null)
+                            val = (bool)item.currentValue;
+                        (aControl as CheckBox).Checked = val;
+                        break;
+                    case "text":
+                        (aControl as TextBox).Text = (string)item.currentValue;
+                        break;
+                    case "number":
+                        (aControl as TextBox).Text = ((double)item.currentValue).ToString();
+                        break;
+                    case "combo":
                         (aControl as ComboBox).SelectedItem = item.currentValue;
-                    break;
-                case "image":
-                    (aControl as TextBox).Text = item.currentValue as string;
-                    break;
-                case "color":
-                    (aControl as Control).BackColor = (Color)item.currentValue;
-                    break;
+                        break;
+                    case "image":
+                        (aControl as TextBox).Text = item.currentValue as string;
+                        break;
+                    case "color":
+                        (aControl as Control).BackColor = (Color)item.currentValue;
+                        break;
+                }
             }
         }
 
-        private void ProceeControl(Control label, Control actualControl, ItemTree root)
+        private void ProceeControl(Control label, Control actualControl, ItemTree aItem)
         {
-            RefreshControlValue(root);
-            ProcessEvents(label, actualControl, root);
+            PrepareControl(label, actualControl, aItem);
+            RefreshControlValue(aItem);
+            ProcessEvents(label, actualControl, aItem);
+        }
+
+        private static void PrepareControl(Control label, Control actualControl, ItemTree aItem)
+        {
+            switch (aItem.type)
+            {
+                case "combo":
+                    string[] values = aItem.values.Split(';');
+                    foreach (string v in values)
+                        (actualControl as ComboBox).Items.Add(v);
+                    break;
+                case "menu":
+                    //TODO: move this two line of code this is no event
+                    (label as Label).Font = new Font(labelFont, 12, FontStyle.Bold);
+                    (label as Label).ForeColor = Color.Blue;
+                    break;
+            }
         }
 
         private void ProcessEvents(Control l, Control t, ItemTree aItem)
         {
             switch (aItem.type)
             {
-                case "menu":
-                    //TODO: move this two line of code this is no event
-                    (l as Label).Font = new Font(labelFont, 12,FontStyle.Bold);
-                    (l as Label).ForeColor = Color.Blue;
-                    break;
                 case "bool":
                     (t as CheckBox).CheckStateChanged += MenuSettings_CheckStateChanged;
                     break;
@@ -339,7 +359,7 @@ namespace NetSettings
             {
                 comboBox.SelectedIndex = (comboBox.SelectedIndex + 1) % comboBox.Items.Count;
             }
-            item.value = comboBox.SelectedItem;
+            item.SetValue(comboBox.SelectedItem);
             RaiseEvent(item);
         }
 
@@ -352,7 +372,7 @@ namespace NetSettings
             {
                 if (item != null)
                 {
-                    item.value = p.BackColor = dialog.Color;
+                    item.SetValue(p.BackColor = dialog.Color);
                     RaiseEvent(item);
                 }
             }
@@ -365,7 +385,7 @@ namespace NetSettings
             double num;
             if (double.TryParse(textbox.Text, out num))
             {
-                item.value = num;
+                item.SetValue(num);
                 RaiseEvent(item);
             }
         }
@@ -412,14 +432,14 @@ namespace NetSettings
             string imageName = ChooseFile(true, "", "");
             TextBox t = sender as TextBox;
             ItemTree item = GetItemFromControl(t);
-            item.value = t.Text = imageName;
+            item.SetValue(t.Text = imageName);
         }
         void c_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
             ItemTree item = GetItemFromControl(comboBox);
             if (item != null)
-                item.value = comboBox.SelectedItem;
+                item.SetValue(comboBox.SelectedItem);
             RaiseEvent(item);
         }
 
@@ -427,7 +447,7 @@ namespace NetSettings
         {
             TextBox textbox = sender as TextBox;
             ItemTree item = GetItemFromControl(textbox);
-            item.value = textbox.Text;
+            item.SetValue(textbox.Text);
             RaiseEvent(item);
         }
 
@@ -435,13 +455,18 @@ namespace NetSettings
         {
             CheckBox checkBox = sender as CheckBox;
             ItemTree item = checkBox.Tag as ItemTree;
-            item.value = checkBox.Checked;
+            item.SetValue(checkBox.Checked);
             RaiseEvent(item);
         }
 
         ItemTree GetItemFromControl(Control aControl)
         {
             return aControl.Tag as ItemTree;
+        }
+
+        public void RefreshViewFromData()
+        {
+            RefreshControlValueRecursivly(fParams.root);
         }
     }
 
