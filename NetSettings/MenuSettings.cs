@@ -80,18 +80,20 @@ namespace NetSettings
         public void SetFilter(Filter aFilter)
         {
             fParams.filter = aFilter;
-            fParams.container.StartUpdate();
             RefreshTree();
-            fParams.container.EndUpdate();
         }
 
         private void RefreshTree()
         {
+            fParams.container.StartUpdate();
+            
             panelPosition = new Point();
             currentRow = 0;
             fParams.container.Reset();
             ApplyFilterRecursively(fParams.root);
             AddControlRecursivly(fParams.root);
+
+            fParams.container.EndUpdate();
         }
         
         private bool ApplyFilterRecursively(ItemTree root)
