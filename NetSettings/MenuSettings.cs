@@ -10,29 +10,12 @@ namespace NetSettings
 {
     public delegate void ItemChangedDelegate(ItemTree aItemTree);
 
-    public class CreationParams
-    {
-        public ControlContainer container;
-        public ControlContainer descriptionContainer;
-        public ItemTree root;
-        public Filter filter;
-        public PlacementParams placement = new PlacementParams();
-    }
-
-    public class PlacementParams
-    {
-        public int LineSpacing = 25;
-        public int TitleMaxWidth = 150;
-        public int TitleSpacing = 30;
-        public int ControlMaxWidth = 80;
-        public int ControlSpacing = 20;
-        public int LineHeight = 20;
-        public int DefaultButtonWidth = 50;
-        public int HorizontalMArgin = 20;
-    }
     
+
+  
     public class MenuSettings
     {
+        const string labelFont = "calibri";
         public event ItemChangedDelegate ItemChanged = delegate { };
         private Dictionary<string, Type> fStringToType;
         Point panelPosition;
@@ -46,22 +29,31 @@ namespace NetSettings
         PreviewForm fPreviewForm;
         Point fLastCursorPosition;
 
+        Font labelNormal;
+        Font labelBold;
+
         public MenuSettings()
         {
             fStringToType = new Dictionary<string, Type>();
             fStringToType.Add("text", typeof(TextBox));
             fStringToType.Add("bool", typeof(CheckBox));
             fStringToType.Add("menu", typeof(Label));
-            fStringToType.Add("combo", typeof(ComboBox));
+            fStringToType.Add("combo", typeof(ComboBoxDoubleClick));
             fStringToType.Add("image", typeof(TextBox));
             fStringToType.Add("number", typeof(TextBox));
             fStringToType.Add("color", typeof(Control));
+            labelNormal = new Font(labelFont, 10, FontStyle.Regular);
+            labelBold = new Font(labelFont, 10, FontStyle.Bold);
         }
+
+        
 
         public void Create(CreationParams aParams)
         {
+            
             fParams = aParams;
             fDescriptionPanel = fParams.descriptionContainer;
+
             if (fDescriptionPanel != null)
             {
                 fDescriptionPanel.Reset();
@@ -77,7 +69,7 @@ namespace NetSettings
                 fDescriptionPanel.EndUpdate();
             }
 
-            if (fPreviewForm != null)
+            if (fPreviewForm == null)
             {
                 fPreviewForm = new PreviewForm();
                 fPreviewForm.PreviewTimer.Tick += PreviewTimer_Tick;
@@ -139,8 +131,14 @@ namespace NetSettings
 
         public void RaiseEvent(ItemTree aTreeItem)
         {
-            
+            CheckLabelColor(aTreeItem);
             ItemChanged(aTreeItem);
+
+        }
+
+        private void CheckLabelColor(ItemTree aTreeItem)
+        {
+            aTreeItem.controlsGroup.label.Font = GetLabelFont(aTreeItem);
         }
 
         private void AddControlRecursivly(ItemTree aRoot)
@@ -159,10 +157,10 @@ namespace NetSettings
                     AddControlRecursivly(subItem);
         }
 
-        private void AddControl(ItemTree root, Type type)
+        private void AddControl(ItemTree aItem, Type aType)
         {
             PlacementParams p = fParams.placement;
-            bool isMenu = root.type == "menu";
+            bool isMenu = aItem.type == "menu";
             //Create parent container
             ControlsGroup group = new ControlsGroup();
             Control panel = group.parentContainer = new Control();
@@ -171,12 +169,12 @@ namespace NetSettings
             
             panel.Width = p.TitleMaxWidth + p.TitleSpacing + p.ControlMaxWidth + p.ControlSpacing + p.DefaultButtonWidth;
             panel.Height = p.LineSpacing;
-            panel.BackColor = isMenu ? Color.Yellow : currentRow % 2 == 0 ? Color.White : Color.LightGray;
+            panel.BackColor = isMenu ? Color.Orange : currentRow % 2 == 0 ? Color.White : Color.LightGray;
             panel.MouseEnter +=l_MouseEnter;
             panelPosition.X = p.HorizontalMArgin * Nesting;
             panel.Location = panelPosition;
             panelPosition.Y += p.LineSpacing;
-            panel.Tag = root;
+            panel.Tag = aItem;
             Point controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
             
             //Add label describing the entry
@@ -185,27 +183,26 @@ namespace NetSettings
 
             label.Width = p.TitleMaxWidth;
             label.Height = p.LineHeight;
-            label.Font = new Font("consolas", 10);
-            label.Text = root.displayname;
-            label.Tag = root;
+            label.Font = GetLabelFont(aItem);
+            label.Text = aItem.displayname;
+            label.Tag = aItem;
             label.Location = controlPosition;
-            //label.MouseEnter += l_MouseEnter;
+            
             panel.Controls.Add(label);
             controlPosition.X = p.TitleMaxWidth + p.TitleSpacing;
             
             //Add the  control itself
-            Control control = group.control = Activator.CreateInstance(type) as Control;
+            Control control = group.control = Activator.CreateInstance(aType) as Control;
             panel.Controls.Add(control);
             control.Location = controlPosition;
-            control.Tag = root;
-            //control.MouseEnter += l_MouseEnter;
+            control.Tag = aItem;
             control.Height = p.LineHeight;
             control.Width = p.ControlMaxWidth;
 
             controlPosition.X += p.ControlMaxWidth + p.ControlSpacing;
             
             //Add reference from the menu item to the control holding the values.
-            root.control = group;
+            aItem.controlsGroup = group;
 
         
             //Add a default button 
@@ -218,11 +215,17 @@ namespace NetSettings
                 button.Text = "Default";
                 button.Location = controlPosition;
                 button.Click += button_Click;
-                button.Tag = root;
+                button.Tag = aItem;
                 currentRow++;
             }
 
-            ProceeControl(label, control, root);
+            ProceeControl(label, control, aItem);
+        }
+
+        private Font GetLabelFont(ItemTree aTreeItem)
+        {
+            return aTreeItem.defaultvalue != null && aTreeItem.value != null  && !aTreeItem.defaultvalue.Equals(aTreeItem.value)
+                ? labelBold : labelNormal;
         }
 
         void button_Click(object sender, EventArgs e)
@@ -252,7 +255,7 @@ namespace NetSettings
 
         private void RefreshControlValue(ItemTree item)
         {
-            Control aControl = item.control.control;
+            Control aControl = item.controlsGroup.control;
             switch (item.type)
             {
                 case "bool":
@@ -280,10 +283,6 @@ namespace NetSettings
                     (aControl as Control).BackColor = (Color)item.currentValue;
                     break;
             }
-
-            //if (item.va)
-
-
         }
 
         private void ProceeControl(Control label, Control actualControl, ItemTree root)
@@ -292,12 +291,13 @@ namespace NetSettings
             ProcessEvents(label, actualControl, root);
         }
 
-        private void ProcessEvents(Control l, Control t, ItemTree root)
+        private void ProcessEvents(Control l, Control t, ItemTree aItem)
         {
-            switch (root.type)
+            switch (aItem.type)
             {
                 case "menu":
-                    (l as Label).Font = new Font("consolas", 12,FontStyle.Bold);
+                    //TODO: move this two line of code this is no event
+                    (l as Label).Font = new Font(labelFont, 12,FontStyle.Bold);
                     (l as Label).ForeColor = Color.Blue;
                     break;
                 case "bool":
@@ -311,6 +311,8 @@ namespace NetSettings
                     break;
                 case "combo":
                     (t as ComboBox).SelectedIndexChanged += c_SelectedIndexChanged;
+                    (t as ComboBox).MouseDoubleClick += Combo_MouseDoubleClick;
+                    
                     break;
                 case "image":
                     (t as TextBox).TextChanged += MenuSettings_TextChanged;
@@ -319,11 +321,24 @@ namespace NetSettings
                     (t as TextBox).MouseHover += MenuSettings_MouseHover;
                     break;
                 case "color":
-                    //(t as Control).BorderStyle = BorderStyle.FixedSingle;
                     (t as Control).Click += MenuSettings_Click;
                     break;
             }
 
+        }
+
+       
+
+        private void Combo_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ComboBox comboBox = sender as ComboBox;
+            ItemTree item = GetItemFromControl(comboBox);
+            if (item != null)
+            {
+                comboBox.SelectedIndex = (comboBox.SelectedIndex + 1) % comboBox.Items.Count;
+            }
+            item.value = comboBox.SelectedItem;
+            RaiseEvent(item);
         }
 
         void MenuSettings_Click(object sender, EventArgs e)
@@ -333,7 +348,6 @@ namespace NetSettings
             ItemTree item = GetItemFromControl(p);
             if ((dialog = new ColorDialog(){FullOpen = true,Color = (Color)item.currentValue }).ShowDialog() == DialogResult.OK)
             {
-                
                 if (item != null)
                 {
                     item.value = p.BackColor = dialog.Color;
@@ -348,7 +362,10 @@ namespace NetSettings
             ItemTree item = GetItemFromControl(textbox);
             double num;
             if (double.TryParse(textbox.Text, out num))
+            {
                 item.value = num;
+                RaiseEvent(item);
+            }
         }
 
         void MenuSettings_MouseHover(object sender, EventArgs e)

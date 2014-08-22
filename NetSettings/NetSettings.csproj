@@ -50,13 +50,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComboBoxDoubleClick.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ControlContainer.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ControlHelper.cs" />
+    <Compile Include="CreationParams.cs" />
     <Compile Include="Filter.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="MenuSettings.cs" />
+    <Compile Include="PlacementParams.cs" />
     <Compile Include="PreviewForm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -19,19 +19,27 @@ namespace NetSettings
             SetStyle(ControlStyles.OptimizedDoubleBuffer |
              ControlStyles.AllPaintingInWmPaint, true);
         }
-        
-        public void Reset()
+
+
+        public void ScrollY(int delta)
+        {
+            int scrollPosition = VerticalScroll.Value - delta;
+            scrollPosition = Math.Min(Math.Max(scrollPosition, VerticalScroll.Minimum), VerticalScroll.Maximum);
+            VerticalScroll.Value = scrollPosition;
+        }
+
+        internal void Reset()
         {
             Controls.Clear();
             HorizontalScroll.Value = VerticalScroll.Value = 0;
         }
 
-        public void StartUpdate()
+        internal void StartUpdate()
         {
             this.SuspendLayout();
             ControlHelper.SuspendDrawing(this);
         }
-        public void EndUpdate()
+        internal void EndUpdate()
         {
             this.ResumeLayout();
             ControlHelper.ResumeDrawing(this);

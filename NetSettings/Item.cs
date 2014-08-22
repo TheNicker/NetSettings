@@ -46,6 +46,19 @@ namespace NetSettings
         public bool IsVisible;
 
         
+        public T GetValue<T>(string key)
+        {
+            object val = this[key];
+            if (val != null)
+            {
+                if (val is T)
+                    return (T)val;
+                else
+                    throw new Exception("Bad type");
+            }
+            throw new Exception("Default value is not set");
+        }
+
         public object this [string key]
         {
             get
@@ -97,7 +110,7 @@ namespace NetSettings
         
         [NonSerialized]
         [JsonIgnore]
-        public ControlsGroup control;
+        public ControlsGroup controlsGroup;
 
         public void RefreshQualifiedNames()
         {
