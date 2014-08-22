@@ -11,14 +11,6 @@ using System.Threading.Tasks;
 
 namespace NetSettings
 {
-    public class ControlsGroup
-    {
-        public System.Windows.Forms.Label label;
-        public System.Windows.Forms.Control parentContainer;
-        public System.Windows.Forms.Control control;
-        public System.Windows.Forms.Button defaultButton;
-    }
-
     [Serializable]
     public class ItemTree
     {
@@ -39,11 +31,6 @@ namespace NetSettings
             if (this.type != "root")
                 throw new Exception("Operation valid only for root item");
         }
-
-        //TODO: move this to another class, it should confirm to the view model paradigm
-        //This class is the model MenuSettings is the view 
-        [JsonIgnore]
-        public bool IsVisible;
 
         [JsonIgnore]
         ItemTree root;
@@ -123,11 +110,11 @@ namespace NetSettings
         [JsonIgnore]
         public ControlsGroup controlsGroup;
 
-        public void RefreshQualifiedNames()
-        {
-            if (root.QualifiedNames == null)
-                ItemTree.BuildQualifiedNames(root);
-        }
+        //public void RefreshQualifiedNames()
+        //{
+        //    if (root.QualifiedNames == null)
+        //        ItemTree.BuildQualifiedNames(root);
+        //}
 
 
         public static ItemTree FromFile(string aFileName)
@@ -292,8 +279,6 @@ namespace NetSettings
 
       public List<string> GetSettingsNames()
       {
-          //RootVerify();
-
           if (root.QualifiedNames == null)
               BuildQualifiedNames(root);
           return root.QualifiedNames.Keys.ToList();

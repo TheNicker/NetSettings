@@ -57,13 +57,16 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ControlHelper.cs" />
+    <Compile Include="ControlsGroup.cs" />
     <Compile Include="CreationParams.cs" />
     <Compile Include="Filter.cs" />
     <Compile Include="Item.cs" />
+    <Compile Include="ItemLogic.cs" />
     <Compile Include="MenuSettings.cs" />
     <Compile Include="PlacementParams.cs" />
     <Compile Include="PreviewForm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VisualItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

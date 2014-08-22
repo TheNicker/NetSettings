@@ -22,6 +22,8 @@ namespace NetSettings
         TextBox fDescriptionTextBox;
         CreationParams fParams;
 
+        VisualItem rootVisualItem;
+
         PreviewForm fPreviewForm;
         Point fLastCursorPosition;
 
@@ -48,8 +50,8 @@ namespace NetSettings
 
         public void Create(CreationParams aParams)
         {
-            
             fParams = aParams;
+            CreateVisualItemTree();
             fDescriptionPanel = fParams.descriptionContainer;
 
             if (fDescriptionPanel != null)
@@ -75,6 +77,33 @@ namespace NetSettings
             RefreshTree();
         }
 
+        private void CreateVisualItemTree()
+        {
+            rootVisualItem = new VisualItem();
+            rootVisualItem.IsVisible = true;
+            rootVisualItem.Item = fParams.root;
+            CreateVisualItemTree(rootVisualItem);
+        }
+
+        private void CreateVisualItemTree(VisualItem rootVisualItem)
+        {
+            ItemTree item = rootVisualItem.Item;
+            if (item.subitems != null)
+            {
+                rootVisualItem.subitems = new VisualItem[item.subitems.Count()];
+                int i = 0;
+                foreach (ItemTree subItem in item.subitems)
+                {
+                    VisualItem visualItem = new VisualItem();
+                    rootVisualItem.subitems[i++] = visualItem;
+                    visualItem.Item = subItem;
+                    visualItem.IsVisible = true;
+                    CreateVisualItemTree(visualItem);
+                }
+                    
+            }
+        }
+
         public void SetFilter(Filter aFilter)
         {
             fParams.filter = aFilter;
@@ -88,44 +117,45 @@ namespace NetSettings
             panelPosition = new Point();
             currentRow = 0;
             fParams.container.Reset();
-            ApplyFilterRecursively(fParams.root);
-            AddControlRecursivly(fParams.root);
+            ApplyFilterRecursively(rootVisualItem);
+            AddControlRecursivly(rootVisualItem);
 
             fParams.container.EndUpdate();
         }
         
-        private bool ApplyFilterRecursively(ItemTree root)
+        private bool ApplyFilterRecursively(VisualItem root)
         {
-            ItemTree item = root;
+            VisualItem visualItem = root;
+            ItemTree item = root.Item;
             
             if (fParams.filter == null || String.IsNullOrEmpty(fParams.filter.IncludeName) || String.IsNullOrWhiteSpace(fParams.filter.IncludeName))
             {
-                item.IsVisible = true;
+                visualItem.IsVisible = true;
             }
             else
             {
                 if (item.type == "menu" || item.type == "root")
                 {
-                    item.IsVisible = true;
+                    visualItem.IsVisible = true;
                 }
                 else
                 if (item.displayname != null)
                 {
-                    item.IsVisible = item.displayname.ToLower().Contains(fParams.filter.IncludeName.ToLower());
+                    visualItem.IsVisible = item.displayname.ToLower().Contains(fParams.filter.IncludeName.ToLower());
                 }
             }
 
             if (item.subitems != null)
             {
                 bool isVisible = false;
-                foreach (ItemTree subItem in item.subitems)
+                foreach (VisualItem subItem in visualItem.subitems)
                     isVisible |= ApplyFilterRecursively(subItem);
                 
                 //if at least one of the childs is visible then the parent is visible as well.
-                item.IsVisible = isVisible;
+                visualItem.IsVisible = isVisible;
 
             }
-            return item.IsVisible;
+            return visualItem.IsVisible;
 
         }
 
@@ -141,10 +171,11 @@ namespace NetSettings
             aTreeItem.controlsGroup.label.Font = GetLabelFont(aTreeItem);
         }
 
-        private void AddControlRecursivly(ItemTree aRoot)
+        private void AddControlRecursivly(VisualItem aRoot)
         {
-            ItemTree item = aRoot;
-            if (!item.IsVisible)
+            VisualItem visualItem = aRoot;
+            ItemTree item = aRoot.Item;
+            if (!visualItem.IsVisible)
                 return;
             Control control = fParams.container;
             Type type;
@@ -152,8 +183,8 @@ namespace NetSettings
                 AddControl(item,type);
 
             //Add children
-            if (item.subitems != null)
-                foreach (ItemTree subItem in item.subitems)
+            if (visualItem.subitems != null)
+                foreach (VisualItem subItem in visualItem.subitems)
                     AddControlRecursivly(subItem);
         }
 
