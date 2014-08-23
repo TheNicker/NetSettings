@@ -105,10 +105,10 @@ namespace NetSettings
         public void SetFilter(Filter aFilter)
         {
             fParams.filter = aFilter;
-            RefreshTree();
+            //RefreshTree();
         }
 
-        private void RefreshTree()
+        public void RefreshTree()
         {
             fParams.container.StartUpdate();
             
@@ -274,11 +274,11 @@ namespace NetSettings
 
         void l_MouseEnter(object sender, EventArgs e)
         {
-            ItemTree item = (sender as Control).Tag as ItemTree;
+            VisualItem item = (sender as Control).Tag as VisualItem;
             if (item != null)
             {
-                if (item.description != null && fDescriptionTextBox != null)
-                    fDescriptionTextBox.Text = item.description;
+                if (item.Item.description != null && fDescriptionTextBox != null)
+                    fDescriptionTextBox.Text = item.Item.description;
             }
         }
 
@@ -378,9 +378,6 @@ namespace NetSettings
             }
 
         }
-
-
-
 
 
         private void SetValue(VisualItem aVisualItem, object val)

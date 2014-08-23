@@ -65,8 +65,12 @@ namespace NetSettings
 
         public void SetValue(string name, object val)
         {
-            fDataProvider[name] = val;
-            ItemChanged(name,val);
+            object currentObject = fDataProvider[name];
+            if (!val.Equals(currentObject))
+            {
+                fDataProvider[name] = val;
+                ItemChanged(name, val);
+            }
         }
 
         public object GetValue(string key)

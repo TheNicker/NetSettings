@@ -19,6 +19,9 @@ namespace NetSettings
         CreationParams fCreationParameters;
         Timer fFilterTimer;
         Filter fSettingsFilter;
+        DataEntity fData;
+
+        SettingsForm fSettingsForm;
         public Form1()
         {
             InitializeComponent();
@@ -28,18 +31,27 @@ namespace NetSettings
         private void Initialize()
         {
             settings = new MenuSettings();
+            fData = new DataEntity(ItemTree.FromFile(SettingsFilePath));
             fCreationParameters = new CreationParams();
             fCreationParameters.container = userControl11;
             fCreationParameters.descriptionContainer = controlContainer1;
-            fCreationParameters.root = new DataEntity(ItemTree.FromFile(SettingsFilePath));
+            fCreationParameters.root = fData;
+            
 
-            //Object a = fCreationParameters.root["inputsettings.enablemouse"];
+            fSettingsForm = new SettingsForm(fData);
+            fSettingsForm.OnSave += fSettingsForm_OnSave;
+            fSettingsForm.Show();
             
             settings.Create(fCreationParameters);
 
             fFilterTimer = new Timer();
             fFilterTimer.Tick += fFilterTimer_Tick;
             fFilterTimer.Interval = 300;
+        }
+
+        void fSettingsForm_OnSave()
+        {
+            int k = 0;
         }
 
         void fFilterTimer_Tick(object sender, EventArgs e)
