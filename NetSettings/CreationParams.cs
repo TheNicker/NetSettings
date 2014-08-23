@@ -10,7 +10,7 @@ namespace NetSettings
     {
         public ControlContainer container;
         public ControlContainer descriptionContainer;
-        public ItemTree root;
+        public DataEntity root;
         public Filter filter;
         public PlacementParams placement = new PlacementParams();
     }

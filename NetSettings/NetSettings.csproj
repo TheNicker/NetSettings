@@ -62,8 +62,10 @@
     <Compile Include="ControlHelper.cs" />
     <Compile Include="ControlsGroup.cs" />
     <Compile Include="CreationParams.cs" />
+    <Compile Include="DataEntity.cs" />
     <Compile Include="Filter.cs" />
     <Compile Include="Item.cs" />
+    <Compile Include="ItemHelpers.cs" />
     <Compile Include="ItemLogic.cs" />
     <Compile Include="MenuSettings.cs" />
     <Compile Include="PlacementParams.cs" />

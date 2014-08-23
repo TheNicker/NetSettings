@@ -8,11 +8,11 @@ using System.Windows.Forms;
 
 namespace NetSettings
 {
-    public delegate void ItemChangedDelegate(ItemTree aItemTree);
+    
     public class MenuSettings
     {
         const string labelFont = "calibri";
-        public event ItemChangedDelegate ItemChanged = delegate { };
+        
         private Dictionary<string, Type> fStringToType;
         Point panelPosition;
         
@@ -29,8 +29,6 @@ namespace NetSettings
 
         Font labelNormal;
         Font labelBold;
-
-        
 
         public MenuSettings()
         {
@@ -81,7 +79,7 @@ namespace NetSettings
         {
             rootVisualItem = new VisualItem();
             rootVisualItem.IsVisible = true;
-            rootVisualItem.Item = fParams.root;
+            rootVisualItem.Item = fParams.root.fRootTemplate;
             CreateVisualItemTree(rootVisualItem);
         }
 
@@ -159,12 +157,11 @@ namespace NetSettings
 
         }
 
-        public void RaiseEvent(VisualItem aVisualItem)
-        {
-            CheckLabelColor(aVisualItem);
-            ItemChanged(aVisualItem.Item);
+        //public void RaiseEvent(VisualItem aVisualItem)
+        //{
+        //    //ItemChanged(aVisualItem.Item);
 
-        }
+        //}
 
         private void CheckLabelColor(VisualItem aVisualItem)
         {
@@ -256,7 +253,8 @@ namespace NetSettings
 
         private Font GetLabelFont(ItemTree aTreeItem)
         {
-            return aTreeItem.defaultvalue != null && aTreeItem.value != null  && !aTreeItem.defaultvalue.Equals(aTreeItem.value)
+            object val = GetValue(aTreeItem);
+            return aTreeItem.defaultvalue != null && val != null  && !aTreeItem.defaultvalue.Equals(val)
                 ? labelBold : labelNormal;
         }
 
@@ -268,9 +266,8 @@ namespace NetSettings
             {
                 if (item.Item.defaultvalue != null)
                 {
-                    item.Item.SetValue( item.Item.defaultvalue);
+                    SetValue(item, item.Item.defaultvalue);
                     RefreshControlValue(item);
-                    RaiseEvent(item);
                 }
             }
         }
@@ -300,28 +297,29 @@ namespace NetSettings
             if (aVisualItem.controlsGroup != null)
             {
                 Control aControl = aVisualItem.controlsGroup.control;
+                object val = GetValue(item);
                 switch (item.type)
                 {
                     case "bool":
-                        bool val = false;
-                        if (item.currentValue != null)
-                            val = (bool)item.currentValue;
-                        (aControl as CheckBox).Checked = val;
+                        bool _val = false;
+                        if (val != null)
+                            _val = (bool)val;
+                        (aControl as CheckBox).Checked = _val;
                         break;
                     case "text":
-                        (aControl as TextBox).Text = (string)item.currentValue;
+                        (aControl as TextBox).Text = (string)val;
                         break;
                     case "number":
-                        (aControl as TextBox).Text = ((double)item.currentValue).ToString();
+                        (aControl as TextBox).Text = ((double)val).ToString();
                         break;
                     case "combo":
-                        (aControl as ComboBox).SelectedItem = item.currentValue;
+                        (aControl as ComboBox).SelectedItem = val;
                         break;
                     case "image":
-                        (aControl as TextBox).Text = item.currentValue as string;
+                        (aControl as TextBox).Text = val as string;
                         break;
                     case "color":
-                        (aControl as Control).BackColor = (Color)item.currentValue;
+                        (aControl as Control).BackColor = (Color)val;
                         break;
                 }
             }
@@ -344,7 +342,6 @@ namespace NetSettings
                         (actualControl as ComboBox).Items.Add(v);
                     break;
                 case "menu":
-                    //TODO: move this two line of code this is no event
                     (label as Label).Font = new Font(labelFont, 12, FontStyle.Bold);
                     (label as Label).ForeColor = Color.Blue;
                     break;
@@ -382,7 +379,25 @@ namespace NetSettings
 
         }
 
-       
+
+
+
+
+        private void SetValue(VisualItem aVisualItem, object val)
+        {
+            fParams.root.SetValue(aVisualItem.Item.FullName, val);
+            CheckLabelColor(aVisualItem);
+        }
+
+        private object GetValue(string name)
+        {
+            return fParams.root.GetValue(name);
+        }
+
+        private object GetValue(ItemTree item)
+        {
+            return GetValue(item.FullName);
+        }
 
         private void Combo_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -392,8 +407,7 @@ namespace NetSettings
             {
                 comboBox.SelectedIndex = (comboBox.SelectedIndex + 1) % comboBox.Items.Count;
             }
-            item.Item.SetValue(comboBox.SelectedItem);
-            RaiseEvent(item);
+            SetValue(item,comboBox.SelectedItem);
         }
 
         void MenuSettings_Click(object sender, EventArgs e)
@@ -401,12 +415,12 @@ namespace NetSettings
             Control p = sender as Control;
             ColorDialog dialog;
             VisualItem item = GetItemFromControl(p);
-            if ((dialog = new ColorDialog(){FullOpen = true,Color = (Color)item.Item.currentValue }).ShowDialog() == DialogResult.OK)
+            if ((dialog = new ColorDialog(){FullOpen = true,Color = (Color)GetValue(item.Item.FullName)}).ShowDialog() == DialogResult.OK)
             {
                 if (item != null)
                 {
-                    item.Item.SetValue(p.BackColor = dialog.Color);
-                    RaiseEvent(item);
+                    SetValue(item, p.BackColor = dialog.Color);
+                    
                 }
             }
         }
@@ -418,8 +432,7 @@ namespace NetSettings
             double num;
             if (double.TryParse(textbox.Text, out num))
             {
-                item.Item.SetValue(num);
-                RaiseEvent(item);
+                SetValue(item, num);
             }
         }
 
@@ -465,31 +478,30 @@ namespace NetSettings
             string imageName = ChooseFile(true, "", "");
             TextBox t = sender as TextBox;
             VisualItem item = GetItemFromControl(t);
-            item.Item.SetValue(t.Text = imageName);
+            SetValue(item, t.Text = imageName);
         }
         void c_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
             VisualItem item = GetItemFromControl(comboBox);
             if (item != null)
-                item.Item.SetValue(comboBox.SelectedItem);
-            RaiseEvent(item);
+                SetValue(item,comboBox.SelectedItem);
+            
         }
 
         void MenuSettings_TextChanged(object sender, EventArgs e)
         {
             TextBox textbox = sender as TextBox;
             VisualItem item = GetItemFromControl(textbox);
-            item.Item.SetValue(textbox.Text);
-            RaiseEvent(item);
+            SetValue(item,textbox.Text);
+            
         }
 
         void MenuSettings_CheckStateChanged(object sender, EventArgs e)
         {
             CheckBox checkBox = sender as CheckBox;
             VisualItem item = checkBox.Tag as VisualItem;
-            item.Item.SetValue(checkBox.Checked);
-            RaiseEvent(item);
+            SetValue(item, checkBox.Checked);
         }
 
         VisualItem GetItemFromControl(Control aControl)

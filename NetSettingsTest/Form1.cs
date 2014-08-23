@@ -31,9 +31,9 @@ namespace NetSettings
             fCreationParameters = new CreationParams();
             fCreationParameters.container = userControl11;
             fCreationParameters.descriptionContainer = controlContainer1;
-            fCreationParameters.root = ItemTree.FromFile(SettingsFilePath);
+            fCreationParameters.root = new DataEntity(ItemTree.FromFile(SettingsFilePath));
 
-            Object a = fCreationParameters.root["inputsettings.enablemouse"];
+            //Object a = fCreationParameters.root["inputsettings.enablemouse"];
             
             settings.Create(fCreationParameters);
 
@@ -50,7 +50,7 @@ namespace NetSettings
 
         private void button1_Click(object sender, EventArgs e)
         {
-            fCreationParameters.root.ToFile(SettingsFilePath);
+            //fCreationParameters.root.fRootTemplate.ToFile(SettingsFilePath);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
