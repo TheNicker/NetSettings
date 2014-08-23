@@ -15,11 +15,11 @@ namespace NetSettings
     public partial class Form1 : Form
     {
         const string SettingsFilePath = @"Resources\GuiTemplate.json";
-        MenuSettings settings;
-        CreationParams fCreationParameters;
+        DataView fView;
+        DataViewParams fDataViewParams;
         Timer fFilterTimer;
         Filter fSettingsFilter;
-        DataEntity fData;
+        DataProvider fData;
 
         SettingsForm fSettingsForm;
         public Form1()
@@ -30,19 +30,19 @@ namespace NetSettings
 
         private void Initialize()
         {
-            settings = new MenuSettings();
-            fData = new DataEntity(ItemTree.FromFile(SettingsFilePath));
-            fCreationParameters = new CreationParams();
-            fCreationParameters.container = userControl11;
-            fCreationParameters.descriptionContainer = controlContainer1;
-            fCreationParameters.root = fData;
+            fView = new DataView();
+            fData = new DataProvider(ItemTree.FromFile(SettingsFilePath));
+            fDataViewParams = new DataViewParams();
+            fDataViewParams.container = userControl11;
+            fDataViewParams.descriptionContainer = controlContainer1;
+            fDataViewParams.dataProvider = fData;
             
 
             fSettingsForm = new SettingsForm(fData);
             fSettingsForm.OnSave += fSettingsForm_OnSave;
             fSettingsForm.Show();
             
-            settings.Create(fCreationParameters);
+            fView.Create(fDataViewParams);
 
             fFilterTimer = new Timer();
             fFilterTimer.Tick += fFilterTimer_Tick;
@@ -57,7 +57,8 @@ namespace NetSettings
         void fFilterTimer_Tick(object sender, EventArgs e)
         {
             fFilterTimer.Enabled = false;
-            settings.SetFilter(fSettingsFilter);
+            fView.SetFilter(fSettingsFilter);
+            fView.RefreshTree();
         }
 
         private void button1_Click(object sender, EventArgs e)

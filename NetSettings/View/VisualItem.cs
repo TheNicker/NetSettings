@@ -11,6 +11,6 @@ namespace NetSettings
         public ItemTree Item;
         public bool IsVisible;
         public VisualItem[] subitems;
-        public ControlsGroup controlsGroup;
+        public ItemControlsGroup controlsGroup;
     }
 }

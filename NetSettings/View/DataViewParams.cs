@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace NetSettings
 {
-    public class CreationParams
+    public class DataViewParams
     {
         public ControlContainer container;
         public ControlContainer descriptionContainer;
-        public DataEntity root;
+        public DataProvider dataProvider;
         public Filter filter;
-        public PlacementParams placement = new PlacementParams();
+        public DataViewPlacement placement = new DataViewPlacement();
     }
 }

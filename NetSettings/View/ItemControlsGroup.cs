@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NetSettings
 {
-   public class ControlsGroup
+   public class ItemControlsGroup
         {
             public System.Windows.Forms.Label label;
             public System.Windows.Forms.Control parentContainer;

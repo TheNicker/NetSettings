@@ -13,22 +13,24 @@ namespace NetSettings
 {
     public partial class SettingsForm : Form
     {
-        MenuSettings fMenuSettings;
-        DataEntity fData;
+        DataView fMenuSettings;
+        DataProvider fData;
         Timer fFilterTimer;
 
         public delegate void OnSaveDelegate();
         public event OnSaveDelegate OnSave = delegate { };
         
-        public SettingsForm(DataEntity aData) 
+        public SettingsForm(DataProvider aData) 
         {
-            fData = aData;
             InitializeComponent();
+            this.MinimizeBox = false;
+            this.ShowInTaskbar = false;
+            fData = aData;
             StartPosition = FormStartPosition.CenterParent;
             DoubleBuffered = true;
-            fMenuSettings = new MenuSettings();
-            CreationParams c = new CreationParams();
-            c.root =  aData;
+            fMenuSettings = new DataView();
+            DataViewParams c = new DataViewParams();
+            c.dataProvider =  aData;
             controlContainer1.AutoScroll = true;
             c.container = controlContainer1;
             c.descriptionContainer = controlContainer2;
@@ -36,7 +38,7 @@ namespace NetSettings
             c.placement.TitleMaxWidth = 180;
             fMenuSettings.Create(c);
             this.MouseWheel += SettingsForm_MouseWheel;
-            c.root.ItemChanged += root_ItemChanged;
+            c.dataProvider.ItemChanged += root_ItemChanged;
 
             fFilterTimer = new Timer();
             fFilterTimer.Tick += fFilterTimer_Tick;

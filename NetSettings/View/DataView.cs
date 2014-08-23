@@ -8,8 +8,7 @@ using System.Windows.Forms;
 
 namespace NetSettings
 {
-    
-    public class MenuSettings
+    public class DataView
     {
         const string labelFont = "calibri";
         
@@ -20,7 +19,7 @@ namespace NetSettings
         int currentRow;
         ControlContainer fDescriptionPanel;
         TextBox fDescriptionTextBox;
-        CreationParams fParams;
+        DataViewParams fParams;
 
         VisualItem rootVisualItem;
 
@@ -30,7 +29,7 @@ namespace NetSettings
         Font labelNormal;
         Font labelBold;
 
-        public MenuSettings()
+        public DataView()
         {
             fStringToType = new Dictionary<string, Type>();
             fStringToType.Add("text", typeof(TextBox));
@@ -46,7 +45,7 @@ namespace NetSettings
 
         
 
-        public void Create(CreationParams aParams)
+        public void Create(DataViewParams aParams)
         {
             fParams = aParams;
             CreateVisualItemTree();
@@ -79,7 +78,7 @@ namespace NetSettings
         {
             rootVisualItem = new VisualItem();
             rootVisualItem.IsVisible = true;
-            rootVisualItem.Item = fParams.root.fRootTemplate;
+            rootVisualItem.Item = fParams.dataProvider.fRootTemplate;
             CreateVisualItemTree(rootVisualItem);
         }
 
@@ -188,10 +187,10 @@ namespace NetSettings
         private void AddControl(VisualItem aVisualItem, Type aType)
         {
             ItemTree aItem = aVisualItem.Item;
-            PlacementParams p = fParams.placement;
+            DataViewPlacement p = fParams.placement;
             bool isMenu = aItem.type == "menu";
             //Create parent container
-            ControlsGroup group = new ControlsGroup();
+            ItemControlsGroup group = new ItemControlsGroup();
             Control panel = group.parentContainer = new Control();
              
             fParams.container.Controls.Add(panel);
@@ -382,13 +381,13 @@ namespace NetSettings
 
         private void SetValue(VisualItem aVisualItem, object val)
         {
-            fParams.root.SetValue(aVisualItem.Item.FullName, val);
+            fParams.dataProvider.SetValue(aVisualItem.Item.FullName, val);
             CheckLabelColor(aVisualItem);
         }
 
         private object GetValue(string name)
         {
-            return fParams.root.GetValue(name);
+            return fParams.dataProvider.GetValue(name);
         }
 
         private object GetValue(ItemTree item)
