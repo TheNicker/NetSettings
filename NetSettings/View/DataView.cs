@@ -472,9 +472,12 @@ namespace NetSettings
         void MenuSettings_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             string imageName = ChooseFile(true, "", "");
-            TextBox t = sender as TextBox;
-            VisualItem item = GetItemFromControl(t);
-            SetValue(item, t.Text = imageName);
+            if (imageName != null)
+            {
+                TextBox t = sender as TextBox;
+                VisualItem item = GetItemFromControl(t);
+                SetValue(item, t.Text = imageName);
+            }
         }
         void c_SelectedIndexChanged(object sender, EventArgs e)
         {
