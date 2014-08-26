@@ -41,7 +41,6 @@ namespace NetSettings
 
         public void ToFile(string aFileName)
         {
-            JsonSerializer d = JsonSerializer.Create();
 
             string text = JsonConvert.SerializeObject(this,
                 new JsonSerializerSettings()
