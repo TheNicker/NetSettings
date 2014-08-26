@@ -257,7 +257,7 @@ namespace NetSettings
             MouseEnterLeave l = new MouseEnterLeave(panel);
             l.MouseEnter += l_MouseEnter;
             l.MouseLeave += panel_MouseLeave;
-            ProceeControl(label, control, aVisualItem);
+            ProceeControl(aVisualItem);
         }
 
         
@@ -360,15 +360,19 @@ namespace NetSettings
             }
         }
 
-        private void ProceeControl(Control label, Control actualControl, VisualItem aVisualItem)
+        private void ProceeControl(VisualItem aVisualItem)
         {
-            PrepareControl(label, actualControl, aVisualItem.Item);
+            PrepareControl(aVisualItem);
             RefreshControlValue(aVisualItem);
-            ProcessEvents(label, actualControl, aVisualItem.Item);
+            ProcessEvents(aVisualItem);
         }
 
-        private static void PrepareControl(Control label, Control actualControl, ItemTree aItem)
+        private static void PrepareControl(VisualItem aVIsualItem)
         {
+
+            Control label = aVIsualItem.controlsGroup.label;
+            Control actualControl = aVIsualItem.controlsGroup.control;
+            ItemTree aItem = aVIsualItem.Item;
             switch (aItem.type)
             {
                 case "combo":
@@ -383,8 +387,12 @@ namespace NetSettings
             }
         }
 
-        private void ProcessEvents(Control l, Control t, ItemTree aItem)
+        private void ProcessEvents(VisualItem aVisualItem)
         {
+
+            Control t = aVisualItem.controlsGroup.control;
+            Control p = aVisualItem.controlsGroup.parentContainer;
+            ItemTree aItem = aVisualItem.Item;
             switch (aItem.type)
             {
                 case "bool":
