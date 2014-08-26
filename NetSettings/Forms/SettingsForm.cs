@@ -52,7 +52,7 @@ namespace NetSettings
             //settings.SetFilter(fSettingsFilter);
         }
 
-        void root_ItemChanged(string key, object val)
+        void root_ItemChanged(ItemChangedArgs args)
         {
             btnSave.Enabled = true;
         }

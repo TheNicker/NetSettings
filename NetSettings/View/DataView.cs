@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetSettings.Controls;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -48,6 +49,7 @@ namespace NetSettings
         public void Create(DataViewParams aParams)
         {
             fParams = aParams;
+            fParams.dataProvider.AddView(this);
             CreateVisualItemTree();
             fDescriptionPanel = fParams.descriptionContainer;
 
@@ -192,16 +194,21 @@ namespace NetSettings
             //Create parent container
             ItemControlsGroup group = new ItemControlsGroup();
             Control panel = group.parentContainer = new Control();
-             
+            
             fParams.container.Controls.Add(panel);
             
+            
+            
+
             panel.Width = p.TitleMaxWidth + p.TitleSpacing + p.ControlMaxWidth + p.ControlSpacing + p.DefaultButtonWidth;
             panel.Height = p.LineSpacing;
-            panel.BackColor = isMenu ? Color.Orange : currentRow % 2 == 0 ? Color.White : Color.LightGray;
-            panel.MouseEnter +=l_MouseEnter;
+            aVisualItem.PanelBackgroundColor = isMenu ? Color.Orange : currentRow % 2 == 0 ? Color.White : Color.LightGray;
+            panel.BackColor = aVisualItem.PanelBackgroundColor;
+            
             panelPosition.X = p.HorizontalMArgin * Nesting;
             panel.Location = panelPosition;
             panelPosition.Y += p.LineSpacing;
+
             panel.Tag = aVisualItem;
             Point controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
             
@@ -247,8 +254,15 @@ namespace NetSettings
                 currentRow++;
             }
 
+            MouseEnterLeave l = new MouseEnterLeave(panel);
+            l.MouseEnter += l_MouseEnter;
+            l.MouseLeave += panel_MouseLeave;
             ProceeControl(label, control, aVisualItem);
         }
+
+        
+
+       
 
         private Font GetLabelFont(ItemTree aTreeItem)
         {
@@ -276,9 +290,31 @@ namespace NetSettings
             VisualItem item = (sender as Control).Tag as VisualItem;
             if (item != null)
             {
+                
                 if (item.Item.description != null && fDescriptionTextBox != null)
                     fDescriptionTextBox.Text = item.Item.description;
+
+                if (item.Item.type != "menu")
+                {
+                    item.controlsGroup.parentContainer.BackColor = Color.YellowGreen;
+                }
             }
+        }
+
+        void panel_MouseLeave(object sender, EventArgs e)
+        {
+            
+            VisualItem item = (sender as Control).Tag as VisualItem;
+            if (item != null)
+            {
+                if (item.Item.type != "menu")
+                {
+                    Control container = item.controlsGroup.parentContainer;
+                    container.BackColor = item.PanelBackgroundColor;
+
+                }
+            }
+         
         }
 
         private void RefreshControlValueRecursivly(VisualItem aRoot)
@@ -356,6 +392,8 @@ namespace NetSettings
                     break;
                 case "text":
                     (t as TextBox).TextChanged += MenuSettings_TextChanged;
+                    (t as TextBox).KeyDown += DataView_KeyDown;
+                    (t as TextBox).Leave += DataView_Leave;
                     break;
                 case "number":
                     (t as TextBox).TextChanged += MenuSettings_NumberChanged;
@@ -378,10 +416,31 @@ namespace NetSettings
 
         }
 
-
-        private void SetValue(VisualItem aVisualItem, object val)
+        void DataView_Leave(object sender, EventArgs e)
         {
-            fParams.dataProvider.SetValue(aVisualItem.Item.FullName, val);
+            TextBox textBox = sender as TextBox;
+            VisualItem visualItem = GetItemFromControl(textBox);
+            if (visualItem != null)
+                SetValue(visualItem,textBox.Text,ItemChangedMode.UserConfirmed);
+        }
+
+        void DataView_KeyDown(object sender, KeyEventArgs e)
+        {
+            
+        }
+
+        private void SetValue(VisualItem aVisualItem, object aVal,ItemChangedMode aMode = ItemChangedMode.UserConfirmed)
+        {
+            fParams.dataProvider.SetValue(
+                new ItemChangedArgs()
+                {
+                    sender = this,
+                    ChangedMode = aMode,
+                    Key = aVisualItem.Item.FullName,
+                    Val = aVal
+                });
+
+                
             CheckLabelColor(aVisualItem);
         }
 
@@ -428,7 +487,7 @@ namespace NetSettings
             double num;
             if (double.TryParse(textbox.Text, out num))
             {
-                SetValue(item, num);
+                SetValue(item, num,ItemChangedMode.OnTheFly);
             }
         }
 
@@ -492,7 +551,7 @@ namespace NetSettings
         {
             TextBox textbox = sender as TextBox;
             VisualItem item = GetItemFromControl(textbox);
-            SetValue(item,textbox.Text);
+            SetValue(item,textbox.Text,ItemChangedMode.OnTheFly);
             
         }
 

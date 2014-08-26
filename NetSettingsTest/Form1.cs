@@ -32,6 +32,7 @@ namespace NetSettings
         {
             fView = new DataView();
             fData = new DataProvider(ItemTree.FromFile(SettingsFilePath));
+            fData.ItemChanged += fData_ItemChanged;
             fDataViewParams = new DataViewParams();
             fDataViewParams.container = userControl11;
             fDataViewParams.descriptionContainer = controlContainer1;
@@ -47,6 +48,16 @@ namespace NetSettings
             fFilterTimer = new Timer();
             fFilterTimer.Tick += fFilterTimer_Tick;
             fFilterTimer.Interval = 300;
+
+        }
+
+        
+        void fData_ItemChanged(ItemChangedArgs changedArgs)
+        {
+            if (changedArgs.ChangedMode == ItemChangedMode.UserConfirmed)
+            {
+                int k = 0;
+            }
         }
 
         void fSettingsForm_OnSave()

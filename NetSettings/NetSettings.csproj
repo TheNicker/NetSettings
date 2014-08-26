@@ -60,6 +60,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\ControlHelper.cs" />
+    <Compile Include="Controls\MouseEnterLeave.cs" />
+    <Compile Include="Data\ItemChangedArgs.cs" />
     <Compile Include="View\ItemControlsGroup.cs" />
     <Compile Include="View\DataViewParams.cs" />
     <Compile Include="Data\DataProvider.cs" />

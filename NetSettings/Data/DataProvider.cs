@@ -8,11 +8,13 @@ namespace NetSettings
 {
     public class DataProvider
     {
-        public delegate void ItemChangedDelegate(string key, object val);
+        public delegate void ItemChangedDelegate(ItemChangedArgs changedArgs);
         public event ItemChangedDelegate ItemChanged = delegate { };
         public ItemTree fRootTemplate;
         public Dictionary<string, ItemTree> fQualifiedNames;
         private Dictionary<string, object> fDataBinding;
+
+        private List<DataView> fBoundViews;
 
         public Dictionary<string, object> DataBinding
         {
@@ -26,6 +28,23 @@ namespace NetSettings
                 NormalizeData();
             }
         }
+
+        public void AddView(DataView aDataView)
+        {
+             DataView dataview =  fBoundViews.FirstOrDefault( x=> x == aDataView);
+            if (dataview == default(DataView))
+            {
+                fBoundViews.Add(aDataView);
+            }
+        }
+
+        public void RemoveView(DataView aDataView)
+        {
+            if (aDataView != null)
+                fBoundViews.Remove(aDataView);
+            
+        }
+
 
         private void NormalizeData()
         {
@@ -46,6 +65,7 @@ namespace NetSettings
         public DataProvider(ItemTree aRoot)
         {
             fRootTemplate = aRoot;
+            fBoundViews = new List<DataView>();
             Initialize();
         }
 
@@ -63,14 +83,25 @@ namespace NetSettings
             return result;
         }
 
-        public void SetValue(string name, object val)
+        public void SetValue(ItemChangedArgs aArgs)
         {
+            string name = aArgs.Key;
+            object val = aArgs.Val;
             object currentObject = fDataBinding[name];
-            if (!val.Equals(currentObject))
+            if (!val.Equals(currentObject) || aArgs.ChangedMode == ItemChangedMode.UserConfirmed)
             {
                 fDataBinding[name] = val;
-                ItemChanged(name, val);
+                ItemChanged(aArgs);
+                UpdateViews(aArgs.sender);
             }
+        }
+
+        private void UpdateViews(object exclude)
+        {
+            foreach (DataView view in fBoundViews)
+                if (view != exclude)
+                    view.RefreshViewFromData();
+            
         }
 
         public object GetValue(string key)
