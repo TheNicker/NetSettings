@@ -15,15 +15,17 @@ namespace NetSettings
         const string labelFont = "calibri";
         
         private Dictionary<string, Type> fStringToType;
-        Point panelPosition;
-        
-        int Nesting = 0;
-        int currentRow;
+
+        //Controls arrangement
+        Point fCurrentPanelPosition;
+        int fNesting = 0;
+        int fCurrentRow;
+
         ControlContainer fDescriptionPanel;
         TextBox fDescriptionTextBox;
         DataViewParams fParams;
 
-        VisualItem rootVisualItem;
+        VisualItem fRootVisualItem;
 
         PreviewForm fPreviewForm;
         Point fLastCursorPosition;
@@ -74,15 +76,22 @@ namespace NetSettings
                 fPreviewForm = new PreviewForm();
                 fPreviewForm.PreviewTimer.Tick += PreviewTimer_Tick;
             }
-            RefreshTree();
+            ReCreateTree();
         }
+
+      
+
+       
+
+       
+        #region Recreate Tree
 
         private void CreateVisualItemTree()
         {
-            rootVisualItem = new VisualItem();
-            rootVisualItem.IsVisible = true;
-            rootVisualItem.Item = fParams.dataProvider.fRootTemplate;
-            CreateVisualItemTree(rootVisualItem);
+            fRootVisualItem = new VisualItem();
+            fRootVisualItem.IsVisible = true;
+            fRootVisualItem.Item = fParams.dataProvider.fRootTemplate;
+            CreateVisualItemTree(fRootVisualItem);
         }
 
         private void CreateVisualItemTree(VisualItem rootVisualItem)
@@ -100,70 +109,17 @@ namespace NetSettings
                     visualItem.IsVisible = true;
                     CreateVisualItemTree(visualItem);
                 }
-                    
+
             }
         }
-
-        public void SetFilter(Filter aFilter)
-        {
-            fParams.filter = aFilter;
-            //RefreshTree();
-        }
-
-        public void RefreshTree()
+        public void ReCreateTree()
         {
             fParams.container.StartUpdate();
-            
-            panelPosition = new Point();
-            currentRow = 0;
             fParams.container.Reset();
-            ApplyFilterRecursively(rootVisualItem);
-            AddControlRecursivly(rootVisualItem);
-
+            AddControlRecursivly(fRootVisualItem);
+            ReArrange();
             fParams.container.EndUpdate();
         }
-        
-        private bool ApplyFilterRecursively(VisualItem root)
-        {
-            VisualItem visualItem = root;
-            ItemTree item = root.Item;
-            
-            if (fParams.filter == null || String.IsNullOrEmpty(fParams.filter.IncludeName) || String.IsNullOrWhiteSpace(fParams.filter.IncludeName))
-            {
-                visualItem.IsVisible = true;
-            }
-            else
-            {
-                if (item.type == "menu" || item.type == "root")
-                {
-                    visualItem.IsVisible = true;
-                }
-                else
-                if (item.displayname != null)
-                {
-                    visualItem.IsVisible = item.displayname.ToLower().Contains(fParams.filter.IncludeName.ToLower());
-                }
-            }
-
-            if (item.subitems != null)
-            {
-                bool isVisible = false;
-                foreach (VisualItem subItem in visualItem.subitems)
-                    isVisible |= ApplyFilterRecursively(subItem);
-                
-                //if at least one of the childs is visible then the parent is visible as well.
-                visualItem.IsVisible = isVisible;
-
-            }
-            return visualItem.IsVisible;
-
-        }
-
-        private void CheckLabelColor(VisualItem aVisualItem)
-        {
-            aVisualItem.controlsGroup.label.Font = GetLabelFont(aVisualItem.Item);
-        }
-
         private void AddControlRecursivly(VisualItem aRoot)
         {
             VisualItem visualItem = aRoot;
@@ -181,75 +137,46 @@ namespace NetSettings
                     AddControlRecursivly(subItem);
         }
 
-
         private void AddControl(VisualItem aVisualItem, Type aType)
         {
             ItemTree aItem = aVisualItem.Item;
-            DataViewPlacement p = fParams.placement;
+
             bool isMenu = aItem.type == "menu";
             //Create parent container
             ItemControlsGroup group = new ItemControlsGroup();
             Control parent = group.parentContainer = new Control();
-            
+
             fParams.container.Controls.Add(parent);
-            
-
-            parent.Width = p.TitleMaxWidth + p.TitleSpacing + p.ControlMaxWidth + p.ControlSpacing + p.DefaultButtonWidth;
-            parent.Height = p.LineSpacing;
-            aVisualItem.PanelBackgroundColor = isMenu ? Color.Orange : currentRow % 2 == 0 ? Color.White : Color.LightGray;
-            parent.BackColor = aVisualItem.PanelBackgroundColor;
-            
-            panelPosition.X = p.HorizontalMArgin * Nesting;
-            parent.Location = panelPosition;
-            panelPosition.Y += p.LineSpacing;
-
             parent.Tag = aVisualItem;
-            Point controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
-            
+
             //Add label describing the entry
 
             Label label = group.label = new Label();
-
-            label.Width = p.TitleMaxWidth;
-            label.Height = p.LineHeight;
             label.Font = GetLabelFont(aItem);
             label.Text = aItem.displayname;
             label.Tag = aVisualItem;
-            label.Location = controlPosition;
-            
+
             parent.Controls.Add(label);
-            controlPosition.X = p.TitleMaxWidth + p.TitleSpacing;
-            
+
             //Add the  control itself
             Control control = group.control = Activator.CreateInstance(aType) as Control;
             parent.Controls.Add(control);
-            control.Location = controlPosition;
             control.Tag = aVisualItem;
-            control.Height = p.LineHeight;
-            control.Width = p.ControlMaxWidth;
 
-            controlPosition.X += p.ControlMaxWidth + p.ControlSpacing;
-            
             //Add reference from the menu item to the control holding the values.
             aVisualItem.controlsGroup = group;
 
-        
             //Add a default button 
             if (!isMenu)
             {
                 Button button = group.defaultButton = new Button();
-                button.Width = p.DefaultButtonWidth;
-                button.Height = p.LineHeight;
                 parent.Controls.Add(button);
                 button.Text = "Default";
-                button.Location = controlPosition;
                 button.Click += button_Click;
                 button.Tag = aVisualItem;
                 button.FlatStyle = FlatStyle.Popup;
                 button.BackColor = System.Drawing.SystemColors.Control;
-                //button.FlatAppearance.BorderSize = 0;
-                currentRow++;
-
+                fCurrentRow++;
             }
 
             MouseEnterLeave l = new MouseEnterLeave(parent);
@@ -257,10 +184,135 @@ namespace NetSettings
             l.MouseLeave += panel_MouseLeave;
             ProceeControl(aVisualItem);
         }
+        #endregion
 
+        #region ReArrange Tree
+        private void ReArrangeRecurseivly(VisualItem aRoot)
+        {
+
+            VisualItem visualItem = aRoot;
+            ItemTree item = aRoot.Item;
+            ReArrange(visualItem);
+            if (visualItem.subitems != null)
+                foreach (VisualItem subItem in visualItem.subitems)
+                    ReArrangeRecurseivly(subItem);
+
+        }
+
+        public void ReArrange()
+        {
+            fCurrentPanelPosition = new Point();
+            fCurrentRow = 0;
+            fParams.container.ResetPosition();
+            ApplyFilterRecursively(fRootVisualItem);
+            fParams.container.StartUpdate();
+            ReArrangeRecurseivly(fRootVisualItem);
+            fParams.container.EndUpdate();
+        }
+
+        private void ReArrange(VisualItem aVisualItem)
+        {
+
+            if (!aVisualItem.IsVisible || aVisualItem.Item.type == "root")
+            {
+                if (aVisualItem.controlsGroup != null)
+                    aVisualItem.controlsGroup.Visible = false;
+                return;
+            }
+
+
+            aVisualItem.controlsGroup.Visible = true;
+
+            ItemTree aItem = aVisualItem.Item;
+            DataViewPlacement p = fParams.placement;
+            bool isMenu = aItem.type == "menu";
+            //Create parent container
+            ItemControlsGroup group = aVisualItem.controlsGroup;
+            Control parent = aVisualItem.controlsGroup.parentContainer;
+
+            parent.Width = p.TitleMaxWidth + p.TitleSpacing + p.ControlMaxWidth + p.ControlSpacing + p.DefaultButtonWidth;
+            parent.Height = p.LineSpacing;
+            aVisualItem.PanelBackgroundColor = isMenu ? Color.Orange : fCurrentRow % 2 == 0 ? Color.White : Color.LightGray;
+            parent.BackColor = aVisualItem.PanelBackgroundColor;
+
+            fCurrentPanelPosition.X = p.HorizontalMArgin * fNesting;
+            parent.Location = fCurrentPanelPosition;
+            fCurrentPanelPosition.Y += p.LineSpacing;
+            Point controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
+            Label label = group.label = new Label();
+            label.Width = p.TitleMaxWidth;
+            label.Height = p.LineHeight;
+            label.Location = controlPosition;
+            controlPosition.X = p.TitleMaxWidth + p.TitleSpacing;
+            Control control = group.control;
+            control.Location = controlPosition;
+            control.Height = p.LineHeight;
+            control.Width = p.ControlMaxWidth;
+            controlPosition.X += p.ControlMaxWidth + p.ControlSpacing;
+
+            //Add a default button 
+            if (!isMenu)
+            {
+                Button button = group.defaultButton;
+                button.Width = p.DefaultButtonWidth;
+                button.Height = p.LineHeight;
+                button.Location = controlPosition;
+                fCurrentRow++;
+            }
+        }
+
+        public void SetFilter(Filter aFilter, bool aCommit = true)
+        {
+            fParams.filter = aFilter;
+            if (aCommit)
+                ReArrange();
+        }
+
+
+
+        private bool ApplyFilterRecursively(VisualItem root)
+        {
+            VisualItem visualItem = root;
+            ItemTree item = root.Item;
+
+            if (fParams.filter == null || String.IsNullOrEmpty(fParams.filter.IncludeName) || String.IsNullOrWhiteSpace(fParams.filter.IncludeName))
+            {
+                visualItem.IsVisible = true;
+            }
+            else
+            {
+                if (item.type == "menu" || item.type == "root")
+                {
+                    visualItem.IsVisible = true;
+                }
+                else
+                    if (item.displayname != null)
+                    {
+                        visualItem.IsVisible = item.displayname.ToLower().Contains(fParams.filter.IncludeName.ToLower());
+                    }
+            }
+
+            if (item.subitems != null)
+            {
+                bool isVisible = false;
+                foreach (VisualItem subItem in visualItem.subitems)
+                    isVisible |= ApplyFilterRecursively(subItem);
+
+                //if at least one of the childs is visible then the parent is visible as well.
+                visualItem.IsVisible = isVisible;
+
+            }
+            return visualItem.IsVisible;
+
+        }
+
+        private void CheckLabelColor(VisualItem aVisualItem)
+        {
+            aVisualItem.controlsGroup.label.Font = GetLabelFont(aVisualItem.Item);
+        }
+        #endregion
         
 
-       
 
         private Font GetLabelFont(ItemTree aTreeItem)
         {
@@ -588,13 +640,6 @@ namespace NetSettings
             
         }
 
-        void MenuSettings_CheckStateChanged(object sender, EventArgs e)
-        {
-            //CheckBox checkBox = sender as CheckBox;
-            //VisualItem item = checkBox.Tag as VisualItem;
-            //SetValue(item, checkBox.Checked);
-        }
-
         VisualItem GetItemFromControl(Control aControl)
         {
             return aControl.Tag as VisualItem;
@@ -602,7 +647,7 @@ namespace NetSettings
 
         public void RefreshViewFromData()
         {
-            RefreshControlValueRecursivly(rootVisualItem);
+            RefreshControlValueRecursivly(fRootVisualItem);
         }
     }
 

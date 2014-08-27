@@ -31,7 +31,13 @@ namespace NetSettings
         internal void Reset()
         {
             Controls.Clear();
+            ResetPosition();
+        }
+
+        internal void ResetPosition()
+        {
             HorizontalScroll.Value = VerticalScroll.Value = 0;
+
         }
 
         internal void StartUpdate()

@@ -15,7 +15,6 @@ namespace NetSettings
     {
         DataView fMenuSettings;
         DataProvider fData;
-        Timer fFilterTimer;
 
         public delegate void OnSaveDelegate();
         public event OnSaveDelegate OnSave = delegate { };
@@ -39,17 +38,6 @@ namespace NetSettings
             fMenuSettings.Create(c);
             this.MouseWheel += SettingsForm_MouseWheel;
             c.dataProvider.ItemChanged += root_ItemChanged;
-
-            fFilterTimer = new Timer();
-            fFilterTimer.Tick += fFilterTimer_Tick;
-            fFilterTimer.Interval = 250;
-        }
-
-        void fFilterTimer_Tick(object sender, EventArgs e)
-        {
-            fFilterTimer.Enabled = false;
-            fMenuSettings.RefreshTree();
-            //settings.SetFilter(fSettingsFilter);
         }
 
         void root_ItemChanged(ItemChangedArgs args)
@@ -65,8 +53,6 @@ namespace NetSettings
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             fMenuSettings.SetFilter(new Filter() { IncludeName = (sender as TextBox).Text });
-            fFilterTimer.Enabled = false;
-            fFilterTimer.Enabled = true;
         }
 
         private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
