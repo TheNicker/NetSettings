@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace NetSettings.Controls
 {
-    class MouseEnterLeave
+    public class MouseEnterLeave
     {
         int i = 0;
         public event EventHandler MouseEnter = delegate { };

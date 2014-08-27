@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -158,12 +159,6 @@ namespace NetSettings
 
         }
 
-        //public void RaiseEvent(VisualItem aVisualItem)
-        //{
-        //    //ItemChanged(aVisualItem.Item);
-
-        //}
-
         private void CheckLabelColor(VisualItem aVisualItem)
         {
             aVisualItem.controlsGroup.label.Font = GetLabelFont(aVisualItem.Item);
@@ -186,6 +181,7 @@ namespace NetSettings
                     AddControlRecursivly(subItem);
         }
 
+
         private void AddControl(VisualItem aVisualItem, Type aType)
         {
             ItemTree aItem = aVisualItem.Item;
@@ -193,23 +189,21 @@ namespace NetSettings
             bool isMenu = aItem.type == "menu";
             //Create parent container
             ItemControlsGroup group = new ItemControlsGroup();
-            Control panel = group.parentContainer = new Control();
+            Control parent = group.parentContainer = new Control();
             
-            fParams.container.Controls.Add(panel);
-            
-            
+            fParams.container.Controls.Add(parent);
             
 
-            panel.Width = p.TitleMaxWidth + p.TitleSpacing + p.ControlMaxWidth + p.ControlSpacing + p.DefaultButtonWidth;
-            panel.Height = p.LineSpacing;
+            parent.Width = p.TitleMaxWidth + p.TitleSpacing + p.ControlMaxWidth + p.ControlSpacing + p.DefaultButtonWidth;
+            parent.Height = p.LineSpacing;
             aVisualItem.PanelBackgroundColor = isMenu ? Color.Orange : currentRow % 2 == 0 ? Color.White : Color.LightGray;
-            panel.BackColor = aVisualItem.PanelBackgroundColor;
+            parent.BackColor = aVisualItem.PanelBackgroundColor;
             
             panelPosition.X = p.HorizontalMArgin * Nesting;
-            panel.Location = panelPosition;
+            parent.Location = panelPosition;
             panelPosition.Y += p.LineSpacing;
 
-            panel.Tag = aVisualItem;
+            parent.Tag = aVisualItem;
             Point controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
             
             //Add label describing the entry
@@ -223,12 +217,12 @@ namespace NetSettings
             label.Tag = aVisualItem;
             label.Location = controlPosition;
             
-            panel.Controls.Add(label);
+            parent.Controls.Add(label);
             controlPosition.X = p.TitleMaxWidth + p.TitleSpacing;
             
             //Add the  control itself
             Control control = group.control = Activator.CreateInstance(aType) as Control;
-            panel.Controls.Add(control);
+            parent.Controls.Add(control);
             control.Location = controlPosition;
             control.Tag = aVisualItem;
             control.Height = p.LineHeight;
@@ -246,15 +240,19 @@ namespace NetSettings
                 Button button = group.defaultButton = new Button();
                 button.Width = p.DefaultButtonWidth;
                 button.Height = p.LineHeight;
-                panel.Controls.Add(button);
+                parent.Controls.Add(button);
                 button.Text = "Default";
                 button.Location = controlPosition;
                 button.Click += button_Click;
                 button.Tag = aVisualItem;
+                button.FlatStyle = FlatStyle.Popup;
+                button.BackColor = System.Drawing.SystemColors.Control;
+                //button.FlatAppearance.BorderSize = 0;
                 currentRow++;
+
             }
 
-            MouseEnterLeave l = new MouseEnterLeave(panel);
+            MouseEnterLeave l = new MouseEnterLeave(parent);
             l.MouseEnter += l_MouseEnter;
             l.MouseLeave += panel_MouseLeave;
             ProceeControl(aVisualItem);
@@ -354,7 +352,8 @@ namespace NetSettings
                         (aControl as TextBox).Text = val as string;
                         break;
                     case "color":
-                        (aControl as Control).BackColor = (Color)val;
+                        (aControl as ColorControl).color  = (Color)val;
+
                         break;
                 }
             }
@@ -392,15 +391,17 @@ namespace NetSettings
 
             Control t = aVisualItem.controlsGroup.control;
             Control p = aVisualItem.controlsGroup.parentContainer;
+            Control l = aVisualItem.controlsGroup.label;
             ItemTree aItem = aVisualItem.Item;
             switch (aItem.type)
             {
                 case "bool":
-                    (t as CheckBox).CheckStateChanged += MenuSettings_CheckStateChanged;
+                    (t as CheckBox).MouseClick += CheckBox_MouseClick;
+                    (p as Control).MouseClick += CheckBox_MouseClick;
+                    (l as Control).MouseClick += CheckBox_MouseClick;
                     break;
                 case "text":
                     (t as TextBox).TextChanged += MenuSettings_TextChanged;
-                    (t as TextBox).KeyDown += DataView_KeyDown;
                     (t as TextBox).Leave += DataView_Leave;
                     break;
                 case "number":
@@ -418,38 +419,72 @@ namespace NetSettings
                     (t as TextBox).MouseHover += MenuSettings_MouseHover;
                     break;
                 case "color":
-                    (t as Control).Click += MenuSettings_Click;
+                    (t as ColorControl).KeyDown +=ColorControl_KeyDown;
+                    (t as ColorControl).TextChanged += ColorControl_TextChanged;
+                    (t as Control).DoubleClick += MenuSettings_Click;
+                    (p as Control).Click += MenuSettings_Click;
+                    (l as Control).Click += MenuSettings_Click;
                     break;
             }
 
+        }
+
+        private void ColorControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            ColorControl colorControl = sender as ColorControl;
+            RefreshControlValue((colorControl.Tag as VisualItem));
+            
+        }
+
+       
+
+        private void ColorControl_TextChanged(object sender, EventArgs e)
+        {
+            ColorControl colorControl = sender as ColorControl;
+            Color c;
+            if (NetSettings.View.DataViewHelper.TryGetColor(colorControl.Text,out c))
+                SetValue((sender as Control).Tag as VisualItem, c, ItemChangedMode.OnTheFly);
+        }
+
+        private void CheckBox_MouseClick(object sender, MouseEventArgs e)
+        {
+            Control control = sender as Control;
+            VisualItem item = control.Tag as VisualItem;
+            CheckBox checkBox = item.controlsGroup.control as CheckBox;
+            if (!(control is CheckBox))
+                checkBox.Checked = !checkBox.Checked;
+
+            SetValue(item, checkBox.Checked);
+            
         }
 
         void DataView_Leave(object sender, EventArgs e)
         {
             TextBox textBox = sender as TextBox;
             VisualItem visualItem = GetItemFromControl(textBox);
-            if (visualItem != null)
-                SetValue(visualItem,textBox.Text,ItemChangedMode.UserConfirmed);
+            SetValue(visualItem,textBox.Text,ItemChangedMode.UserConfirmed);
         }
 
-        void DataView_KeyDown(object sender, KeyEventArgs e)
-        {
-            
-        }
 
         private void SetValue(VisualItem aVisualItem, object aVal,ItemChangedMode aMode = ItemChangedMode.UserConfirmed)
         {
-            fParams.dataProvider.SetValue(
-                new ItemChangedArgs()
-                {
-                    sender = this,
-                    ChangedMode = aMode,
-                    Key = aVisualItem.Item.FullName,
-                    Val = aVal
-                });
 
-                
-            CheckLabelColor(aVisualItem);
+            if (aVisualItem != null)
+            {
+                fParams.dataProvider.SetValue(
+                    new ItemChangedArgs()
+                    {
+                        sender = this,
+                        ChangedMode = aMode,
+                        Key = aVisualItem.Item.FullName,
+                        Val = aVal
+                    });
+
+
+                // Get the data back from the DataProvider
+                RefreshControlValue(aVisualItem);
+                CheckLabelColor(aVisualItem);
+            }
         }
 
         private object GetValue(string name)
@@ -466,11 +501,7 @@ namespace NetSettings
         {
             ComboBox comboBox = sender as ComboBox;
             VisualItem item = GetItemFromControl(comboBox);
-            if (item != null)
-            {
-                comboBox.SelectedIndex = (comboBox.SelectedIndex + 1) % comboBox.Items.Count;
-            }
-            SetValue(item,comboBox.SelectedItem);
+            SetValue(item, comboBox.SelectedItem);
         }
 
         void MenuSettings_Click(object sender, EventArgs e)
@@ -478,14 +509,9 @@ namespace NetSettings
             Control p = sender as Control;
             ColorDialog dialog;
             VisualItem item = GetItemFromControl(p);
+            ColorControl colorControl = item.controlsGroup.control as ColorControl;
             if ((dialog = new ColorDialog(){FullOpen = true,Color = (Color)GetValue(item.Item.FullName)}).ShowDialog() == DialogResult.OK)
-            {
-                if (item != null)
-                {
-                    SetValue(item, p.BackColor = dialog.Color);
-                    
-                }
-            }
+                SetValue(item, dialog.Color);
         }
 
         private void MenuSettings_NumberChanged(object sender, EventArgs e)
@@ -550,8 +576,7 @@ namespace NetSettings
         {
             ComboBox comboBox = sender as ComboBox;
             VisualItem item = GetItemFromControl(comboBox);
-            if (item != null)
-                SetValue(item,comboBox.SelectedItem);
+            SetValue(item,comboBox.SelectedItem);
             
         }
 
@@ -565,9 +590,9 @@ namespace NetSettings
 
         void MenuSettings_CheckStateChanged(object sender, EventArgs e)
         {
-            CheckBox checkBox = sender as CheckBox;
-            VisualItem item = checkBox.Tag as VisualItem;
-            SetValue(item, checkBox.Checked);
+            //CheckBox checkBox = sender as CheckBox;
+            //VisualItem item = checkBox.Tag as VisualItem;
+            //SetValue(item, checkBox.Checked);
         }
 
         VisualItem GetItemFromControl(Control aControl)
