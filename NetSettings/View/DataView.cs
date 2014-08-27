@@ -134,6 +134,7 @@ namespace NetSettings
             ItemTree aItem = aVisualItem.Item;
 
             bool isMenu = aItem.type == "menu";
+            bool isBool = aItem.type == "bool";
             //Create parent container
             ItemControlsGroup group = new ItemControlsGroup();
             Control parent = group.parentContainer = new Control();
@@ -143,7 +144,7 @@ namespace NetSettings
 
             //Add label describing the entry
 
-            Label label = group.label = new Label();
+            LabelSingleClick label = group.label = new LabelSingleClick(!isBool);
             label.Font = GetLabelFont(aItem);
             label.Text = aItem.displayname;
             label.Tag = aVisualItem;
@@ -312,7 +313,7 @@ namespace NetSettings
             parent.Location = fCurrentPanelPosition;
             fCurrentPanelPosition.Y += p.LineSpacing;
             Point controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
-            Label label = group.label = new Label();
+            LabelSingleClick label = group.label;
             label.Width = p.TitleMaxWidth;
             label.Height = p.LineHeight;
             label.Location = controlPosition;

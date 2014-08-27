@@ -60,6 +60,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\ControlHelper.cs" />
+    <Compile Include="Controls\LabelSingleClick.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\MouseEnterLeave.cs" />
     <Compile Include="Data\ItemChangedArgs.cs" />
     <Compile Include="View\DataViewHelper.cs" />
