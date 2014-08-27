@@ -12,7 +12,7 @@ namespace NetSettings.Controls
         int i = 0;
         public event EventHandler MouseEnter = delegate { };
         public event EventHandler MouseLeave = delegate { };
-
+        public static Control LastEntered;
         public MouseEnterLeave(Control aTarget)
         {
             AddEvents(aTarget);
@@ -44,7 +44,13 @@ namespace NetSettings.Controls
         void aTarget_MouseEnter(object sender, EventArgs e)
         {
             if (++i == 1)
+            {
+                if (LastEntered != null)
+                    MouseLeave(LastEntered, e);
+                
+                LastEntered = sender as Control;
                 MouseEnter(sender, e);
+            }
         }
     }
 }
