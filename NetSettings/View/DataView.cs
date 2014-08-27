@@ -46,9 +46,6 @@ namespace NetSettings
             labelNormal = new Font(labelFont, 10, FontStyle.Regular);
             labelBold = new Font(labelFont, 10, FontStyle.Bold);
         }
-
-        
-
         public void Create(DataViewParams aParams)
         {
             fParams = aParams;
@@ -79,11 +76,6 @@ namespace NetSettings
             ReCreateTree();
         }
 
-      
-
-       
-
-       
         #region Recreate Tree
 
         private void CreateVisualItemTree()
@@ -183,6 +175,87 @@ namespace NetSettings
             l.MouseEnter += l_MouseEnter;
             l.MouseLeave += panel_MouseLeave;
             ProceeControl(aVisualItem);
+        }
+        private void ProceeControl(VisualItem aVisualItem)
+        {
+            PrepareControl(aVisualItem);
+            RefreshControlValue(aVisualItem);
+            ProcessEvents(aVisualItem);
+        }
+
+        private static void PrepareControl(VisualItem aVIsualItem)
+        {
+
+            Control label = aVIsualItem.controlsGroup.label;
+            Control actualControl = aVIsualItem.controlsGroup.control;
+            ItemTree aItem = aVIsualItem.Item;
+            switch (aItem.type)
+            {
+                case "combo":
+                    string[] values = aItem.values.Split(';');
+                    foreach (string v in values)
+                        (actualControl as ComboBox).Items.Add(v);
+                    break;
+                case "menu":
+                    (label as Label).Font = new Font(labelFont, 12, FontStyle.Bold);
+                    (label as Label).ForeColor = Color.Blue;
+                    break;
+            }
+        }
+
+        private void ProcessEvents(VisualItem aVisualItem)
+        {
+
+            Control t = aVisualItem.controlsGroup.control;
+            Control p = aVisualItem.controlsGroup.parentContainer;
+            Control l = aVisualItem.controlsGroup.label;
+            ItemTree aItem = aVisualItem.Item;
+            switch (aItem.type)
+            {
+                case "menu":
+                    (l as Control).DoubleClick += Menu_DoubleClick;
+                    break;
+                case "bool":
+                    (t as CheckBox).MouseClick += CheckBox_MouseClick;
+                    (p as Control).MouseClick += CheckBox_MouseClick;
+                    (l as Control).MouseClick += CheckBox_MouseClick;
+                    break;
+                case "text":
+                    (t as TextBox).TextChanged += MenuSettings_TextChanged;
+                    (t as TextBox).Leave += DataView_Leave;
+                    break;
+                case "number":
+                    (t as TextBox).TextChanged += MenuSettings_NumberChanged;
+                    break;
+                case "combo":
+                    (t as ComboBox).SelectedIndexChanged += c_SelectedIndexChanged;
+                    (t as ComboBox).MouseDoubleClick += Combo_MouseDoubleClick;
+
+                    break;
+                case "image":
+                    (t as TextBox).TextChanged += MenuSettings_TextChanged;
+                    (t as TextBox).MouseDoubleClick += MenuSettings_MouseDoubleClick;
+                    (t as TextBox).MouseLeave += MenuSettings_MouseLeave;
+                    (t as TextBox).MouseHover += MenuSettings_MouseHover;
+                    break;
+                case "color":
+                    (t as ColorControl).KeyDown += ColorControl_KeyDown;
+                    (t as ColorControl).TextChanged += ColorControl_TextChanged;
+                    (t as Control).DoubleClick += MenuSettings_Click;
+                    (p as Control).Click += MenuSettings_Click;
+                    (l as Control).Click += MenuSettings_Click;
+                    break;
+            }
+
+        }
+
+        private void Menu_DoubleClick(object sender, EventArgs e)
+        {
+            VisualItem item = GetItemFromControl(sender as Control);
+            if (item != null)
+                item.Expanded = false;
+
+            ReArrange();
         }
         #endregion
 
@@ -312,8 +385,6 @@ namespace NetSettings
         }
         #endregion
         
-
-
         private Font GetLabelFont(ItemTree aTreeItem)
         {
             object val = GetValue(aTreeItem);
@@ -411,84 +482,12 @@ namespace NetSettings
             }
         }
 
-        private void ProceeControl(VisualItem aVisualItem)
-        {
-            PrepareControl(aVisualItem);
-            RefreshControlValue(aVisualItem);
-            ProcessEvents(aVisualItem);
-        }
-
-        private static void PrepareControl(VisualItem aVIsualItem)
-        {
-
-            Control label = aVIsualItem.controlsGroup.label;
-            Control actualControl = aVIsualItem.controlsGroup.control;
-            ItemTree aItem = aVIsualItem.Item;
-            switch (aItem.type)
-            {
-                case "combo":
-                    string[] values = aItem.values.Split(';');
-                    foreach (string v in values)
-                        (actualControl as ComboBox).Items.Add(v);
-                    break;
-                case "menu":
-                    (label as Label).Font = new Font(labelFont, 12, FontStyle.Bold);
-                    (label as Label).ForeColor = Color.Blue;
-                    break;
-            }
-        }
-
-        private void ProcessEvents(VisualItem aVisualItem)
-        {
-
-            Control t = aVisualItem.controlsGroup.control;
-            Control p = aVisualItem.controlsGroup.parentContainer;
-            Control l = aVisualItem.controlsGroup.label;
-            ItemTree aItem = aVisualItem.Item;
-            switch (aItem.type)
-            {
-                case "bool":
-                    (t as CheckBox).MouseClick += CheckBox_MouseClick;
-                    (p as Control).MouseClick += CheckBox_MouseClick;
-                    (l as Control).MouseClick += CheckBox_MouseClick;
-                    break;
-                case "text":
-                    (t as TextBox).TextChanged += MenuSettings_TextChanged;
-                    (t as TextBox).Leave += DataView_Leave;
-                    break;
-                case "number":
-                    (t as TextBox).TextChanged += MenuSettings_NumberChanged;
-                    break;
-                case "combo":
-                    (t as ComboBox).SelectedIndexChanged += c_SelectedIndexChanged;
-                    (t as ComboBox).MouseDoubleClick += Combo_MouseDoubleClick;
-                    
-                    break;
-                case "image":
-                    (t as TextBox).TextChanged += MenuSettings_TextChanged;
-                    (t as TextBox).MouseDoubleClick += MenuSettings_MouseDoubleClick;
-                    (t as TextBox).MouseLeave += MenuSettings_MouseLeave;
-                    (t as TextBox).MouseHover += MenuSettings_MouseHover;
-                    break;
-                case "color":
-                    (t as ColorControl).KeyDown +=ColorControl_KeyDown;
-                    (t as ColorControl).TextChanged += ColorControl_TextChanged;
-                    (t as Control).DoubleClick += MenuSettings_Click;
-                    (p as Control).Click += MenuSettings_Click;
-                    (l as Control).Click += MenuSettings_Click;
-                    break;
-            }
-
-        }
-
         private void ColorControl_KeyDown(object sender, KeyEventArgs e)
         {
             ColorControl colorControl = sender as ColorControl;
             RefreshControlValue((colorControl.Tag as VisualItem));
             
         }
-
-       
 
         private void ColorControl_TextChanged(object sender, EventArgs e)
         {
@@ -516,7 +515,6 @@ namespace NetSettings
             VisualItem visualItem = GetItemFromControl(textBox);
             SetValue(visualItem,textBox.Text,ItemChangedMode.UserConfirmed);
         }
-
 
         private void SetValue(VisualItem aVisualItem, object aVal,ItemChangedMode aMode = ItemChangedMode.UserConfirmed)
         {

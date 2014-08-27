@@ -12,7 +12,9 @@ namespace NetSettings
         public Color PanelBackgroundColor;
         public ItemTree Item;
         public bool IsVisible;
-        public VisualItem[] subitems;
+        
         public ItemControlsGroup controlsGroup;
+        public bool Expanded = true;
+        public VisualItem[] subitems;
     }
 }
