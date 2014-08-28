@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="Controls\MouseEnterLeave.cs" />
     <Compile Include="Data\ItemChangedArgs.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="View\DataViewHelper.cs" />
     <Compile Include="View\ItemControlsGroup.cs" />
     <Compile Include="View\DataViewParams.cs" />

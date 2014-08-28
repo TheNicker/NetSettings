@@ -56,6 +56,9 @@ namespace NetSettings
             {
                 if (obj != null && obj is string)
                     obj = System.Drawing.ColorTranslator.FromHtml(obj as string);
+			//Make sure all the colors are created from (R,G,B) and not known names
+                System.Drawing.Color c = (System.Drawing.Color)(obj);
+                obj = System.Drawing.Color.FromArgb(c.R, c.G, c.B);
 
                 //if (aItem.value != null && aItem.value is string)
                 //    aItem.value = System.Drawing.ColorTranslator.FromHtml(aItem.value as string);

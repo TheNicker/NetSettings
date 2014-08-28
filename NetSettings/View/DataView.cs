@@ -30,8 +30,9 @@ namespace NetSettings
         PreviewForm fPreviewForm;
         Point fLastCursorPosition;
 
-        Font labelNormal;
-        Font labelBold;
+        Font fLabelNormal;
+        Font fLabelBold;
+        Font fMenuLabel;
 
         public DataView()
         {
@@ -43,8 +44,9 @@ namespace NetSettings
             fStringToType.Add("image", typeof(TextBox));
             fStringToType.Add("number", typeof(TextBox));
             fStringToType.Add("color", typeof(ColorControl));
-            labelNormal = new Font(labelFont, 10, FontStyle.Regular);
-            labelBold = new Font(labelFont, 10, FontStyle.Bold);
+            fLabelNormal = new Font(labelFont, 10, FontStyle.Regular);
+            fLabelBold = new Font(labelFont, 10, FontStyle.Bold);
+            fMenuLabel = new Font(labelFont, 12, FontStyle.Bold);
         }
         public void Create(DataViewParams aParams)
         {
@@ -145,9 +147,12 @@ namespace NetSettings
             //Add label describing the entry
 
             LabelSingleClick label = group.label = new LabelSingleClick(!isBool);
-            label.Font = GetLabelFont(aItem);
+            label.Font = GetLabelFont(aVisualItem);
             label.Text = aItem.displayname;
             label.Tag = aVisualItem;
+
+            
+                
 
             parent.Controls.Add(label);
 
@@ -198,7 +203,6 @@ namespace NetSettings
                         (actualControl as ComboBox).Items.Add(v);
                     break;
                 case "menu":
-                    (label as Label).Font = new Font(labelFont, 12, FontStyle.Bold);
                     (label as Label).ForeColor = Color.Blue;
                     break;
             }
@@ -382,29 +386,28 @@ namespace NetSettings
 
         private void CheckLabelColor(VisualItem aVisualItem)
         {
-            aVisualItem.controlsGroup.label.Font = GetLabelFont(aVisualItem.Item);
+            aVisualItem.controlsGroup.label.Font = GetLabelFont(aVisualItem);
         }
         #endregion
         
-        private Font GetLabelFont(ItemTree aTreeItem)
+        
+        private Font GetLabelFont(VisualItem aVisualItem)
         {
-            object val = GetValue(aTreeItem);
-            return aTreeItem.defaultvalue != null && val != null  && !aTreeItem.defaultvalue.Equals(val)
-                ? labelBold : labelNormal;
+            if (aVisualItem.Item.type == "menu")
+                return fMenuLabel;
+
+            ItemTree item = aVisualItem.Item;
+            object val = GetValue(aVisualItem.Item);
+            return item.defaultvalue != null && val != null  && !item.defaultvalue.Equals(val)
+                ? fLabelBold : fLabelNormal;
         }
 
         void button_Click(object sender, EventArgs e)
         {
             Control c = sender as Control;
             VisualItem item = GetItemFromControl(c);
-            if (item != null)
-            {
-                if (item.Item.defaultvalue != null)
-                {
-                    SetValue(item, item.Item.defaultvalue);
-                    RefreshControlValue(item);
-                }
-            }
+            if (item != null && item.Item.defaultvalue != null)
+                SetValue(item, item.Item.defaultvalue);
         }
 
         void l_MouseEnter(object sender, EventArgs e)
@@ -480,6 +483,7 @@ namespace NetSettings
 
                         break;
                 }
+                CheckLabelColor(aVisualItem);
             }
         }
 
@@ -534,7 +538,6 @@ namespace NetSettings
 
                 // Get the data back from the DataProvider
                 RefreshControlValue(aVisualItem);
-                CheckLabelColor(aVisualItem);
             }
         }
 
