@@ -86,11 +86,14 @@ namespace NetSettings
         public void SetValue(ItemChangedArgs aArgs)
         {
             string name = aArgs.Key;
-            object val = aArgs.Val;
-            object currentObject = fDataBinding[name];
-            if (!val.Equals(currentObject) || aArgs.ChangedMode == ItemChangedMode.UserConfirmed)
+            object valueNew = aArgs.Val;
+
+            object valueCurrent;
+            fDataBinding.TryGetValue(name, out valueCurrent);
+
+            if (!valueNew.Equals(valueCurrent) || aArgs.ChangedMode == ItemChangedMode.UserConfirmed)
             {
-                fDataBinding[name] = val;
+                fDataBinding[name] = valueNew;
                 ItemChanged(aArgs);
                 UpdateViews(aArgs.sender);
             }
@@ -106,8 +109,8 @@ namespace NetSettings
 
         public object GetValue(string key)
         {
-            object val = fDataBinding[key];
-            if (val == null)
+            object val;
+            if (!fDataBinding.TryGetValue(key,out val))
                 val = fQualifiedNames[key].defaultvalue;
             return val;
         }
