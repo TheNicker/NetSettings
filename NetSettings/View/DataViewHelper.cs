@@ -16,38 +16,26 @@ namespace NetSettings.View
 
         public static bool TryGetColor(string colorName,out Color color)
         {
-            ColorRepresentanion colorRep = ColorRepresentanion.None;
             color = Color.Empty;
-            bool result = false;
-            string text = colorName;
+            ColorRepresentanion colorRep = ClassifyColor(colorName);
+            return TryParseColor(ref color, colorRep, colorName);
+        }
 
-            string[] numbers = null;
-
+        private static ColorRepresentanion ClassifyColor(string text)
+        {
+            ColorRepresentanion colorRep = ColorRepresentanion.None;
             if (text.StartsWith("#") || text.StartsWith("$") || IsHexLetters(text)) //100% hex
                 colorRep = ColorRepresentanion.Hex;
             else if (text.Contains(','))
-            {
                 colorRep = ColorRepresentanion.CommaSeperated;
-                numbers = text.Split(',');
-            }
             else
                 colorRep = ColorRepresentanion.Hex;
+            return colorRep;
+        }
 
-            //else
-            //{
-            //    if (numbers.Length > 1) //100% RGB
-            //    {
-            //        colorRep = ColorRepresentanion.CommaSeperated;
-            //    }
-            //    else /// check further
-            //    {
-            //        int num;
-            //        if (numbers.Length == 1 && int.TryParse(numbers[0], out num) && num > 255)
-            //            colorRep = ColorRepresentanion.Hex;
-
-            //    }
-            //}
-
+        private static bool TryParseColor(ref Color color, ColorRepresentanion colorRep, string text)
+        {
+            bool result = false;
             switch (colorRep)
             {
                 case ColorRepresentanion.None:
@@ -59,30 +47,37 @@ namespace NetSettings.View
                     result = true;
                     break;
                 case ColorRepresentanion.CommaSeperated:
-                      int []rgb = new int[3];
-                
-                for (int i = 0 ; i <numbers.Length; i++ )
-                {
-                    string s1 = GetNumbers(numbers[i]);
-                    if (int.TryParse(s1,out rgb[i]))
-                    {
-                        rgb[i] = rgb[i].Clamp(0, 255);
-                    }
-                    else
-                       rgb[i] = -1;
-                }
-
-
-                if (rgb[0] != -1)
-                {
-
-                    color = Color.FromArgb(rgb[0], rgb[1] != -1 ? rgb[1] : 0, rgb[2] != -1 ? rgb[2] : 0);
-                    result = true;
-                }
+                    TryParseCommaSeperatedColor(ref color, text);
                     break;
                 default:
                     result = false;
                     break;
+            }
+            return result;
+        }
+
+        private static bool TryParseCommaSeperatedColor(ref Color color, string text)
+        {
+            string[] numbers = null;
+            numbers = text.Split(',');
+            int[] rgb = new int[3];
+            bool result = false;
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                string s1 = GetNumbers(numbers[i]);
+                if (int.TryParse(s1, out rgb[i]))
+                {
+                    rgb[i] = rgb[i].Clamp(0, 255);
+                }
+                else
+                    rgb[i] = -1;
+            }
+
+            if (rgb[0] != -1)
+            {
+
+                color = Color.FromArgb(rgb[0], rgb[1] != -1 ? rgb[1] : 0, rgb[2] != -1 ? rgb[2] : 0);
+                result = true;
             }
             return result;
         }
