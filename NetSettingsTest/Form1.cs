@@ -37,7 +37,7 @@ namespace NetSettings
             fDataViewParams.container = userControl11;
             fDataViewParams.descriptionContainer = controlContainer1;
             fDataViewParams.dataProvider = fData;
-            
+
 
             fSettingsForm = new SettingsForm(fData);
             fSettingsForm.OnSave += fSettingsForm_OnSave;
@@ -46,7 +46,6 @@ namespace NetSettings
             fView.Create(fDataViewParams);
 
             fFilterTimer = new Timer();
-            fFilterTimer.Tick += fFilterTimer_Tick;
             fFilterTimer.Interval = 300;
 
         }
@@ -65,12 +64,7 @@ namespace NetSettings
             int k = 0;
         }
 
-        void fFilterTimer_Tick(object sender, EventArgs e)
-        {
-            fFilterTimer.Enabled = false;
-            fView.SetFilter(fSettingsFilter);
-            fView.RefreshTree();
-        }
+       
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -79,13 +73,7 @@ namespace NetSettings
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            fSettingsFilter = new Filter()
-            {
-                IncludeName = (sender as TextBox).Text
-            };
-            fFilterTimer.Enabled = false;
-            fFilterTimer.Enabled = true;
-         
+            fView.SetFilter(new Filter() { IncludeName = (sender as TextBox).Text});
         }
     }
 }
