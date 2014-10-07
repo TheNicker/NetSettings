@@ -24,12 +24,14 @@ namespace NetSettings.View
         private static ColorRepresentanion ClassifyColor(string text)
         {
             ColorRepresentanion colorRep = ColorRepresentanion.None;
-            if (text.StartsWith("#") || text.StartsWith("$") || IsHexLetters(text)) //100% hex
-                colorRep = ColorRepresentanion.Hex;
-            else if (text.Contains(','))
+            if (text.Contains(','))
                 colorRep = ColorRepresentanion.CommaSeperated;
             else
                 colorRep = ColorRepresentanion.Hex;
+
+                //if (text.StartsWith("#") || text.StartsWith("$") || IsHexLetters(text)) 
+                //    colorRep = ColorRepresentanion.Hex;
+                //colorRep = ColorRepresentanion.Hex;
             return colorRep;
         }
 
@@ -62,22 +64,21 @@ namespace NetSettings.View
             numbers = text.Split(',');
             int[] rgb = new int[3];
             bool result = false;
+            bool validComponentFound = false;
             for (int i = 0; i < numbers.Length; i++)
             {
                 string s1 = GetNumbers(numbers[i]);
-                if (int.TryParse(s1, out rgb[i]))
-                {
-                    rgb[i] = rgb[i].Clamp(0, 255);
-                }
-                else
-                    rgb[i] = -1;
+                validComponentFound = (rgb[i] = int.TryParse(s1, out rgb[i]) ? rgb[i].Clamp(0, 255) : -1) != -1;
             }
 
-            if (rgb[0] != -1)
+            if (validComponentFound)
             {
-
-                color = Color.FromArgb(rgb[0], rgb[1] != -1 ? rgb[1] : 0, rgb[2] != -1 ? rgb[2] : 0);
+                color = Color.FromArgb(rgb[0] != -1 ? rgb[0] : 0, rgb[1] != -1 ? rgb[1] : 0, rgb[2] != -1 ? rgb[2] : 0);
                 result = true;
+            }
+            else
+            {
+                result = false;
             }
             return result;
         }
