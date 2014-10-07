@@ -47,7 +47,7 @@ namespace NetSettings.View
                     result = true;
                     break;
                 case ColorRepresentanion.CommaSeperated:
-                    TryParseCommaSeperatedColor(ref color, text);
+                    result = TryParseCommaSeperatedColor(ref color, text);
                     break;
                 default:
                     result = false;
