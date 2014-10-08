@@ -575,7 +575,10 @@ namespace NetSettings
             double num;
             if (double.TryParse(textbox.Text, out num))
             {
-                SetValue(item, num,ItemChangedMode.OnTheFly);
+                // check if user is inserting the decimal point of a number while trying to define the fractional part of a number
+                // if yes don't update the number yet since the parsing from string to double will omit the decimal point.
+                if (textbox.Text.IndexOf(".") != textbox.Text.Length - 1)
+                    SetValue(item, num,ItemChangedMode.OnTheFly);
             }
         }
 
