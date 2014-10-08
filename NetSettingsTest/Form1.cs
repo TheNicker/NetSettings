@@ -17,10 +17,7 @@ namespace NetSettings
         const string SettingsFilePath = @"Resources\GuiTemplate.json";
         DataView fView;
         DataViewParams fDataViewParams;
-        Timer fFilterTimer;
-        Filter fSettingsFilter;
         DataProvider fData;
-
         SettingsForm fSettingsForm;
         public Form1()
         {
@@ -33,21 +30,20 @@ namespace NetSettings
             fView = new DataView();
             fData = new DataProvider(ItemTree.FromFile(SettingsFilePath));
             fData.ItemChanged += fData_ItemChanged;
+
+            //Create manually view[1]
             fDataViewParams = new DataViewParams();
             fDataViewParams.container = userControl11;
             fDataViewParams.descriptionContainer = controlContainer1;
             fDataViewParams.dataProvider = fData;
+            fView.Create(fDataViewParams);
 
-
+            //Create view[2] with predefined 'SettingsForm' fro the same data provider
             fSettingsForm = new SettingsForm(fData);
             fSettingsForm.OnSave += fSettingsForm_OnSave;
             fSettingsForm.Show();
             
-            fView.Create(fDataViewParams);
-
-            fFilterTimer = new Timer();
-            fFilterTimer.Interval = 300;
-
+            
         }
 
         
