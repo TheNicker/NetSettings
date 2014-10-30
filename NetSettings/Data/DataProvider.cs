@@ -107,25 +107,43 @@ namespace NetSettings
             
         }
 
+        private object GetDefaultValue(string key)
+        {
+            ItemTree itemTree;
+            if (fQualifiedNames.TryGetValue(key, out itemTree)) 
+            {
+                return itemTree.defaultvalue;
+            }
+            return null;
+        }
+
+        public object GetValueOrDefault(string key)
+        {
+            object val;
+            if (!fDataBinding.TryGetValue(key, out val))
+                val = GetDefaultValue(key);
+            return val;
+        }
+
         public object GetValue(string key)
         {
             object val;
-            if (!fDataBinding.TryGetValue(key,out val))
-                val = fQualifiedNames[key].defaultvalue;
+            fDataBinding.TryGetValue(key, out val);
             return val;
         }
 
         public T GetValue<T>(string key)
         {
             object val = fDataBinding[key];
-            if (val != null)
-            {
-                if (val is T)
-                    return (T)val;
-                else
-                    throw new Exception("Bad type");
-            }
-            throw new Exception("Default value is not set");
+            if (val == null)
+                val = GetDefaultValue(key);
+
+
+            if (val is T)
+                return (T)val;
+            else
+                throw new Exception("Bad type or Default value is not set");
+            
         }
 
 

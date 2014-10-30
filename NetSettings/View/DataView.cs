@@ -543,7 +543,7 @@ namespace NetSettings
 
         private object GetValue(string name)
         {
-            return fParams.dataProvider.GetValue(name);
+            return fParams.dataProvider.GetValueOrDefault(name);
         }
 
         private object GetValue(ItemTree item)
