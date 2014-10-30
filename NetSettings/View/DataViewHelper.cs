@@ -62,23 +62,28 @@ namespace NetSettings.View
         {
             string[] numbers = null;
             numbers = text.Split(',');
-            int[] rgb = new int[3];
             bool result = false;
-            bool foundValidComponentFound = false;
-            for (int i = 0; i < numbers.Length; i++)
+            if (numbers.Length <= 3)
             {
-                string s1 = GetNumbers(numbers[i]);
-                foundValidComponentFound |= (rgb[i] = int.TryParse(s1, out rgb[i]) ? rgb[i].Clamp(0, 255) : -1) != -1;
-            }
+                int[] rgb = new int[3];
 
-            if (foundValidComponentFound)
-            {
-                color = Color.FromArgb(rgb[0] != -1 ? rgb[0] : 0, rgb[1] != -1 ? rgb[1] : 0, rgb[2] != -1 ? rgb[2] : 0);
-                result = true;
-            }
-            else
-            {
-                result = false;
+                bool foundValidComponentFound = false;
+
+                for (int i = 0; i < numbers.Length; i++)
+                {
+                    string s1 = GetNumbers(numbers[i]);
+                    foundValidComponentFound |= (rgb[i] = int.TryParse(s1, out rgb[i]) ? rgb[i].Clamp(0, 255) : -1) != -1;
+                }
+
+                if (foundValidComponentFound)
+                {
+                    color = Color.FromArgb(rgb[0] != -1 ? rgb[0] : 0, rgb[1] != -1 ? rgb[1] : 0, rgb[2] != -1 ? rgb[2] : 0);
+                    result = true;
+                }
+                else
+                {
+                    result = false;
+                }
             }
             return result;
         }
