@@ -78,12 +78,9 @@ namespace NetSettings
 
             if (aItem.type == "number")
             {
-                if (obj == null)
-                    obj = 0.0;
-                else
-                    if (obj is Int64)
-                        obj = (double)(Int64)obj;
-
+                //normalize all our numbers to double data type
+                if (obj != null && obj is Int64)
+                    obj = (double)(Int64)obj;
             }
         }
     }

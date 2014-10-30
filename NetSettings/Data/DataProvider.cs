@@ -91,7 +91,7 @@ namespace NetSettings
             object valueCurrent;
             fDataBinding.TryGetValue(name, out valueCurrent);
 
-            if (!valueNew.Equals(valueCurrent) || aArgs.ChangedMode == ItemChangedMode.UserConfirmed)
+            if (!Object.Equals(valueNew, valueCurrent) || aArgs.ChangedMode == ItemChangedMode.UserConfirmed)
             {
                 fDataBinding[name] = valueNew;
                 ItemChanged(aArgs);

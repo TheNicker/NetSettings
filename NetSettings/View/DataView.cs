@@ -406,7 +406,7 @@ namespace NetSettings
         {
             Control c = sender as Control;
             VisualItem item = GetItemFromControl(c);
-            if (item != null && item.Item.defaultvalue != null)
+            if (item != null)
                 SetValue(item, item.Item.defaultvalue);
         }
 
@@ -467,23 +467,25 @@ namespace NetSettings
                         (aControl as CheckBox).Checked = _val;
                         break;
                     case "text":
-                        (aControl as TextBox).Text = (string)val;
+
+                        (aControl as TextBox).Text = (val != null ? (string)val : "");
                         break;
                     case "number":
-                        (aControl as TextBox).Text = ((double)val).ToString();
+                        (aControl as TextBox).Text = (val != null ? ((double)val).ToString() : "");
                         break;
                     case "combo":
                         (aControl as ComboBox).SelectedItem = val;
                         break;
                     case "image":
-                        (aControl as TextBox).Text = val as string;
+                        (aControl as TextBox).Text = (val != null ? val as string : "");
                         break;
                     case "color":
-                        (aControl as ColorControl).color  = (Color)val;
+                        (aControl as ColorControl).color = (val != null ? (Color)val : Color.Empty);
 
                         break;
                 }
                 CheckLabelColor(aVisualItem);
+
             }
         }
 

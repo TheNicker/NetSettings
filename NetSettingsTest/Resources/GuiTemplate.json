@@ -50,11 +50,19 @@
           "value": "hello world"
         },
         {
-          "type": "text",
-          "name": "ForceMonitor",
+            "type": "number",
+            "name": "ForceMonitor",
+            "displayname": "Force working on specific monitor",
+            "description": "Force displaying the application on the index of a specific monitor (empty for deafault)",
+        },
+        {
+          "type": "number",
+          "name": "ForceMonitor1",
           "displayname": "Force working on specific monitor",
-          "description": "Force displaying the application on a named specific monitor (empty for deafault)",
-          "value": "hello world"
+          "description": "Force displaying the application on the index of a specific monitor (empty for deafault)",
+          "defaultvalue":  3
+
+            
         },
         {
           "type": "bool",
@@ -72,11 +80,18 @@
       "displayname": "Input settings",
       "subitems": [
         {
-          "type": "bool",
-          "name": "EnableMouse",
-          "displayname": "Enable mouse",
-          "description": "set to enable input from mouse",
-          "defaultvalue": true
+            "type": "bool",
+            "name": "EnableMouse",
+            "displayname": "Enable mouse",
+            "description": "set to enable input from mouse",
+            "defaultvalue": true
+        },
+        {
+          "type": "number",
+          "name": "ApplesToBuy",
+          "displayname": "Apples to buy",
+          "description": "How many apples to buy ?",
+          "defaultvalue": 0.1
         },
         {
           "type": "bool",

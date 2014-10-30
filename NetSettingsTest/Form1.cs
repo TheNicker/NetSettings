@@ -9,16 +9,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using NetSettingsTest;
+using Newtonsoft.Json;
 
 namespace NetSettings
 {
     public partial class Form1 : Form
     {
         const string SettingsFilePath = @"Resources\GuiTemplate.json";
+        const string UserPAth = @".\settings";
+        Dictionary<string, object> fUserSettings;
         DataView fView;
         DataViewParams fDataViewParams;
         DataProvider fData;
         SettingsForm fSettingsForm;
+        
         public Form1()
         {
             InitializeComponent();
@@ -30,6 +34,8 @@ namespace NetSettings
             fView = new DataView();
             fData = new DataProvider(ItemTree.FromFile(SettingsFilePath));
             fData.ItemChanged += fData_ItemChanged;
+            Load();
+            fData.DataBinding = fUserSettings;
 
             //Create manually view[1]
             fDataViewParams = new DataViewParams();
@@ -46,6 +52,32 @@ namespace NetSettings
             
         }
 
+        public  void Save()
+        {
+            string text = JsonConvert.SerializeObject(fUserSettings, new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented
+            });
+
+            File.WriteAllText(UserPAth, text);
+        }
+
+        void Load()
+        {
+            if (!File.Exists(UserPAth))
+            {
+                fUserSettings = fData.GenerateDefaultOptionsSet();
+                Save();
+
+            }
+            else
+            {
+                string text = File.ReadAllText(UserPAth);
+                fUserSettings = JsonConvert.DeserializeObject<Dictionary<string, object>>(text);
+            }
+
+        }
+
         
         void fData_ItemChanged(ItemChangedArgs changedArgs)
         {
@@ -57,7 +89,7 @@ namespace NetSettings
 
         void fSettingsForm_OnSave()
         {
-            int k = 0;
+            Save();
         }
 
        
