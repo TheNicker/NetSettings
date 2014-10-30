@@ -54,8 +54,20 @@ namespace NetSettings
         {
             if (aItem.type == "color")
             {
-                if (obj != null && obj is string)
-                    obj = System.Drawing.ColorTranslator.FromHtml(obj as string);
+
+                var lastCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+                System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+                try
+                {
+                    if (obj != null && obj is string)
+                        obj = System.Drawing.ColorTranslator.FromHtml(obj as string);
+                }
+                finally
+                {
+                    System.Threading.Thread.CurrentThread.CurrentCulture = lastCulture;
+                }
+
+                
 			//Make sure all the colors are created from (R,G,B) and not known names
                 System.Drawing.Color c = (System.Drawing.Color)(obj);
                 obj = System.Drawing.Color.FromArgb(c.R, c.G, c.B);
