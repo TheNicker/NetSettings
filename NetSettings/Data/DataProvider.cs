@@ -52,8 +52,11 @@ namespace NetSettings
             foreach(KeyValuePair<string,object> pair in fDataBinding )
             {
                 object obj = fDataBinding[pair.Key];
-                ItemHelpers.NormalizeItemData(fQualifiedNames[pair.Key], ref obj);
-                normalizedValues.Add(pair.Key, obj);
+                if (fQualifiedNames.ContainsKey(pair.Key))
+                {
+                    ItemHelpers.NormalizeItemData(fQualifiedNames[pair.Key], ref obj);
+                    normalizedValues.Add(pair.Key, obj);
+                }
             }
 
             foreach (KeyValuePair<string, object> pair in normalizedValues)
@@ -134,7 +137,9 @@ namespace NetSettings
 
         public T GetValue<T>(string key)
         {
-            object val = fDataBinding[key];
+            object val = null;
+            fDataBinding.TryGetValue(key, out val);
+            
             if (val == null)
                 val = GetDefaultValue(key);
 
