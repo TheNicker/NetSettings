@@ -83,7 +83,7 @@ namespace NetSettings
         private void CreateVisualItemTree()
         {
             fRootVisualItem = new VisualItem();
-            fRootVisualItem.IsVisible = true;
+            fRootVisualItem.IsFiltered = true;
             fRootVisualItem.Item = fParams.dataProvider.fRootTemplate;
             CreateVisualItemTree(fRootVisualItem);
         }
@@ -100,7 +100,7 @@ namespace NetSettings
                     VisualItem visualItem = new VisualItem();
                     rootVisualItem.subitems[i++] = visualItem;
                     visualItem.Item = subItem;
-                    visualItem.IsVisible = true;
+                    visualItem.IsFiltered = true;
                     CreateVisualItemTree(visualItem);
                 }
 
@@ -118,7 +118,7 @@ namespace NetSettings
         {
             VisualItem visualItem = aRoot;
             ItemTree item = aRoot.Item;
-            if (!visualItem.IsVisible)
+            if (!visualItem.IsFiltered)
                 return;
             Control control = fParams.container;
             Type type;
@@ -203,7 +203,7 @@ namespace NetSettings
                         (actualControl as ComboBox).Items.Add(v);
                     break;
                 case "menu":
-                    (label as Label).ForeColor = Color.Blue;
+                    (label as Label).ForeColor = Color.LawnGreen;
                     break;
             }
         }
@@ -258,7 +258,7 @@ namespace NetSettings
         {
             VisualItem item = GetItemFromControl(sender as Control);
             if (item != null)
-                item.Expanded = false;
+                item.Expanded = !item.Expanded;
 
             ReArrange();
         }
@@ -271,9 +271,9 @@ namespace NetSettings
             VisualItem visualItem = aRoot;
             ItemTree item = aRoot.Item;
             ReArrange(visualItem);
-            if (visualItem.subitems != null)
+            if (visualItem.subitems != null && (visualItem.Expanded == true  || (fParams.filter != null && fParams.filter.IsEmpty() == false)) )
                 foreach (VisualItem subItem in visualItem.subitems)
-                    ReArrangeRecurseivly(subItem);
+                        ReArrangeRecurseivly(subItem);
 
         }
 
@@ -282,16 +282,33 @@ namespace NetSettings
             fCurrentPanelPosition = new Point();
             fCurrentRow = 0;
             fParams.container.ResetPosition();
-            ApplyFilterRecursively(fRootVisualItem);
             fParams.container.StartUpdate();
+            
+            HideAllControls();
+            ApplyFilterRecursively(fRootVisualItem);
             ReArrangeRecurseivly(fRootVisualItem);
+
             fParams.container.EndUpdate();
+        }
+
+        private void HideAllControls()
+        {
+            HideAllControlsRecursively(fRootVisualItem);
+        }
+
+        private void HideAllControlsRecursively(VisualItem aRoot)
+        {
+            if (aRoot.controlsGroup != null)
+                aRoot.controlsGroup.Visible = false;
+
+            if (aRoot.subitems != null)
+            foreach (VisualItem subItem in aRoot.subitems)
+                HideAllControlsRecursively(subItem);
         }
 
         private void ReArrange(VisualItem aVisualItem)
         {
-
-            if (!aVisualItem.IsVisible || aVisualItem.Item.type == "root")
+            if (!aVisualItem.IsFiltered || aVisualItem.Item.type == "root")
             {
                 if (aVisualItem.controlsGroup != null)
                     aVisualItem.controlsGroup.Visible = false;
@@ -310,7 +327,7 @@ namespace NetSettings
 
             parent.Width = p.TitleMaxWidth + p.TitleSpacing + p.ControlMaxWidth + p.ControlSpacing + p.DefaultButtonWidth;
             parent.Height = p.LineSpacing;
-            aVisualItem.PanelBackgroundColor = isMenu ? Color.Orange : fCurrentRow % 2 == 0 ? Color.White : Color.LightGray;
+            aVisualItem.PanelBackgroundColor = isMenu ? Color.DarkBlue : fCurrentRow % 2 == 0 ? Color.White : Color.LightGray;
             parent.BackColor = aVisualItem.PanelBackgroundColor;
 
             fCurrentPanelPosition.X = p.HorizontalMArgin * fNesting;
@@ -355,32 +372,32 @@ namespace NetSettings
 
             if (fParams.filter == null || String.IsNullOrEmpty(fParams.filter.IncludeName) || String.IsNullOrWhiteSpace(fParams.filter.IncludeName))
             {
-                visualItem.IsVisible = true;
+                visualItem.IsFiltered = true;
             }
             else
             {
                 if (item.type == "menu" || item.type == "root")
                 {
-                    visualItem.IsVisible = true;
+                    visualItem.IsFiltered = true;
                 }
                 else
                     if (item.displayname != null)
                     {
-                        visualItem.IsVisible = item.displayname.ToLower().Contains(fParams.filter.IncludeName.ToLower());
+                        visualItem.IsFiltered = item.displayname.ToLower().Contains(fParams.filter.IncludeName.ToLower());
                     }
             }
 
             if (item.subitems != null)
             {
-                bool isVisible = false;
+                bool isFiltered = false;
                 foreach (VisualItem subItem in visualItem.subitems)
-                    isVisible |= ApplyFilterRecursively(subItem);
+                    isFiltered |= ApplyFilterRecursively(subItem);
 
                 //if at least one of the childs is visible then the parent is visible as well.
-                visualItem.IsVisible = isVisible;
+                visualItem.IsFiltered = isFiltered;
 
             }
-            return visualItem.IsVisible;
+            return visualItem.IsFiltered;
 
         }
 

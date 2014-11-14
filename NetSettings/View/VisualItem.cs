@@ -11,7 +11,7 @@ namespace NetSettings
     {
         public Color PanelBackgroundColor;
         public ItemTree Item;
-        public bool IsVisible;
+        public bool IsFiltered;
         
         public ItemControlsGroup controlsGroup;
         public bool Expanded = true;
