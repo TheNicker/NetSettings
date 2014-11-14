@@ -34,7 +34,7 @@ namespace NetSettings
             c.container = controlContainer1;
             c.descriptionContainer = controlContainer2;
             
-            c.placement.TitleMaxWidth = 180;
+            c.placement.TitleMaxWidth = 200;
             fMenuSettings.Create(c);
             this.MouseWheel += SettingsForm_MouseWheel;
             c.dataProvider.ItemChanged += root_ItemChanged;
