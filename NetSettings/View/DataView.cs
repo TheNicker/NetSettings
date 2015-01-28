@@ -489,7 +489,7 @@ namespace NetSettings
                         (aControl as TextBox).Text = (val != null ? (string)val : "");
                         break;
                     case "number":
-                        (aControl as TextBox).Text = (val != null ? ((double)val).ToString() : "");
+                        (aControl as TextBox).Text = (val != null ? ToDoubleString( ((double)val)) : "");
                         break;
                     case "combo":
                         (aControl as ComboBox).SelectedItem = val;
@@ -592,6 +592,11 @@ namespace NetSettings
             }
         }
 
+        private string ToDoubleString(double num)
+        {
+            return num.ToString("0.################");
+        }
+
         private object GetValue(string name)
         {
             return fParams.dataProvider.GetValueOrDefault(name);
@@ -628,7 +633,8 @@ namespace NetSettings
             {
                 // check if user is inserting the decimal point of a number while trying to define the fractional part of a number
                 // if yes don't update the number yet since the parsing from string to double will omit the decimal point.
-                string testString = num.ToString();
+                
+                string testString = ToDoubleString(num);
                 if (testString == textbox.Text)
                     SetValue(item, num, ItemChangedMode.OnTheFly);
             }
