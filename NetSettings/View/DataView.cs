@@ -50,6 +50,7 @@ namespace NetSettings
         }
         public void Create(DataViewParams aParams)
         {
+            VerifyParameters(aParams);
             fParams = aParams;
             fParams.dataProvider.AddView(this);
             CreateVisualItemTree();
@@ -78,13 +79,19 @@ namespace NetSettings
             ReCreateTree();
         }
 
+        private void VerifyParameters(DataViewParams aParams)
+        {
+            if (aParams.container == null || aParams.dataProvider == null)
+                throw new Exception("Mising parameters, can not build data view tree");
+        }
+
         #region Recreate Tree
 
         private void CreateVisualItemTree()
         {
             fRootVisualItem = new VisualItem();
             fRootVisualItem.IsFiltered = true;
-            fRootVisualItem.Item = fParams.dataProvider.fRootTemplate;
+            fRootVisualItem.Item = fParams.dataProvider.RootTemplate;
             CreateVisualItemTree(fRootVisualItem);
         }
 

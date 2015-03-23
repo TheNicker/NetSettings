@@ -10,11 +10,13 @@ namespace NetSettings
     {
         public delegate void ItemChangedDelegate(ItemChangedArgs changedArgs);
         public event ItemChangedDelegate ItemChanged = delegate { };
-        public ItemTree fRootTemplate;
-        public Dictionary<string, ItemTree> fQualifiedNames;
+        private ItemTree fRootTemplate;
+        private Dictionary<string, ItemTree> fQualifiedNames;
         private Dictionary<string, object> fDataBinding;
 
         private List<DataView> fBoundViews;
+
+        public ItemTree RootTemplate { get { return fRootTemplate; } }
 
         public Dictionary<string, object> DataBinding
         {
@@ -101,6 +103,18 @@ namespace NetSettings
                 UpdateViews(aArgs.sender);
             }
         }
+
+        public void SynthesizeAllChanged()
+        {
+            foreach (string key in fQualifiedNames.Keys.ToList())
+                ItemChanged(new ItemChangedArgs()
+                {
+                    ChangedMode = ItemChangedMode.Synthesized,
+                    Key = key,
+                    Val = GetValueOrDefault(key)
+                });
+        }
+
 
         private void UpdateViews(object exclude)
         {

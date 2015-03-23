@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NetSettings
 {
-    public enum ItemChangedMode { None, OnTheFly, UserConfirmed }
+    public enum ItemChangedMode { None, OnTheFly, UserConfirmed, Synthesized }
     public class ItemChangedArgs
     {
         public string Key { get; set; }
