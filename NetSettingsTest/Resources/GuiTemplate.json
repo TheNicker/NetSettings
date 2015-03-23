@@ -56,11 +56,20 @@
             "description": "Force displaying the application on the index of a specific monitor (empty for deafault)",
         },
         {
-          "type": "number",
-          "name": "ForceMonitor1",
-          "displayname": "Force working on specific monitor",
-          "description": "Force displaying the application on the index of a specific monitor (empty for deafault)",
-          "defaultvalue":  3
+            "type": "number",
+            "name": "ForceMonitor1",
+            "displayname": "Force working on specific monitor",
+            "description": "Force displaying the application on the index of a specific monitor (empty for deafault)",
+            "defaultvalue": 3
+
+
+        },
+        {
+          "type": "text",
+          "name": "TextBox",
+          "displayname": "text test",
+          "description": "",
+          "defaultvalue":  "3"
 
             
         },

@@ -238,6 +238,7 @@ namespace NetSettings
                     break;
                 case "number":
                     (t as TextBox).TextChanged += MenuSettings_NumberChanged;
+                    (t as TextBox).Leave += Number_Leave;
                     break;
                 case "combo":
                     (t as ComboBox).SelectedIndexChanged += c_SelectedIndexChanged;
@@ -495,7 +496,7 @@ namespace NetSettings
                         (aControl as TextBox).Text = (val != null ? (string)val : "");
                         break;
                     case "number":
-                        (aControl as TextBox).Text = (val != null ? ((double)val).ToString() : "");
+                        (aControl as TextBox).Text = (val != null ? ToDoubleString( ((double)val)) : "");
                         break;
                     case "combo":
                         (aControl as ComboBox).SelectedItem = val;
@@ -540,12 +541,43 @@ namespace NetSettings
             
         }
 
+        private object GetValueFromControl(VisualItem aVisualItem)
+        {
+            object result = null;
+            switch (aVisualItem.Item.type)
+            {
+                case "text":
+                    result = aVisualItem.controlsGroup.control.Text;
+                    break;
+                case "number":
+                    double value;
+                    if (double.TryParse(aVisualItem.controlsGroup.control.Text, out value))
+                        result = value;
+                    
+                    break;
+            }
+            return result;
+        }
+
+        private void Number_Leave(object sender, EventArgs e)
+        {
+            Leave(sender);
+        }
+
         void DataView_Leave(object sender, EventArgs e)
+        {
+            Leave(sender);
+        }
+
+        private void Leave(object sender)
         {
             TextBox textBox = sender as TextBox;
             VisualItem visualItem = GetItemFromControl(textBox);
-            SetValue(visualItem,textBox.Text,ItemChangedMode.UserConfirmed);
+            object value = GetValueFromControl(visualItem);
+            SetValue(visualItem, value, ItemChangedMode.UserConfirmed);
         }
+
+      
 
         private void SetValue(VisualItem aVisualItem, object aVal,ItemChangedMode aMode = ItemChangedMode.UserConfirmed)
         {
@@ -565,6 +597,11 @@ namespace NetSettings
                 // Get the data back from the DataProvider
                 RefreshControlValue(aVisualItem);
             }
+        }
+
+        private string ToDoubleString(double num)
+        {
+            return num.ToString("0.################");
         }
 
         private object GetValue(string name)
@@ -603,8 +640,10 @@ namespace NetSettings
             {
                 // check if user is inserting the decimal point of a number while trying to define the fractional part of a number
                 // if yes don't update the number yet since the parsing from string to double will omit the decimal point.
-                if (textbox.Text.IndexOf(".") != textbox.Text.Length - 1)
-                    SetValue(item, num,ItemChangedMode.OnTheFly);
+                
+                string testString = ToDoubleString(num);
+                if (testString == textbox.Text)
+                    SetValue(item, num, ItemChangedMode.OnTheFly);
             }
         }
 
