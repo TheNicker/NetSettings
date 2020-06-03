@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetSettingsCore", "NetSettings\NetSettingsCore.csproj", "{4E5FC3A6-3959-4A03-9EE0-C8C179A37277}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetSettingsTestCore", "NetSettingsTest\NetSettingsTestCore.csproj", "{FDA66F8D-AB54-4EC4-B158-2453F970B0EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4E5FC3A6-3959-4A03-9EE0-C8C179A37277}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E5FC3A6-3959-4A03-9EE0-C8C179A37277}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E5FC3A6-3959-4A03-9EE0-C8C179A37277}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E5FC3A6-3959-4A03-9EE0-C8C179A37277}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDA66F8D-AB54-4EC4-B158-2453F970B0EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA66F8D-AB54-4EC4-B158-2453F970B0EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA66F8D-AB54-4EC4-B158-2453F970B0EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA66F8D-AB54-4EC4-B158-2453F970B0EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1DBAC974-4A21-4685-9A38-9D0F4E03549D}
+	EndGlobalSection
+EndGlobal
