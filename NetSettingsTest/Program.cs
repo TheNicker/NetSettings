@@ -6,9 +6,6 @@ using System.Windows.Forms;
 
 namespace NetSettingsTest
 {
-
-   
-
     static class Program
     {
         /// <summary>
@@ -19,7 +16,7 @@ namespace NetSettingsTest
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new NetSettings.Form1());
+            Application.Run(new NetSettingsTest.Form1());
         }
     }
 }

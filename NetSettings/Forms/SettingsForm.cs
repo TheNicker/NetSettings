@@ -1,15 +1,15 @@
-﻿using NetSettings;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NetSettings.Data;
+using NetSettings.View;
 
-namespace NetSettings
+namespace NetSettings.Forms
 {
     public partial class SettingsForm : Form
     {
