@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using NetSettingsTest;
+using NetSettings.Data;
+using NetSettings.Forms;
+using NetSettings.View;
 using Newtonsoft.Json;
 
-namespace NetSettings
+namespace NetSettingsTest
 {
     public partial class Form1 : Form
     {
-        const string SettingsFilePath = @"Resources\GuiTemplate.json";
-        const string UserPAth = @".\settings";
-        Dictionary<string, object> fUserSettings;
-        DataView fView;
-        DataViewParams fDataViewParams;
-        DataProvider fData;
-        SettingsForm fSettingsForm;
-        
+        private const string SettingsFilePath = @"Resources\GuiTemplate.json";
+        private const string UserPath = @".\settings";
+        private Dictionary<string, object> fUserSettings;
+        private DataView fView;
+        private DataViewParams fDataViewParams;
+        private DataProvider fData;
+        private SettingsForm fSettingsForm;
+
         public Form1()
         {
             InitializeComponent();
@@ -34,37 +35,35 @@ namespace NetSettings
             fView = new DataView();
             fData = new DataProvider(ItemTree.FromFile(SettingsFilePath));
             fData.ItemChanged += fData_ItemChanged;
-            Load();
-            fData.DataBinding = fUserSettings;
 
             //Create manually view[1]
-            fDataViewParams = new DataViewParams();
-            fDataViewParams.container = userControl11;
-            fDataViewParams.descriptionContainer = controlContainer1;
-            fDataViewParams.dataProvider = fData;
+            fDataViewParams = new DataViewParams
+            {
+                container = userControl11,
+                descriptionContainer = controlContainer1,
+                dataProvider = fData
+            };
             fView.Create(fDataViewParams);
 
-            //Create view[2] with predefined 'SettingsForm' fro the same data provider
+            //Create view[2] with predefined 'SettingsForm' from the same data provider
             fSettingsForm = new SettingsForm(fData);
             fSettingsForm.OnSave += fSettingsForm_OnSave;
             fSettingsForm.Show();
-            
-            
         }
 
-        public  void Save()
+        private void Save()
         {
             string text = JsonConvert.SerializeObject(fUserSettings, new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented
             });
 
-            File.WriteAllText(UserPAth, text);
+            File.WriteAllText(UserPath, text);
         }
 
-        void Load()
+        private void LoadSettings()
         {
-            if (!File.Exists(UserPAth))
+            if (!File.Exists(UserPath))
             {
                 fUserSettings = fData.GenerateDefaultOptionsSet();
                 Save();
@@ -72,14 +71,14 @@ namespace NetSettings
             }
             else
             {
-                string text = File.ReadAllText(UserPAth);
+                string text = File.ReadAllText(UserPath);
                 fUserSettings = JsonConvert.DeserializeObject<Dictionary<string, object>>(text);
             }
 
         }
 
-        
-        void fData_ItemChanged(ItemChangedArgs changedArgs)
+
+        private void fData_ItemChanged(ItemChangedArgs changedArgs)
         {
             if (changedArgs.ChangedMode == ItemChangedMode.UserConfirmed)
             {
@@ -87,12 +86,12 @@ namespace NetSettings
             }
         }
 
-        void fSettingsForm_OnSave()
+        private void fSettingsForm_OnSave()
         {
             Save();
         }
 
-       
+
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -101,7 +100,13 @@ namespace NetSettings
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            fView.SetFilter(new Filter() { IncludeName = (sender as TextBox).Text});
+            fView.SetFilter(new Filter { IncludeName = (sender as TextBox).Text });
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            LoadSettings();
+            fData.DataBinding = fUserSettings;
         }
     }
 }

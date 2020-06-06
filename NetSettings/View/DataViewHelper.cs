@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace NetSettings.View
 {
     enum ColorRepresentanion { None, Hex, CommaSeperated}
-    public class DataViewHelper
+    internal class DataViewHelper
     {
 
         public static bool TryGetColor(string colorName,out Color color)
