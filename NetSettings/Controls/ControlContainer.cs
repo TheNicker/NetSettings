@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace NetSettings
+namespace NetSettings.Controls
 {
     public partial class ControlContainer : ScrollableControl
     {

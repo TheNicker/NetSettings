@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NetSettings
 {
-   public class ItemControlsGroup
+   internal class ItemControlsGroup
         {
             public LabelSingleClick label;
             public System.Windows.Forms.Control parentContainer;
