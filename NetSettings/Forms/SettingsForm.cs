@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using NetSettings.Data;
+﻿using NetSettings.Data;
 using NetSettings.View;
+using System;
+using System.Windows.Forms;
 
 namespace NetSettings.Forms
 {
     public partial class SettingsForm : Form
     {
-        DataView fMenuSettings;
-        DataProvider fData;
+        private readonly DataView fMenuSettings;
+        private readonly DataProvider fData;
 
         public delegate void OnSaveDelegate();
         public event OnSaveDelegate OnSave = delegate { };
-        
-        public SettingsForm(DataProvider aData) 
+
+        public SettingsForm(DataProvider aData)
         {
             InitializeComponent();
             this.MinimizeBox = false;
@@ -29,11 +23,11 @@ namespace NetSettings.Forms
             DoubleBuffered = true;
             fMenuSettings = new DataView();
             DataViewParams c = new DataViewParams();
-            c.dataProvider =  aData;
+            c.dataProvider = aData;
             controlContainer1.AutoScroll = true;
             c.container = controlContainer1;
             c.descriptionContainer = controlContainer2;
-            
+
             c.placement.TitleMaxWidth = 200;
             fMenuSettings.Create(c);
             this.MouseWheel += SettingsForm_MouseWheel;
@@ -66,7 +60,7 @@ namespace NetSettings.Forms
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            
+
             if (keyData == Keys.Escape || keyData == Keys.Enter)
             {
                 if (keyData == Keys.Escape)

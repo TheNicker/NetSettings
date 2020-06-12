@@ -1,54 +1,58 @@
 ﻿using NetSettings.Controls;
+using NetSettings.Data;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using NetSettings.Data;
+using NetSettings.Forms;
 
 namespace NetSettings.View
 {
     public class DataView
     {
-        const string labelFont = "calibri";
+        private const string labelFont = "calibri";
 
         private Dictionary<string, Type> fStringToType;
 
         //Controls arrangement
-        Point fCurrentPanelPosition;
-        int fNesting = 0;
-        int fCurrentRow;
+        private Point fCurrentPanelPosition;
+        private int fNesting = 0;
+        private int fCurrentRow;
 
-        ControlContainer fDescriptionPanel;
-        TextBox fDescriptionTextBox;
-        DataViewParams fParams;
+        private ControlContainer fDescriptionPanel;
+        private TextBox fDescriptionTextBox;
+        private DataViewParams fParams;
 
-        VisualItem fRootVisualItem;
+        private VisualItem fRootVisualItem;
 
-        PreviewForm fPreviewForm;
-        Point fLastCursorPosition;
+        private PreviewForm fPreviewForm;
+        private Point fLastCursorPosition;
 
-        Font fLabelNormal;
-        Font fLabelBold;
-        Font fMenuLabel;
+        private Font fLabelNormal;
+        private Font fLabelBold;
+        private Font fMenuLabel;
 
         public DataView()
         {
-            fStringToType = new Dictionary<string, Type>();
-            fStringToType.Add("text", typeof(TextBox));
-            fStringToType.Add("bool", typeof(CheckBox));
-            fStringToType.Add("menu", typeof(Label));
-            fStringToType.Add("combo", typeof(ComboBoxDoubleClick));
-            fStringToType.Add("image", typeof(TextBox));
-            fStringToType.Add("number", typeof(TextBox));
-            fStringToType.Add("color", typeof(ColorControl));
+            fStringToType = new Dictionary<string, Type>
+            {
+                {"text", typeof(TextBox)},
+                {"bool", typeof(CheckBox)},
+                {"menu", typeof(Label)},
+                {"combo", typeof(ComboBoxDoubleClick)},
+                {"image", typeof(TextBox)},
+                {"number", typeof(TextBox)},
+                {"color", typeof(ColorControl)}
+            };
             fLabelNormal = new Font(labelFont, 10, FontStyle.Regular);
             fLabelBold = new Font(labelFont, 10, FontStyle.Bold);
             fMenuLabel = new Font(labelFont, 12, FontStyle.Bold);
+            fPreviewForm = new PreviewForm();
         }
+
         public void Create(DataViewParams aParams)
         {
             VerifyParameters(aParams);
@@ -72,48 +76,47 @@ namespace NetSettings.View
                 fDescriptionPanel.EndUpdate();
             }
 
-            if (fPreviewForm == null)
-            {
-                fPreviewForm = new PreviewForm();
-                fPreviewForm.PreviewTimer.Tick += PreviewTimer_Tick;
-            }
             ReCreateTree();
         }
 
         private void VerifyParameters(DataViewParams aParams)
         {
             if (aParams.container == null || aParams.dataProvider == null)
-                throw new Exception("Mising parameters, can not build data view tree");
+                throw new Exception("Missing parameters, can not build data view tree");
         }
 
         #region Recreate Tree
 
         private void CreateVisualItemTree()
         {
-            fRootVisualItem = new VisualItem();
-            fRootVisualItem.IsFiltered = true;
-            fRootVisualItem.Item = fParams.dataProvider.RootTemplate;
+            fRootVisualItem = new VisualItem
+            {
+                IsFiltered = true,
+                Item = fParams.dataProvider.RootTemplate
+            };
             CreateVisualItemTree(fRootVisualItem);
         }
 
         private void CreateVisualItemTree(VisualItem rootVisualItem)
         {
             ItemTree item = rootVisualItem.Item;
-            if (item.subitems != null)
+            if (item.subItems != null)
             {
-                rootVisualItem.subitems = new VisualItem[item.subitems.Count()];
-                int i = 0;
-                foreach (ItemTree subItem in item.subitems)
+                rootVisualItem.subItems = new VisualItem[item.subItems.Length];
+                int i = 0;//TODO: Can we remove this?
+                foreach (var subItem in item.subItems)
                 {
-                    VisualItem visualItem = new VisualItem();
-                    rootVisualItem.subitems[i++] = visualItem;
-                    visualItem.Item = subItem;
-                    visualItem.IsFiltered = true;
+                    var visualItem = new VisualItem
+                    {
+                        Item = subItem,
+                        IsFiltered = true
+                    };
+                    rootVisualItem.subItems[i++] = visualItem;
                     CreateVisualItemTree(visualItem);
                 }
-
             }
         }
+
         public void ReCreateTree()
         {
             fParams.container.StartUpdate();
@@ -122,6 +125,7 @@ namespace NetSettings.View
             ReArrange();
             fParams.container.EndUpdate();
         }
+
         private void AddControlRecursivly(VisualItem aRoot)
         {
             VisualItem visualItem = aRoot;
@@ -134,8 +138,8 @@ namespace NetSettings.View
                 AddControl(aRoot, type);
 
             //Add children
-            if (visualItem.subitems != null)
-                foreach (VisualItem subItem in visualItem.subitems)
+            if (visualItem.subItems != null)
+                foreach (VisualItem subItem in visualItem.subItems)
                     AddControlRecursivly(subItem);
         }
 
@@ -156,7 +160,7 @@ namespace NetSettings.View
 
             LabelSingleClick label = group.label = new LabelSingleClick(!isBool);
             label.Font = GetLabelFont(aVisualItem);
-            label.Text = aItem.displayname;
+            label.Text = aItem.displayName;
             label.Tag = aVisualItem;
             parent.Controls.Add(label);
 
@@ -221,6 +225,7 @@ namespace NetSettings.View
             ItemTree aItem = aVisualItem.Item;
             switch (aItem.type)
             {
+			//TODO: Remove all the casting in this switch
                 case "menu":
                     (l as Control).DoubleClick += Menu_DoubleClick;
                     break;
@@ -240,13 +245,12 @@ namespace NetSettings.View
                 case "combo":
                     (t as ComboBox).SelectedIndexChanged += c_SelectedIndexChanged;
                     (t as ComboBox).MouseDoubleClick += Combo_MouseDoubleClick;
-
                     break;
                 case "image":
-                    (t as TextBox).TextChanged += MenuSettings_TextChanged;
-                    (t as TextBox).MouseDoubleClick += MenuSettings_MouseDoubleClick;
-                    (t as TextBox).MouseLeave += MenuSettings_MouseLeave;
-                    (t as TextBox).MouseHover += MenuSettings_MouseHover;
+                    t.TextChanged += MenuSettings_TextChanged;
+                    t.MouseDoubleClick += MenuSettings_MouseDoubleClick;
+                    t.MouseLeave += MenuSettings_MouseLeave;
+                    t.MouseEnter += MenuSettings_MouseEnter;
                     break;
                 case "color":
                     (t as ColorControl).KeyDown += ColorControl_KeyDown;
@@ -276,8 +280,8 @@ namespace NetSettings.View
             VisualItem visualItem = aRoot;
             ItemTree item = aRoot.Item;
             ReArrange(visualItem);
-            if (visualItem.subitems != null && (visualItem.Expanded == true || (fParams.filter != null && fParams.filter.IsEmpty() == false)))
-                foreach (VisualItem subItem in visualItem.subitems)
+            if (visualItem.subItems != null && (visualItem.Expanded == true || (fParams.filter != null && fParams.filter.IsEmpty() == false)))
+                foreach (VisualItem subItem in visualItem.subItems)
                     ReArrangeRecurseivly(subItem);
 
         }
@@ -306,8 +310,8 @@ namespace NetSettings.View
             if (aRoot.controlsGroup != null)
                 aRoot.controlsGroup.Visible = false;
 
-            if (aRoot.subitems != null)
-                foreach (VisualItem subItem in aRoot.subitems)
+            if (aRoot.subItems != null)
+                foreach (VisualItem subItem in aRoot.subItems)
                     HideAllControlsRecursively(subItem);
         }
 
@@ -319,7 +323,6 @@ namespace NetSettings.View
                     aVisualItem.controlsGroup.Visible = false;
                 return;
             }
-
 
             aVisualItem.controlsGroup.Visible = true;
 
@@ -335,7 +338,7 @@ namespace NetSettings.View
             aVisualItem.PanelBackgroundColor = isMenu ? Color.DarkBlue : fCurrentRow % 2 == 0 ? Color.White : Color.LightGray;
             parent.BackColor = aVisualItem.PanelBackgroundColor;
 
-            fCurrentPanelPosition.X = p.HorizontalMArgin * fNesting;
+            fCurrentPanelPosition.X = p.HorizontalMargin * fNesting;
             parent.Location = fCurrentPanelPosition;
             fCurrentPanelPosition.Y += p.LineSpacing;
             Point controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
@@ -368,8 +371,6 @@ namespace NetSettings.View
                 ReArrange();
         }
 
-
-
         private bool ApplyFilterRecursively(VisualItem root)
         {
             VisualItem visualItem = root;
@@ -386,16 +387,16 @@ namespace NetSettings.View
                     visualItem.IsFiltered = true;
                 }
                 else
-                    if (item.displayname != null)
+                    if (item.displayName != null)
                 {
-                    visualItem.IsFiltered = item.displayname.ToLower().Contains(fParams.filter.IncludeName.ToLower());
+                    visualItem.IsFiltered = item.displayName.ToLower().Contains(fParams.filter.IncludeName.ToLower());
                 }
             }
 
-            if (item.subitems != null)
+            if (item.subItems != null)
             {
                 bool isFiltered = false;
-                foreach (VisualItem subItem in visualItem.subitems)
+                foreach (VisualItem subItem in visualItem.subItems)
                     isFiltered |= ApplyFilterRecursively(subItem);
 
                 //if at least one of the childs is visible then the parent is visible as well.
@@ -403,7 +404,6 @@ namespace NetSettings.View
 
             }
             return visualItem.IsFiltered;
-
         }
 
         private void CheckLabelColor(VisualItem aVisualItem)
@@ -419,7 +419,7 @@ namespace NetSettings.View
 
             ItemTree item = aVisualItem.Item;
             object val = GetValue(aVisualItem.Item);
-            return item.defaultvalue != null && val != null && !item.defaultvalue.Equals(val)
+            return item.defaultValue != null && val != null && !item.defaultValue.Equals(val)
                 ? fLabelBold : fLabelNormal;
         }
 
@@ -428,7 +428,7 @@ namespace NetSettings.View
             Control c = sender as Control;
             VisualItem item = GetItemFromControl(c);
             if (item != null)
-                SetValue(item, item.Item.defaultvalue);
+                SetValue(item, item.Item.defaultValue);
         }
 
         void l_MouseEnter(object sender, EventArgs e)
@@ -463,10 +463,9 @@ namespace NetSettings.View
         private void RefreshControlValueRecursivly(VisualItem aRoot)
         {
             RefreshControlValue(aRoot);
-            if (aRoot.subitems != null)
-                foreach (VisualItem subItem in aRoot.subitems)
+            if (aRoot.subItems != null)
+                foreach (VisualItem subItem in aRoot.subItems)
                     RefreshControlValueRecursivly(subItem);
-
         }
 
         private void RefreshControlValue(VisualItem aVisualItem)
@@ -634,20 +633,25 @@ namespace NetSettings.View
             }
         }
 
-        void MenuSettings_MouseHover(object sender, EventArgs e)
+        private void MenuSettings_MouseEnter(object sender, EventArgs e)
         {
-            fPreviewForm.ImageName = (sender as TextBox).Text;
+            var textBox = (TextBox)sender;
+            if (!string.IsNullOrEmpty(textBox.Text))
+            {
+                Task.Delay(500).ContinueWith(_ =>
+                  {
+                      textBox.Invoke((MethodInvoker)delegate
+                   {
+                       fPreviewForm.Show();
+                       fPreviewForm.ImageName = textBox.Text;
+                   });
+                  });
+            }
         }
 
-        void MenuSettings_MouseLeave(object sender, EventArgs e)
+        private void MenuSettings_MouseLeave(object sender, EventArgs e)
         {
-            if (Cursor.Position != fLastCursorPosition && fPreviewForm != null)
-                fPreviewForm.Hide();
-        }
-
-        void PreviewTimer_Tick(object sender, EventArgs e)
-        {
-            fLastCursorPosition = Cursor.Position;
+                    fPreviewForm.Hide(); 
         }
 
         public static string ChooseFile(bool aOpen, string aFilter, string aPath)
@@ -664,10 +668,9 @@ namespace NetSettings.View
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 strResult = dialog.FileName;
-                string directory = System.IO.Path.GetDirectoryName(strResult);
+                string directory = System.IO.Path.GetDirectoryName(strResult);//TODO: Remove or what???
             }
             return strResult;
-
         }
 
         void MenuSettings_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -680,6 +683,7 @@ namespace NetSettings.View
                 SetValue(item, t.Text = imageName);
             }
         }
+
         void c_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = sender as ComboBox;
@@ -689,8 +693,8 @@ namespace NetSettings.View
 
         void MenuSettings_TextChanged(object sender, EventArgs e)
         {
-            TextBox textbox = sender as TextBox;
-            VisualItem item = GetItemFromControl(textbox);
+            var textbox = sender as TextBox;
+            var item = GetItemFromControl(textbox);
             SetValue(item, textbox.Text, ItemChangedMode.OnTheFly);
 
         }
@@ -705,5 +709,4 @@ namespace NetSettings.View
             RefreshControlValueRecursivly(fRootVisualItem);
         }
     }
-
 }

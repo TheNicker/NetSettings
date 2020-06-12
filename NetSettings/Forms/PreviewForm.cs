@@ -3,116 +3,104 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Forms;
 
-namespace NetSettings
+namespace NetSettings.Forms
 {
-    class PreviewForm
+    internal partial class PreviewForm : Form
     {
-        Form fPreviewForm;
-        string fImageName;
-        Timer fPreviewImageTimer;
-        
+        private string fImageName;
 
-        public string ImageName 
+        public string ImageName
         {
-            get
-            { return fImageName; }
+            get => fImageName;
             set
             {
                 if (value != null)
                 {
-                    if (value != fImageName || !fPreviewForm.Visible)
+                    if (value != fImageName || !this.Visible)
                     {
-                        fPreviewImageTimer.Enabled = true;
+                        //PreviewTimer.Enabled = true;
                         fImageName = value;
+                        Image img;
+                        try
+                        {
+                            img = Image.FromFile(fImageName);
+                        }
+                        catch
+                        {
+                            throw new NotImplementedException("Implement: Add an image or text that says \"Preview not available\"");
+                        }
+                        //(this.Controls[0] as PictureBox).Image = img;
+                        this.pbPreviewImage.Image = img;
                     }
                 }
             }
-        
         }
-
-        public Timer PreviewTimer { get { return fPreviewImageTimer; } }
 
         public PreviewForm()
         {
-            fPreviewImageTimer = new Timer();
-            fPreviewImageTimer.Tick += fPreviewImageTimer_Tick;
-            fPreviewImageTimer.Interval = 500;
+            InitializeComponent();
         }
 
-        public void Show()
-        {
-            VerifiyForm();
-            ShowImage();
-        }
-
+        //TODO: Delete this method
         private void ShowImage()
         {
             if (System.IO.File.Exists(fImageName))
             {
-                Image img ;
+                Image img;
                 try
                 {
                     img = Image.FromFile(fImageName);
                 }
                 catch
                 {
-                    return;
+                    throw new NotImplementedException("Implement: Add an image or text that says \"Preview not available\"");
                 }
-                (fPreviewForm.Controls[0] as PictureBox).Image = img;
+                this.pbPreviewImage.Image = img;
 
-                const int MaxWidth = 400;
-                const int MaxHeight = 400;
+                const int maxWidth = 400;
+                const int maxHeight = 400;
 
-                float h = (float)MaxHeight / img.Height;
-                float v = (float)MaxWidth / img.Width;
-                float ratio = Math.Min(h, v);
-                SizeF size = new SizeF(img.Width * ratio, img.Height * ratio);
-                fPreviewForm.Width = (int)size.Width;
-                fPreviewForm.Height = (int)size.Height;
-                fPreviewForm.TopMost = true;
-                fPreviewForm.Show();
-            }
-            
-        }
-
-        private void VerifiyForm()
-        {
-            if (fPreviewForm == null)
-            {
-
-               
-
-                fPreviewForm = new Form();
-                PictureBox p = new PictureBox();
-                p.SizeMode = PictureBoxSizeMode.StretchImage;
-                p.Dock = DockStyle.Fill;
-                fPreviewForm.Controls.Add(p);
-                p.MouseLeave += p_MouseLeave;
-
-                fPreviewForm.Width = 800;
-                fPreviewForm.Height = 600;
-                fPreviewForm.FormBorderStyle = FormBorderStyle.None;
+                var h = (float)maxHeight / img.Height;
+                var v = (float)maxWidth / img.Width;
+                var ratio = Math.Min(h, v);
+                var size = new SizeF(img.Width * ratio, img.Height * ratio);
+                this.Width = (int)size.Width;
+                this.Height = (int)size.Height;
+                this.TopMost = true;
+                this.Show();
             }
         }
 
-        void p_MouseLeave(object sender, EventArgs e)
+        private void p_MouseLeave(object sender, EventArgs e)
         {
-            Hide();
+            //HideImage();
         }
 
-        void fPreviewImageTimer_Tick(object sender, EventArgs e)
+        private void pbPreviewImage_LoadCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            Show();
+            const int maxWidth = 400;
+            const int maxHeight = 400;
+            //TODO: Open ratio calcs
+            //var h = (float)maxHeight / img.Height;
+            //var v = (float)maxWidth / img.Width;
+            //var ratio = Math.Min(h, v);
+            //var size = new SizeF(img.Width * ratio, img.Height * ratio);
+            //this.Width = (int)size.Width;
+            //this.Height = (int)size.Height;
+            this.TopMost = true;
+            //this.Show();
         }
 
-        public void Hide()
+        private void PreviewForm_Load(object sender, EventArgs e)
         {
-            VerifiyForm();
-            fPreviewImageTimer.Enabled = false;
-            fPreviewForm.Hide();
+            this.Width = 800;
+            this.Height = 600;
+            this.FormBorderStyle = FormBorderStyle.None;
         }
     }
 }

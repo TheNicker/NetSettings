@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace NetSettings
@@ -12,7 +8,7 @@ namespace NetSettings
     {
         public ColorControl()
         {
-            this.Font = new Font("Arial", 9,FontStyle.Bold);
+            this.Font = new Font("Arial", 9, FontStyle.Bold);
             //this.BorderStyle = System.Windows.Forms.BorderStyle.None;
         }
 
@@ -26,9 +22,9 @@ namespace NetSettings
             {
                 if (!Updating)
                 {
-                BackColor = value;
-           
-                double brightness = Math.Sqrt(.241 * BackColor.R * BackColor.R + .691 * BackColor.G * BackColor.G + .068 * BackColor.B * BackColor.B);
+                    BackColor = value;
+
+                    double brightness = Math.Sqrt(.241 * BackColor.R * BackColor.R + .691 * BackColor.G * BackColor.G + .068 * BackColor.B * BackColor.B);
                     ForeColor = brightness < 130 ? ForeColor = Color.White : ForeColor = Color.Black;
 
                     RefreshName();
@@ -54,7 +50,7 @@ namespace NetSettings
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            Rectangle t = ClientRectangle ;
+            Rectangle t = ClientRectangle;
             t.Width -= 1;
             t.Height -= 1;
             e.Graphics.DrawRectangle(Pens.Black, t);
@@ -78,7 +74,7 @@ namespace NetSettings
             }
             else
                 DisableAutoColorName = true;
-            
+
             return base.ProcessCmdKey(ref msg, keyData);
         }
     }

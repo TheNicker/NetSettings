@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NetSettings.Data
+﻿namespace NetSettings.Data
 {
     public enum ItemChangedMode { None, OnTheFly, UserConfirmed, Synthesized }
     public class ItemChangedArgs

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NetSettings.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NetSettings.Data;
 
-namespace NetSettings
+namespace NetSettings.View
 {
     internal class VisualItem
     {
@@ -15,6 +10,6 @@ namespace NetSettings
         public bool IsFiltered;
         public ItemControlsGroup controlsGroup;
         public bool Expanded = true;
-        public VisualItem[] subitems;
+        public VisualItem[] subItems;
     }
 }

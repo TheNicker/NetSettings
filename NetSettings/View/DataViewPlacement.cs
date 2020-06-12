@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NetSettings
+﻿namespace NetSettings
 {
     internal class DataViewPlacement
     {
@@ -15,6 +9,6 @@ namespace NetSettings
         public int ControlSpacing = 20;
         public int LineHeight = 20;
         public int DefaultButtonWidth = 50;
-        public int HorizontalMArgin = 20;
+        public int HorizontalMargin = 20;
     }
 }
