@@ -7,13 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NetSettings.Data;
 
-namespace NetSettings
+namespace NetSettings.View
 {
     public class DataView
     {
         const string labelFont = "calibri";
-        
+
         private Dictionary<string, Type> fStringToType;
 
         //Controls arrangement
@@ -157,10 +158,6 @@ namespace NetSettings
             label.Font = GetLabelFont(aVisualItem);
             label.Text = aItem.displayname;
             label.Tag = aVisualItem;
-
-            
-                
-
             parent.Controls.Add(label);
 
             //Add the  control itself
@@ -279,9 +276,9 @@ namespace NetSettings
             VisualItem visualItem = aRoot;
             ItemTree item = aRoot.Item;
             ReArrange(visualItem);
-            if (visualItem.subitems != null && (visualItem.Expanded == true  || (fParams.filter != null && fParams.filter.IsEmpty() == false)) )
+            if (visualItem.subitems != null && (visualItem.Expanded == true || (fParams.filter != null && fParams.filter.IsEmpty() == false)))
                 foreach (VisualItem subItem in visualItem.subitems)
-                        ReArrangeRecurseivly(subItem);
+                    ReArrangeRecurseivly(subItem);
 
         }
 
@@ -291,7 +288,7 @@ namespace NetSettings
             fCurrentRow = 0;
             fParams.container.ResetPosition();
             fParams.container.StartUpdate();
-            
+
             HideAllControls();
             ApplyFilterRecursively(fRootVisualItem);
             ReArrangeRecurseivly(fRootVisualItem);
@@ -310,8 +307,8 @@ namespace NetSettings
                 aRoot.controlsGroup.Visible = false;
 
             if (aRoot.subitems != null)
-            foreach (VisualItem subItem in aRoot.subitems)
-                HideAllControlsRecursively(subItem);
+                foreach (VisualItem subItem in aRoot.subitems)
+                    HideAllControlsRecursively(subItem);
         }
 
         private void ReArrange(VisualItem aVisualItem)
@@ -390,9 +387,9 @@ namespace NetSettings
                 }
                 else
                     if (item.displayname != null)
-                    {
-                        visualItem.IsFiltered = item.displayname.ToLower().Contains(fParams.filter.IncludeName.ToLower());
-                    }
+                {
+                    visualItem.IsFiltered = item.displayname.ToLower().Contains(fParams.filter.IncludeName.ToLower());
+                }
             }
 
             if (item.subitems != null)
@@ -414,8 +411,7 @@ namespace NetSettings
             aVisualItem.controlsGroup.label.Font = GetLabelFont(aVisualItem);
         }
         #endregion
-        
-        
+
         private Font GetLabelFont(VisualItem aVisualItem)
         {
             if (aVisualItem.Item.type == "menu")
@@ -423,7 +419,7 @@ namespace NetSettings
 
             ItemTree item = aVisualItem.Item;
             object val = GetValue(aVisualItem.Item);
-            return item.defaultvalue != null && val != null  && !item.defaultvalue.Equals(val)
+            return item.defaultvalue != null && val != null && !item.defaultvalue.Equals(val)
                 ? fLabelBold : fLabelNormal;
         }
 
@@ -440,7 +436,6 @@ namespace NetSettings
             VisualItem item = (sender as Control).Tag as VisualItem;
             if (item != null)
             {
-                
                 if (item.Item.description != null && fDescriptionTextBox != null)
                     fDescriptionTextBox.Text = item.Item.description;
 
@@ -453,7 +448,6 @@ namespace NetSettings
 
         void panel_MouseLeave(object sender, EventArgs e)
         {
-            
             VisualItem item = (sender as Control).Tag as VisualItem;
             if (item != null)
             {
@@ -464,7 +458,6 @@ namespace NetSettings
 
                 }
             }
-         
         }
 
         private void RefreshControlValueRecursivly(VisualItem aRoot)
@@ -496,7 +489,7 @@ namespace NetSettings
                         (aControl as TextBox).Text = (val != null ? (string)val : "");
                         break;
                     case "number":
-                        (aControl as TextBox).Text = (val != null ? ToDoubleString( ((double)val)) : "");
+                        (aControl as TextBox).Text = (val != null ? ToDoubleString(((double)val)) : "");
                         break;
                     case "combo":
                         (aControl as ComboBox).SelectedItem = val;
@@ -518,14 +511,13 @@ namespace NetSettings
         {
             ColorControl colorControl = sender as ColorControl;
             RefreshControlValue((colorControl.Tag as VisualItem));
-            
         }
 
         private void ColorControl_TextChanged(object sender, EventArgs e)
         {
             ColorControl colorControl = sender as ColorControl;
             Color c;
-            if (NetSettings.View.DataViewHelper.TryGetColor(colorControl.Text,out c))
+            if (NetSettings.View.DataViewHelper.TryGetColor(colorControl.Text, out c))
                 SetValue((sender as Control).Tag as VisualItem, c, ItemChangedMode.OnTheFly);
         }
 
@@ -538,7 +530,6 @@ namespace NetSettings
                 checkBox.Checked = !checkBox.Checked;
 
             SetValue(item, checkBox.Checked);
-            
         }
 
         private object GetValueFromControl(VisualItem aVisualItem)
@@ -553,7 +544,6 @@ namespace NetSettings
                     double value;
                     if (double.TryParse(aVisualItem.controlsGroup.control.Text, out value))
                         result = value;
-                    
                     break;
             }
             return result;
@@ -577,9 +567,7 @@ namespace NetSettings
             SetValue(visualItem, value, ItemChangedMode.UserConfirmed);
         }
 
-      
-
-        private void SetValue(VisualItem aVisualItem, object aVal,ItemChangedMode aMode = ItemChangedMode.UserConfirmed)
+        private void SetValue(VisualItem aVisualItem, object aVal, ItemChangedMode aMode = ItemChangedMode.UserConfirmed)
         {
 
             if (aVisualItem != null)
@@ -627,7 +615,7 @@ namespace NetSettings
             ColorDialog dialog;
             VisualItem item = GetItemFromControl(p);
             ColorControl colorControl = item.controlsGroup.control as ColorControl;
-            if ((dialog = new ColorDialog(){FullOpen = true,Color = (Color)GetValue(item.Item.FullName)}).ShowDialog() == DialogResult.OK)
+            if ((dialog = new ColorDialog() { FullOpen = true, Color = (Color)GetValue(item.Item.FullName) }).ShowDialog() == DialogResult.OK)
                 SetValue(item, dialog.Color);
         }
 
@@ -640,7 +628,6 @@ namespace NetSettings
             {
                 // check if user is inserting the decimal point of a number while trying to define the fractional part of a number
                 // if yes don't update the number yet since the parsing from string to double will omit the decimal point.
-                
                 string testString = ToDoubleString(num);
                 if (testString == textbox.Text)
                     SetValue(item, num, ItemChangedMode.OnTheFly);
@@ -654,16 +641,15 @@ namespace NetSettings
 
         void MenuSettings_MouseLeave(object sender, EventArgs e)
         {
-            if (Cursor.Position != fLastCursorPosition &&  fPreviewForm != null)
+            if (Cursor.Position != fLastCursorPosition && fPreviewForm != null)
                 fPreviewForm.Hide();
-                
         }
 
         void PreviewTimer_Tick(object sender, EventArgs e)
         {
             fLastCursorPosition = Cursor.Position;
         }
-        
+
         public static string ChooseFile(bool aOpen, string aFilter, string aPath)
         {
             string strResult = null;
@@ -698,16 +684,15 @@ namespace NetSettings
         {
             ComboBox comboBox = sender as ComboBox;
             VisualItem item = GetItemFromControl(comboBox);
-            SetValue(item,comboBox.SelectedItem);
-            
+            SetValue(item, comboBox.SelectedItem);
         }
 
         void MenuSettings_TextChanged(object sender, EventArgs e)
         {
             TextBox textbox = sender as TextBox;
             VisualItem item = GetItemFromControl(textbox);
-            SetValue(item,textbox.Text,ItemChangedMode.OnTheFly);
-            
+            SetValue(item, textbox.Text, ItemChangedMode.OnTheFly);
+
         }
 
         VisualItem GetItemFromControl(Control aControl)

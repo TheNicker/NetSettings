@@ -1,4 +1,4 @@
-﻿namespace NetSettings
+﻿namespace NetSettingsTest
 {
     partial class Form1
     {
@@ -33,8 +33,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.userControl11 = new NetSettings.ControlContainer();
-            this.controlContainer1 = new NetSettings.ControlContainer();
+            this.userControl11 = new NetSettings.Controls.ControlContainer();
+            this.controlContainer1 = new NetSettings.Controls.ControlContainer();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -155,7 +155,7 @@
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
-        private NetSettings.ControlContainer userControl11;
-        private ControlContainer controlContainer1;
+        private NetSettings.Controls.ControlContainer userControl11;
+        private NetSettings.Controls.ControlContainer controlContainer1;
     }
 }

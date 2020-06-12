@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NetSettings.Data;
 
 namespace NetSettings
 {
-    public class ItemHelpers
+    internal class ItemHelpers
     {
         public static void BuildQualifiedNames(Dictionary<string, ItemTree> aQualifiedNames, ItemTree item, ItemTree parent)
         {

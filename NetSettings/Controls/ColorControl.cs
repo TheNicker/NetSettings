@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace NetSettings
 {
-    public class ColorControl : TextBox
+    internal class ColorControl : TextBox
     {
         public ColorControl()
         {

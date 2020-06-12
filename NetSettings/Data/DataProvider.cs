@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NetSettings.View;
 
-namespace NetSettings
+namespace NetSettings.Data
 {
     public class DataProvider
     {
         public delegate void ItemChangedDelegate(ItemChangedArgs changedArgs);
-        public event ItemChangedDelegate ItemChanged = delegate { };
-        private ItemTree fRootTemplate;
+        public event ItemChangedDelegate ItemChanged;// = delegate { };
+        private readonly ItemTree fRootTemplate;
         private Dictionary<string, ItemTree> fQualifiedNames;
         private Dictionary<string, object> fDataBinding;
 
         private List<DataView> fBoundViews;
 
-        public ItemTree RootTemplate { get { return fRootTemplate; } }
+        internal ItemTree RootTemplate { get { return fRootTemplate; } }
 
         public Dictionary<string, object> DataBinding
         {
@@ -24,7 +25,7 @@ namespace NetSettings
             {
                 return fDataBinding;
             }
-            set 
+            set
             {
                 fDataBinding = value;
                 NormalizeData();
@@ -33,7 +34,7 @@ namespace NetSettings
 
         public void AddView(DataView aDataView)
         {
-             DataView dataview =  fBoundViews.FirstOrDefault( x=> x == aDataView);
+            DataView dataview = fBoundViews.FirstOrDefault(x => x == aDataView);
             if (dataview == default(DataView))
             {
                 fBoundViews.Add(aDataView);
@@ -44,14 +45,12 @@ namespace NetSettings
         {
             if (aDataView != null)
                 fBoundViews.Remove(aDataView);
-            
         }
-
 
         private void NormalizeData()
         {
             Dictionary<string, object> normalizedValues = new Dictionary<string, object>();
-            foreach(KeyValuePair<string,object> pair in fDataBinding )
+            foreach (KeyValuePair<string, object> pair in fDataBinding)
             {
                 object obj = fDataBinding[pair.Key];
                 if (fQualifiedNames.ContainsKey(pair.Key))
@@ -65,8 +64,8 @@ namespace NetSettings
                 fDataBinding[pair.Key] = normalizedValues[pair.Key];
         }
 
-        
-        
+
+
         public DataProvider(ItemTree aRoot)
         {
             fRootTemplate = aRoot;
@@ -121,13 +120,13 @@ namespace NetSettings
             foreach (DataView view in fBoundViews)
                 if (view != exclude)
                     view.RefreshViewFromData();
-            
+
         }
 
         private object GetDefaultValue(string key)
         {
             ItemTree itemTree;
-            if (fQualifiedNames.TryGetValue(key, out itemTree)) 
+            if (fQualifiedNames.TryGetValue(key, out itemTree))
             {
                 return itemTree.defaultvalue;
             }
@@ -153,7 +152,7 @@ namespace NetSettings
         {
             object val = null;
             fDataBinding.TryGetValue(key, out val);
-            
+
             if (val == null)
                 val = GetDefaultValue(key);
 
@@ -162,7 +161,7 @@ namespace NetSettings
                 return (T)val;
             else
                 throw new Exception("Bad type or Default value is not set");
-            
+
         }
 
 

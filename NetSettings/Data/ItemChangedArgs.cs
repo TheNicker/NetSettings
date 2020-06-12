@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetSettings
+namespace NetSettings.Data
 {
     public enum ItemChangedMode { None, OnTheFly, UserConfirmed, Synthesized }
     public class ItemChangedArgs
