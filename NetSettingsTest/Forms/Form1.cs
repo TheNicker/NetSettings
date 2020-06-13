@@ -1,11 +1,13 @@
 ﻿using NetSettings.Data;
-using NetSettings.Forms;
 using NetSettings.View;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using NetSettings.Forms;
+using NetSettingsCore.Common;
+using TextBox = System.Windows.Forms.TextBox;
 
 namespace NetSettingsTest
 {
@@ -27,12 +29,14 @@ namespace NetSettingsTest
             //Create manually view[1]
             fDataViewParams = new DataViewParams
             {
+                guiProvider = new WinFormGuiProvider(),
+                dataProvider = fData,
                 container = userControl11,
-                descriptionContainer = controlContainer1,
-                dataProvider = fData
+                descriptionContainer = controlContainer1
             };
-			
-			//Create view[2] with predefined 'SettingsForm' from the same data provider
+
+            //Create view[2] with predefined 'SettingsForm' from the same data provider
+            //fSettingsForm = new SettingsForm((DataProvider)fData, new DataViewParams(), new DataView());
             fSettingsForm = new SettingsForm(fData);
         }
 
@@ -42,7 +46,7 @@ namespace NetSettingsTest
             LoadSettings();
             fData.DataBinding = fUserSettings;
 
-            fView.Create(fDataViewParams);
+            fView.Create(fDataViewParams);//TODO: Compare the init process of this form with the SettingsForm
 
             fSettingsForm.OnSave += fSettingsForm_OnSave;
             fSettingsForm.Show();
@@ -72,7 +76,7 @@ namespace NetSettingsTest
             }
         }
 
-		//TODO: Delete this event
+        //TODO: Delete this event
         private void fData_ItemChanged(ItemChangedArgs changedArgs)
         {
             if (changedArgs.ChangedMode == ItemChangedMode.UserConfirmed)

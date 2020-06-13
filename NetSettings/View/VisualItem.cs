@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace NetSettings.View
 {
-    internal class VisualItem
+    public class VisualItem
     {
         public Color PanelBackgroundColor;
         public ItemTree Item;

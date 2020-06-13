@@ -2,7 +2,7 @@
 
 namespace NetSettings.Controls
 {
-    internal class LabelSingleClick : Label
+    public class LabelSingleClick : Label //TODO: Can this be changed to internal?
     {
         public LabelSingleClick(bool aAllowDoubleClick)
         {

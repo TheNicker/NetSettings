@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace NetSettings
+namespace NetSettings.WinForms.Controls
 {
-    class ComboBoxDoubleClick : ComboBox
+    public class ComboBoxDoubleClick : ComboBox
     {
         DateTime prevClick = DateTime.MinValue;
 

@@ -2,20 +2,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NetSettingsCore.Common;
 
 namespace NetSettings.Data
 {
-    public class DataProvider
+    public class DataProvider //: IDataProvider
     {
         public delegate void ItemChangedDelegate(ItemChangedArgs changedArgs);
         public event ItemChangedDelegate ItemChanged;// = delegate { };
-        private readonly ItemTree fRootTemplate;
+        //private readonly ItemTree fRootTemplate;
         private Dictionary<string, ItemTree> fQualifiedNames;
         private Dictionary<string, object> fDataBinding;
 
         private List<DataView> fBoundViews;
 
-        internal ItemTree RootTemplate { get { return fRootTemplate; } }
+        //internal ItemTree RootTemplate { get { return fRootTemplate; } }
+        public ItemTree RootTemplate { get; }
 
         public Dictionary<string, object> DataBinding
         {
@@ -35,14 +37,14 @@ namespace NetSettings.Data
             DataView dataview = fBoundViews.FirstOrDefault(x => x == aDataView);
             if (dataview == default(DataView))
             {
-                fBoundViews.Add(aDataView);
+                fBoundViews.Add((DataView)aDataView);
             }
         }
 
         public void RemoveView(DataView aDataView)
         {
             if (aDataView != null)
-                fBoundViews.Remove(aDataView);
+                fBoundViews.Remove((DataView)aDataView);
         }
 
         private void NormalizeData()
@@ -66,14 +68,14 @@ namespace NetSettings.Data
 
         public DataProvider(ItemTree aRoot)
         {
-            fRootTemplate = aRoot;
+            RootTemplate = aRoot;
             fBoundViews = new List<DataView>();
             Initialize();
         }
 
         private void Initialize()
         {
-            ItemHelpers.BuildQualifiedNames(fRootTemplate, out fQualifiedNames);
+            ItemHelpers.BuildQualifiedNames(RootTemplate, out fQualifiedNames);
             fDataBinding = GenerateDefaultOptionsSet();
         }
         public Dictionary<string, object> GenerateDefaultOptionsSet()

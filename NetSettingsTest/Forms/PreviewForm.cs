@@ -7,10 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
+using NetSettingsCore.Common;
 
 namespace NetSettings.Forms
 {
-    internal partial class PreviewForm : Form
+    public partial class PreviewForm : Form, IPreviewForm
     {
         private string fImageName;
 

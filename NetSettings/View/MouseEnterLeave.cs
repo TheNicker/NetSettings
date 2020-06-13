@@ -1,27 +1,29 @@
 ﻿using System;
-using System.Windows.Forms;
+using NetSettingsCore.Common;
+
+//using System.Windows.Forms;
 
 namespace NetSettings.Controls
 {
-    internal class MouseEnterLeave
+    public class MouseEnterLeave //TODO: Remove this file as this bug is created by Lior
     {
-        int i = 0;
+        int i;
         public event EventHandler MouseEnter = delegate { };
         public event EventHandler MouseLeave = delegate { };
-        public static Control LastEntered;
-        public MouseEnterLeave(Control aTarget)
+        public static IControl LastEntered;
+        public MouseEnterLeave(IGuiElement aTarget)
         {
-            AddEvents(aTarget);
+            AddEvents(aTarget as IControl);
         }
 
-        private void AddEvents(Control aTarget)
+        private void AddEvents(IControl aTarget)
         {
             if (aTarget != null)
             {
                 aTarget.MouseEnter += aTarget_MouseEnter;
                 aTarget.MouseLeave += aTarget_MouseLeave;
             }
-            foreach (Control control in aTarget.Controls)
+            foreach (IControl control in aTarget.Controls)
                 AddEvents(control);
 
 
@@ -44,7 +46,7 @@ namespace NetSettings.Controls
                 if (LastEntered != null)
                     MouseLeave(LastEntered, e);
                 
-                LastEntered = sender as Control;
+                LastEntered = sender as IControl;
                 MouseEnter(sender, e);
             }
         }

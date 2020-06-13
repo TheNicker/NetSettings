@@ -1,13 +1,13 @@
-﻿using NetSettings.Controls;
+﻿using NetSettingsCore.Common;
 
 namespace NetSettings.View
 {
-    internal class ItemControlsGroup
+    public class ItemControlsGroup
     {
-        public LabelSingleClick label;
-        public System.Windows.Forms.Control parentContainer;
-        public System.Windows.Forms.Control control;
-        public System.Windows.Forms.Button defaultButton;
+        public ILabelSingleClick label;
+        public IControl parentContainer;
+        public IControl control;
+        public IButton defaultButton;
 
         public bool Visible
         {
@@ -19,4 +19,6 @@ namespace NetSettings.View
             }
         }
     }
+
+    
 }

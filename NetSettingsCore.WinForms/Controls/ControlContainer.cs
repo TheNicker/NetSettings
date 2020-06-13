@@ -7,11 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NetSettingsCore.Common;
+using System.Collections;
 
 namespace NetSettings.Controls
 {
-    public partial class ControlContainer : ScrollableControl
+    public partial class ControlContainer : ScrollableControl, IControlContainer
     {
+        IList IControlContainer.Controls => Controls;
+
         public ControlContainer()
         {
             DoubleBuffered = true;
@@ -20,7 +24,6 @@ namespace NetSettings.Controls
              ControlStyles.AllPaintingInWmPaint, true);
         }
 
-
         public void ScrollY(int delta)
         {
             int scrollPosition = VerticalScroll.Value - delta;
@@ -28,24 +31,24 @@ namespace NetSettings.Controls
             VerticalScroll.Value = scrollPosition;
         }
 
-        internal void Reset()
+        public void Reset()
         {
             Controls.Clear();
             ResetPosition();
         }
 
-        internal void ResetPosition()
+        public void ResetPosition()
         {
             HorizontalScroll.Value = VerticalScroll.Value = 0;
 
         }
 
-        internal void StartUpdate()
+        public void StartUpdate()
         {
             this.SuspendLayout();
             ControlHelper.SuspendDrawing(this);
         }
-        internal void EndUpdate()
+        public void EndUpdate()
         {
             this.ResumeLayout();
             ControlHelper.ResumeDrawing(this);
