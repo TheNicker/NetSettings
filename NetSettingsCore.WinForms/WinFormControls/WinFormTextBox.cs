@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using NetSettingsCore.Common;
@@ -12,6 +13,11 @@ namespace NetSettingsCore.WinForms.WinFormControls
     {
         private WinFormFont _winFormFont;
         public new IList Controls => base.Controls;
+        public IList<IControl> LogicalControls { get; }
+
+        public IColor BackColor { get; set; }
+        public IPoint Location { get; set; }
+
         public new IFont Font
         {
             get

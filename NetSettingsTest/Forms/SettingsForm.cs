@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using NetSettings.View;
 using NetSettingsCore.Common;
+using NetSettingsCore.WinForms;
 using TextBox = System.Windows.Forms.TextBox;
 
 //using DataView = System.Data.DataView;

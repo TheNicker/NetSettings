@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using NetSettingsCore.Common;
 
-namespace NetSettings.Forms
+namespace NetSettingsCore.WinForms.WinFormControls
 {
     public class WinFormComboBox : ComboBox, IComboBox
     {
         public IList Controls => base.Controls;
+        public IList<IControl> LogicalControls { get; }
+        public IColor BackColor { get; set; }
+        public IPoint Location { get; set; }
         public IFont Font { get; set; }
         public event EventHandler MouseClick;
         public event EventHandler MouseDoubleClick;

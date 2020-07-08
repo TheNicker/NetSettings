@@ -7,14 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CustomControls\ControlContainer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\NetSettingsCore.Common\NetSettingsCore.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Controls\ColorControl.cs" />
-    <Compile Update="Controls\ComboBoxDoubleClick.cs" />
-    <Compile Update="Controls\ControlContainer.cs" />
-    <Compile Update="Controls\LabelSingleClick.cs" />
+    <Compile Update="CustomControls\ColorControl.cs" />
+    <Compile Update="WinFormControls\ComboBoxDoubleClick.cs" />
+    <Compile Update="WinFormControls\WinFormLabelSingleClick.cs" />
     <Compile Update="WinFormControls\WinFormControl.cs">
       <SubType>Component</SubType>
     </Compile>

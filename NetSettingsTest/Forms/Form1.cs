@@ -7,6 +7,7 @@ using System.IO;
 using System.Windows.Forms;
 using NetSettings.Forms;
 using NetSettingsCore.Common;
+using NetSettingsCore.WinForms;
 using TextBox = System.Windows.Forms.TextBox;
 
 namespace NetSettingsTest

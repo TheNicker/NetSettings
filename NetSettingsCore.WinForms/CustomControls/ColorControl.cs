@@ -1,33 +1,36 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using NetSettingsCore.Common;
+using NetSettingsCore.WinForms.SystemDrawingItems;
+using DrawingColor = System.Drawing.Color;
 
-namespace NetSettings.WinForms.Controls
+namespace NetSettingsCore.WinForms.Controls
 {
     public class ColorControl : TextBox, IColorControl
     {
+        private IColor _color;
+        private IColor _backColor;
+
         public ColorControl()
         {
             //this.Font = new Font("Arial", 9, FontStyle.Bold);//TODO: Open this line
             //this.BorderStyle = System.Windows.Forms.BorderStyle.None;
         }
 
-        public Color Color
+        public IColor Color
         {
-            get
-            {
-                return BackColor;
-            }
+            get => BackColor;
             set
             {
                 if (!Updating)
                 {
                     BackColor = value;
 
-                    double brightness = Math.Sqrt(.241 * BackColor.R * BackColor.R + .691 * BackColor.G * BackColor.G + .068 * BackColor.B * BackColor.B);
-                    ForeColor = brightness < 130 ? ForeColor = Color.White : ForeColor = Color.Black;
+                    var brightness = Math.Sqrt(.241 * BackColor.R * BackColor.R + .691 * BackColor.G * BackColor.G + .068 * BackColor.B * BackColor.B);
+                    ForeColor = brightness < 130 ? ForeColor = DrawingColor.White : ForeColor = DrawingColor.Black;
 
                     RefreshName();
                 }
@@ -44,7 +47,7 @@ namespace NetSettings.WinForms.Controls
             }
 
         }
-        
+
         public bool DisableAutoColorName { get; set; }
 
         public bool Updating { get; set; }
@@ -77,13 +80,22 @@ namespace NetSettings.WinForms.Controls
             else
                 DisableAutoColorName = true;
 
-            var a = Color.AliceBlue;
+            var a = DrawingColor.AliceBlue;
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
         public IList Controls => base.Controls;
+        public IColor BackColor
+        {
+            get => _backColor;
+            set { _backColor = new MyColor(value); }
+        }
+        public IPoint Location { get; set; }
         public new IFont Font { get; set; }
+
+        public IList<IControl> LogicalControls => throw new NotImplementedException();
+
         public event EventHandler MouseClick;
         public event EventHandler SelectedIndexChanged;
         public event EventHandler MouseDoubleClick;

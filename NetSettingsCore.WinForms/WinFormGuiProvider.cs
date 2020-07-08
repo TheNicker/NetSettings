@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Drawing;
+using NetSettings.Forms;
 using NetSettings.View;
-using NetSettings.WinForms.Controls;
 using NetSettingsCore.Common;
+using NetSettingsCore.WinForms.Controls;
 using NetSettingsCore.WinForms.WinFormControls;
 
-namespace NetSettings.Forms
+namespace NetSettingsCore.WinForms
 {
     public class WinFormGuiProvider : IGuiProvider
     {

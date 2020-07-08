@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="**\*.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <AvaloniaResource Include="**\*.xaml">
+      <SubType>Designer</SubType>
+    </AvaloniaResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="AvaloniaControls\ComboBoxDoubleClick.cs" />
+    <Compile Remove="AvaloniaControls\LabelSingleClick.cs" />
+    <Compile Remove="AvaloniaControls\LogicalControls.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.9.10" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.9.10" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NetSettingsCore.Common\NetSettingsCore.Common.csproj" />
+  </ItemGroup>
+</Project>

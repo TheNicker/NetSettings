@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using NetSettingsCore.Common;
-using NetSettingsCore.WinForms.WinFormControls;
 
-namespace NetSettings.Forms
+namespace NetSettingsCore.WinForms.WinFormControls
 {
     public class WinFormLabel : Label, ILabelSingleClick
     {
         private WinFormFont _winFormFont;
+        public IColor BackColor { get; set; }
+        public IPoint Location { get; set; }
+
         public new IFont Font
         {
             get
@@ -29,6 +32,7 @@ namespace NetSettings.Forms
             }
         }
         public new IList Controls { get => base.Controls; }
+        public IList<IControl> LogicalControls { get; }
         public event EventHandler MouseClick;
         public event EventHandler SelectedIndexChanged;
         public event EventHandler MouseDoubleClick;
@@ -37,5 +41,7 @@ namespace NetSettings.Forms
         {
             base.SetStyle((ControlStyles)flag, value);
         }
+
+        public IColor ForeColor { get; set; }
     }
 }

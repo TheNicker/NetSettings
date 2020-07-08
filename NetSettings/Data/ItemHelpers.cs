@@ -1,7 +1,7 @@
 ﻿using NetSettings.Data;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using NetSettingsCore.Common;
 
 namespace NetSettings
 {
@@ -53,7 +53,6 @@ namespace NetSettings
         {
             if (aItem.type == "color")
             {
-
                 var lastCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
                 System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
                 try
@@ -68,9 +67,10 @@ namespace NetSettings
 
                 
 			//Make sure all the colors are created from (R,G,B) and not known names
-                Color c = (System.Drawing.Color)(obj);
-                obj = Color.FromArgb(c.R, c.G, c.B);
+                var c = (IColor)(obj);
+                obj = c.FromArgb(c.R, c.G, c.B);
 
+                //TODO: Delete this lines? if no remove the System.Drawing
                 //if (aItem.value != null && aItem.value is string)
                 //    aItem.value = System.Drawing.ColorTranslator.FromHtml(aItem.value as string);
             }
@@ -81,6 +81,14 @@ namespace NetSettings
                 if (obj != null && obj is Int64)
                     obj = (double)(Int64)obj;
             }
+        }
+    }
+
+    internal class ColorTranslator
+    {
+        public static IColor FromHtml(string s)
+        {
+            throw new NotImplementedException();
         }
     }
 }

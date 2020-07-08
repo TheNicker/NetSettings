@@ -2,14 +2,9 @@
 using NetSettings.Data;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
-//using System.Drawing;
 using NetSettings.Controls;
-using NetSettings.WinForms.Controls;
 using NetSettingsCore.Common;
+using NetSettingsCore.WinForms.Controls;
 using BorderStyle = NetSettingsCore.Common.BorderStyle;
 using ControlStyles = NetSettingsCore.Common.GuiElementStyles;
 using DialogResult = NetSettingsCore.Common.DialogResult;
@@ -31,7 +26,7 @@ using ComboBox = NetSettingsCore.Common.IComboBox;
 
 //using System.Windows.Forms;
 //using NetSettings.Forms;
-using Point = System.Drawing.Point;
+//using Point = System.Drawing.Point;
 
 namespace NetSettings.View
 {
@@ -42,7 +37,7 @@ namespace NetSettings.View
         private Dictionary<string, Type> fStringToType; //TODO: Delete this field
 
         //Controls arrangement
-        private Point fCurrentPanelPosition;
+        private IPoint fCurrentPanelPosition;
         private readonly int fNesting = 0;
         private int fCurrentRow;
 
@@ -54,7 +49,7 @@ namespace NetSettings.View
 
         //private PreviewForm fPreviewForm;
         public IGuiProvider guiProvider { get; set; }
-        private readonly Point fLastCursorPosition;
+        private readonly IPoint fLastCursorPosition;
 
         private IFont fLabelNormal;
         private IFont fLabelBold;
@@ -234,7 +229,7 @@ namespace NetSettings.View
                 button.Click += button_Click;
                 //button.Tag = aVisualItem;
                 button.FlatStyle = FlatStyle.Popup;
-                button.BackColor = SystemColors.Control;
+                //button.BackColor = SystemColors.Control; //TODO: Open this
                 parent.Controls.Add(button);
                 dic.Add(button, aVisualItem);
                 fCurrentRow++;

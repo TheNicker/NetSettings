@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace NetSettings.WinForms.Controls
+namespace NetSettingsCore.WinForms.WinFormControls
 {
-    public class ComboBoxDoubleClick : ComboBox
+    //TODO: Can this be deleted? See WinFormLabel
+    //TODO: Can this be changed to internal?
+    public class ComboBoxDoubleClick : WinFormComboBox 
     {
         DateTime prevClick = DateTime.MinValue;
 
@@ -19,7 +21,5 @@ namespace NetSettings.WinForms.Controls
 
             base.OnMouseClick(e);
         }
-
-
     }
 }
