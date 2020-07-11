@@ -5,6 +5,8 @@ using Avalonia;
 using Avalonia.Media;
 using NetSettingsCore.Avalonia.AvaloniaControls;
 using NetSettingsCore.Common;
+using NetSettingsCore.Common.Interfaces;
+using Color = NetSettingsCore.Common.Classes.Color;
 
 //using SharpDX.Direct3D11;
 
@@ -89,16 +91,15 @@ namespace NetSettingsCore.Avalonia.Controls
 
         public IList Controls => base.Controls;
         public new IFont Font { get; set; }
-        public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public IList<NetSettingsCore.Common.IControl> LogicalControls => throw new NotImplementedException();
+        public IList<IControl> LogicalControls => throw new NotImplementedException();
 
-        int NetSettingsCore.Common.IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        int NetSettingsCore.Common.IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IColor BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IPoint Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Color Color { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        IColor IColorControl.Color { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Color BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public global::Avalonia.Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public global::Avalonia.Media.Color Color { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public event EventHandler MouseClick;
         public event EventHandler SelectedIndexChanged;

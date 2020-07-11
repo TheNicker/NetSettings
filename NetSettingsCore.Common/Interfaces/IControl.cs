@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using NetSettingsCore.Common.Classes;
 
-namespace NetSettingsCore.Common
+namespace NetSettingsCore.Common.Interfaces
 {
     public interface IControl : IGuiElement
     {
@@ -15,8 +16,8 @@ namespace NetSettingsCore.Common
         IList<IControl> LogicalControls { get; }
         int Width { get; set; }
         int Height { get; set; }
-        IColor BackColor { get; set; }
-        IPoint Location { get; set; }
+        Color BackColor { set; }
+        Point Location { get; set; }
         IFont Font { get; set; }
 
         #region Events

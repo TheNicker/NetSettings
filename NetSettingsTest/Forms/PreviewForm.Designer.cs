@@ -1,4 +1,6 @@
-﻿namespace NetSettings.Forms
+﻿using System.Drawing;
+
+namespace NetSettings.Forms
 {
     public partial class PreviewForm
     {
@@ -35,7 +37,7 @@
             // pbPreviewImage
             // 
             this.pbPreviewImage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pbPreviewImage.Location = new System.Drawing.Point(0, 0);
+            this.pbPreviewImage.Location = new Point(0, 0);
             this.pbPreviewImage.Name = "pbPreviewImage";
             this.pbPreviewImage.Size = new System.Drawing.Size(284, 261);
             this.pbPreviewImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;

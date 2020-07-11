@@ -3,12 +3,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using Avalonia.Controls;
 using NetSettingsCore.Common;
+using NetSettingsCore.Common.Classes;
+using Color = NetSettingsCore.Common.Classes.Color;
 using BorderStyle = NetSettingsCore.Common.BorderStyle;
 using DockStyle = NetSettingsCore.Common.DockStyle;
-using IControl = NetSettingsCore.Common.IControl;
+using IControl = NetSettingsCore.Common.Interfaces.IControl;
 
 namespace NetSettings.Forms
 {
@@ -26,8 +27,7 @@ namespace NetSettings.Forms
         public Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         int IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         int IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        IColor IControl.BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        IPoint IControl.Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        Point IControl.Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public event EventHandler MouseClick;
         public event EventHandler SelectedIndexChanged;

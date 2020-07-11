@@ -3,14 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using Avalonia.Controls;
 using NetSettingsCore.Common;
-using IControl = NetSettingsCore.Common.IControl;
+using NetSettingsCore.Common.Classes;
+using IControl = NetSettingsCore.Common.Interfaces.IControl;
 
 namespace NetSettingsCore.Avalonia.AvaloniaControls
 {
     public class AvaloniaLabel : TextBlock, ILabelSingleClick
     {
         private AvaloniaFont _winFormFont;
-        public IPoint Location { get; set; }
+        public Point Location { get; set; }
 
         public new IFont Font
         {
@@ -40,7 +41,7 @@ namespace NetSettingsCore.Avalonia.AvaloniaControls
         public IList<IControl> LogicalControls { get; }
         public int Width { get; set; }
         public int Height { get; set; }
-        public IColor BackColor { get; set; }
+        public Color BackColor { get; set; }
         public event EventHandler MouseClick;
         public event EventHandler TextChanged;
         public event EventHandler Leave;
@@ -57,8 +58,8 @@ namespace NetSettingsCore.Avalonia.AvaloniaControls
             throw new NotImplementedException();
         }
 
-        public IColor ForeColor { get; set; }
-        IColor ILabelSingleClick.ForeColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        IColor IControl.BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Color ForeColor { get; set; }
+        Color ILabelSingleClick.ForeColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        Color IControl.BackColor { set => throw new NotImplementedException(); }
     }
 }

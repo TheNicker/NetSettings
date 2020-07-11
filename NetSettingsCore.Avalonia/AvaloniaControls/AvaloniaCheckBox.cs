@@ -5,7 +5,8 @@ using Avalonia.Controls;
 using Avalonia.LogicalTree;
 using NetSettingsCore.Avalonia.AvaloniaControls;
 using NetSettingsCore.Common;
-using IControl = NetSettingsCore.Common.IControl;
+using NetSettingsCore.Common.Classes;
+using IControl = NetSettingsCore.Common.Interfaces.IControl;
 
 namespace NetSettings.Forms
 {
@@ -25,11 +26,11 @@ namespace NetSettings.Forms
 
         public IList<IControl> LogicalControls => _logicalControls;
 
-        public IColor BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IPoint Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Color BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public bool Checked { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        int NetSettingsCore.Common.IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        int NetSettingsCore.Common.IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public event EventHandler MouseClick;
         public event EventHandler SelectedIndexChanged;
@@ -41,7 +42,7 @@ namespace NetSettings.Forms
         public event EventHandler MouseEnter;
         public event EventHandler MouseLeave;
 
-        event EventHandler NetSettingsCore.Common.IControl.Click
+        event EventHandler IControl.Click
         {
             add
             {

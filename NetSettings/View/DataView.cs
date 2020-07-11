@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using NetSettings.Controls;
 using NetSettingsCore.Common;
+using NetSettingsCore.Common.Classes;
+using NetSettingsCore.Common.Interfaces;
 using NetSettingsCore.WinForms.Controls;
 using BorderStyle = NetSettingsCore.Common.BorderStyle;
 using ControlStyles = NetSettingsCore.Common.GuiElementStyles;
@@ -26,7 +28,7 @@ using ComboBox = NetSettingsCore.Common.IComboBox;
 
 //using System.Windows.Forms;
 //using NetSettings.Forms;
-//using Point = System.Drawing.Point;
+//using Point = Point;
 
 namespace NetSettings.View
 {
@@ -37,7 +39,7 @@ namespace NetSettings.View
         private Dictionary<string, Type> fStringToType; //TODO: Delete this field
 
         //Controls arrangement
-        private IPoint fCurrentPanelPosition;
+        private Point fCurrentPanelPosition;
         private readonly int fNesting = 0;
         private int fCurrentRow;
 
@@ -49,7 +51,7 @@ namespace NetSettings.View
 
         //private PreviewForm fPreviewForm;
         public IGuiProvider guiProvider { get; set; }
-        private readonly IPoint fLastCursorPosition;
+        private readonly Point fLastCursorPosition;
 
         private IFont fLabelNormal;
         private IFont fLabelBold;
@@ -528,6 +530,7 @@ namespace NetSettings.View
                 object val = GetValue(item);
                 switch (item.type)
                 {
+                    //TODO: Remove all the casting of the controls unless needed
                     case "bool":
                         var _val = false;
                         if (val != null)
@@ -535,19 +538,19 @@ namespace NetSettings.View
                         (aControl as ICheckBox).Checked = _val;
                         break;
                     case "text":
-                        (aControl as ITextBox).Text = (val != null ? (string)val : "");
+                        (aControl as ITextBox).Text = (val != null ? (string)val : string.Empty);
                         break;
                     case "number":
-                        (aControl as ITextBox).Text = (val != null ? ToDoubleString(((double)val)) : "");
+                        (aControl as ITextBox).Text = (val != null ? ToDoubleString(((double)val)) : string.Empty);
                         break;
                     case "combo":
                         (aControl as IComboBox).SelectedItem = val;
                         break;
                     case "image":
-                        (aControl as ITextBox).Text = (val != null ? val as string : "");
+                        (aControl as ITextBox).Text = (val != null ? val as string : string.Empty);
                         break;
                     case "color":
-                        (aControl as IColorControl).Color = (Color?) val ?? Color.Empty;
+                        aControl.BackColor = (Color?) val ?? Color.Empty; //TODO: This was IColorControl
                         break;
                 }
                 CheckLabelColor(aVisualItem);
@@ -557,13 +560,13 @@ namespace NetSettings.View
 
         private void ColorControl_KeyDown(object sender, EventArgs e)
         {
-            ColorControl colorControl = sender as ColorControl;
-            RefreshControlValue((colorControl.Tag as VisualItem));
+            var colorControl = sender as IColorControl;
+            RefreshControlValue(dic[colorControl]);
         }
 
         private void ColorControl_TextChanged(object sender, EventArgs e)
         {
-            ColorControl colorControl = sender as ColorControl;
+            var colorControl = sender as IColorControl;
             Color c;
             if (DataViewHelper.TryGetColor(colorControl.Text, out c))
                 SetValue(GetItemFromControl(sender), c, ItemChangedMode.OnTheFly);
@@ -664,7 +667,7 @@ namespace NetSettings.View
             var dialog = guiProvider.CreateGuiElement(GuiElementType.ColorDialog) as IColorDialog;
             dialog.FullOpen = true;
             dialog.Color = (Color) GetValue(item.Item.FullName);
-            ColorControl colorControl = item.controlsGroup.control as ColorControl;
+            var colorControl = item.controlsGroup.control as IColorControl;
             if (dialog.ShowDialog() == DialogResult.OK)
                 SetValue(item, dialog.Color);
         }

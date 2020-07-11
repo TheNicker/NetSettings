@@ -1,6 +1,6 @@
 ﻿namespace NetSettingsCore.Common
 {
-    public interface IPoint
+    public interface Point
     {
     }
 }

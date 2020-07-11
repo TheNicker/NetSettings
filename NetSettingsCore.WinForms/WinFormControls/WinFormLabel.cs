@@ -2,16 +2,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+//using System.Drawing;
 using System.Windows.Forms;
 using NetSettingsCore.Common;
+using NetSettingsCore.Common.Interfaces;
+using Color = NetSettingsCore.Common.Classes.Color;
+using Point = NetSettingsCore.Common.Classes.Point;
 
 namespace NetSettingsCore.WinForms.WinFormControls
 {
     public class WinFormLabel : Label, ILabelSingleClick
     {
         private WinFormFont _winFormFont;
-        public IColor BackColor { get; set; }
-        public IPoint Location { get; set; }
+        public Color BackColor { get; set; }
+        public Point Location { get; set; }
 
         public new IFont Font
         {
@@ -42,6 +46,7 @@ namespace NetSettingsCore.WinForms.WinFormControls
             base.SetStyle((ControlStyles)flag, value);
         }
 
-        public IColor ForeColor { get; set; }
+        public Color ForeColor { get; set; }
+        
     }
 }

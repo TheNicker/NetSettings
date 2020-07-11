@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using NetSettingsCore.Common;
+using NetSettingsCore.Common.Classes;
+using NetSettingsCore.Common.Interfaces;
 
 namespace NetSettingsCore.WinForms.WinFormControls
 {
@@ -10,8 +12,8 @@ namespace NetSettingsCore.WinForms.WinFormControls
     {
         public IList Controls => base.Controls;
         public IList<IControl> LogicalControls { get; }
-        public IColor BackColor { get; set; }
-        public IPoint Location { get; set; }
+        public Color BackColor { get; set; }
+        public Point Location { get; set; }
         public IFont Font { get; set; }
         public event EventHandler MouseClick;
         public event EventHandler MouseDoubleClick;

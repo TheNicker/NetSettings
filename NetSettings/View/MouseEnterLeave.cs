@@ -1,5 +1,6 @@
 ﻿using System;
 using NetSettingsCore.Common;
+using NetSettingsCore.Common.Interfaces;
 
 //using System.Windows.Forms;
 

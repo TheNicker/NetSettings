@@ -1,7 +1,9 @@
-﻿namespace NetSettingsCore.Common
+﻿using NetSettingsCore.Common.Classes;
+using NetSettingsCore.Common.Interfaces;
+
+namespace NetSettingsCore.Common
 {
     public interface IColorControl : IControl
     {
-        IColor Color { get; set; }
     }
 }

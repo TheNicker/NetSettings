@@ -1,4 +1,7 @@
-﻿namespace NetSettingsTest
+﻿using System.Drawing;
+using NetSettingsTestCore.Controls;
+
+namespace NetSettingsTest
 {
     partial class Form1
     {
@@ -33,8 +36,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.userControl11 = new NetSettings.Controls.ControlContainer();
-            this.controlContainer1 = new NetSettings.Controls.ControlContainer();
+            this.userControl11 = new ControlContainer();
+            this.controlContainer1 = new ControlContainer();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -47,7 +50,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(31, 40);
+            this.button1.Location = new Point(31, 40);
             this.button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(88, 27);
@@ -58,7 +61,7 @@
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Location = new Point(0, 0);
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -79,7 +82,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(27, 77);
+            this.label1.Location = new Point(27, 77);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(33, 15);
@@ -88,7 +91,7 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(68, 74);
+            this.textBox1.Location = new Point(68, 74);
             this.textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(116, 23);
@@ -98,7 +101,7 @@
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Location = new Point(0, 0);
             this.splitContainer2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -119,7 +122,7 @@
             // 
             this.userControl11.AutoScroll = true;
             this.userControl11.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.userControl11.Location = new System.Drawing.Point(0, 0);
+            this.userControl11.Location = new Point(0, 0);
             this.userControl11.Name = "userControl11";
             this.userControl11.Size = new System.Drawing.Size(389, 326);
             this.userControl11.TabIndex = 0;
@@ -128,7 +131,7 @@
             // 
             this.controlContainer1.AutoScroll = true;
             this.controlContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.controlContainer1.Location = new System.Drawing.Point(0, 0);
+            this.controlContainer1.Location = new Point(0, 0);
             this.controlContainer1.Name = "controlContainer1";
             this.controlContainer1.Size = new System.Drawing.Size(389, 124);
             this.controlContainer1.TabIndex = 0;
@@ -162,7 +165,7 @@
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
-        private NetSettings.Controls.ControlContainer userControl11;
-        private NetSettings.Controls.ControlContainer controlContainer1;
+        private ControlContainer userControl11;
+        private ControlContainer controlContainer1;
     }
 }

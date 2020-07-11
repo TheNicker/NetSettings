@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using NetSettingsCore.Avalonia.AvaloniaControls;
 using NetSettingsCore.Common;
+using NetSettingsCore.Common.Classes;
+using IControl = NetSettingsCore.Common.Interfaces.IControl;
 
 namespace NetSettings.Forms
 {
@@ -21,12 +23,12 @@ namespace NetSettings.Forms
         public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string Text { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public IList<NetSettingsCore.Common.IControl> LogicalControls => _logicalControls;
+        public IList<IControl> LogicalControls => _logicalControls;
 
-        public IColor BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IPoint Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        int NetSettingsCore.Common.IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        int NetSettingsCore.Common.IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Color BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public event EventHandler MouseClick;
         public event EventHandler MouseDoubleClick;

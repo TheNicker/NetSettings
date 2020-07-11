@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using NetSettingsCore.Common;
-using NetSettingsCore.WinForms.SystemDrawingItems;
-using DrawingColor = System.Drawing.Color;
+using NetSettingsCore.Common.Interfaces;
+using Color = NetSettingsCore.Common.Classes.Color;
+using Point = NetSettingsCore.Common.Classes.Point;
 
 namespace NetSettingsCore.WinForms.Controls
 {
-    public class ColorControl : TextBox, IColorControl
+    internal class ColorControl : TextBox, IColorControl
     {
-        private IColor _color;
-        private IColor _backColor;
+        //private IColor _color;
+        //private IColor _backColor;
 
         public ColorControl()
         {
@@ -20,29 +21,12 @@ namespace NetSettingsCore.WinForms.Controls
             //this.BorderStyle = System.Windows.Forms.BorderStyle.None;
         }
 
-        public IColor Color
-        {
-            get => BackColor;
-            set
-            {
-                if (!Updating)
-                {
-                    BackColor = value;
-
-                    var brightness = Math.Sqrt(.241 * BackColor.R * BackColor.R + .691 * BackColor.G * BackColor.G + .068 * BackColor.B * BackColor.B);
-                    ForeColor = brightness < 130 ? ForeColor = DrawingColor.White : ForeColor = DrawingColor.Black;
-
-                    RefreshName();
-                }
-            }
-        }
-
         private void RefreshName()
         {
             if (!Updating && !DisableAutoColorName)
             {
                 Updating = true;
-                Text = "#" + BackColor.ToArgb().ToString("X").Substring(2, 6);
+                Text = "#" + base.BackColor.ToArgb().ToString("X").Substring(2, 6);
                 Updating = false;
             }
 
@@ -78,23 +62,33 @@ namespace NetSettingsCore.WinForms.Controls
                 }
             }
             else
+            {
                 DisableAutoColorName = true;
-
-            var a = DrawingColor.AliceBlue;
-
+            }
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
         public IList Controls => base.Controls;
-        public IColor BackColor
+        public new Color BackColor
         {
-            get => _backColor;
-            set { _backColor = new MyColor(value); }
+            //get => base.BackColor;
+            set {
+                if (!Updating)
+                {
+                    BackColor = value;
+
+                    var brightness = Math.Sqrt(.241 * base.BackColor.R * base.BackColor.R + .691 * base.BackColor.G * base.BackColor.G + .068 * base.BackColor.B * base.BackColor.B);
+                    ForeColor = brightness < 130 ? ForeColor = System.Drawing.Color.White : ForeColor = System.Drawing.Color.Black;
+
+                    RefreshName();
+                }
+            }
         }
-        public IPoint Location { get; set; }
+        public new Point Location { get; set; }
         public new IFont Font { get; set; }
 
         public IList<IControl> LogicalControls => throw new NotImplementedException();
+
 
         public event EventHandler MouseClick;
         public event EventHandler SelectedIndexChanged;

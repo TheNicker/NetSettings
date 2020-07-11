@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using NetSettingsCore.Common;
+using NetSettingsCore.Common.Interfaces;
 using BorderStyle = NetSettingsCore.Common.BorderStyle;
 using DockStyle = NetSettingsCore.Common.DockStyle;
+using Color = NetSettingsCore.Common.Classes.Color;
+using Point = NetSettingsCore.Common.Classes.Point;
 
 namespace NetSettingsCore.WinForms.WinFormControls
 {
@@ -15,8 +18,8 @@ namespace NetSettingsCore.WinForms.WinFormControls
         public new IList Controls => base.Controls;
         public IList<IControl> LogicalControls { get; }
 
-        public IColor BackColor { get; set; }
-        public IPoint Location { get; set; }
+        public Color BackColor { get; set; }
+        public Point Location { get; set; }
 
         public new IFont Font
         {

@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using Avalonia.Controls;
-using Avalonia.Media;
 using NetSettingsCore.Common;
+using NetSettingsCore.Common.Classes;
 using BorderStyle = NetSettingsCore.Common.BorderStyle;
+using Color = NetSettingsCore.Common.Classes.Color;
 using DockStyle = NetSettingsCore.Common.DockStyle;
+using IControl = NetSettingsCore.Common.Interfaces.IControl;
 
 namespace NetSettingsCore.Avalonia.AvaloniaControls
 {
@@ -43,18 +45,18 @@ namespace NetSettingsCore.Avalonia.AvaloniaControls
         public event EventHandler MouseEnter;
         public event EventHandler MouseLeave;
 
-        public ITextBox Instance { get=>this; }
+        public ITextBox Instance { get => this; }
         public DockStyle Dock { get; set; }
         public BorderStyle BorderStyle { get; set; }
         public bool Multiline { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public bool ReadOnly { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public IList<Common.IControl> LogicalControls => throw new NotImplementedException();
+        public IList<IControl> LogicalControls => throw new NotImplementedException();
 
-        int Common.IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        int Common.IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IColor BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IPoint Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Color BackColor { set => throw new NotImplementedException(); }
+        public Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

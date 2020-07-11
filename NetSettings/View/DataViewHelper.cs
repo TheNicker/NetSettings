@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Drawing;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using NetSettingsCore.Common.Classes;
 
 namespace NetSettings.View
 {
@@ -40,7 +40,7 @@ namespace NetSettings.View
                     break;
                 case ColorRepresentanion.Hex:
                     string hexRepresentation = GetHexNumber(text);
-                    color = ColorTranslator.FromHtml(hexRepresentation);
+                    color = Color.FromHtml(hexRepresentation);
                     result = true;
                     break;
                 case ColorRepresentanion.CommaSeperated:

@@ -5,7 +5,7 @@ using System.Text;
 //using NetSettings.Data;
 //using NetSettings.View;
 //using Color = Colourful.RGBColor;
-//using Color = System.Drawing.Color;
+//using Color = Color;
 
 namespace NetSettingsCore.Common
 {

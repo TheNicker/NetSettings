@@ -6,6 +6,9 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using NetSettingsCore.Common;
 using FlatStyle = NetSettingsCore.Common.FlatStyle;
+using Color = NetSettingsCore.Common.Classes.Color;
+using IControl = NetSettingsCore.Common.Interfaces.IControl;
+using Point = NetSettingsCore.Common.Classes.Point;
 
 namespace NetSettings.Forms
 {
@@ -57,15 +60,16 @@ namespace NetSettings.Forms
         }
         public IList Controls => throw new NotImplementedException();
         public IFont Font { get; set; }
-        public IColor BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Avalonia.Media.Color BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string Text { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IPoint Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public IList<NetSettingsCore.Common.IControl> LogicalControls => throw new NotImplementedException();//base.LogicalChildren;
+        public IList<IControl> LogicalControls => throw new NotImplementedException();//base.LogicalChildren;
 
-        int NetSettingsCore.Common.IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        int NetSettingsCore.Common.IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        Color IControl.BackColor { set => throw new NotImplementedException(); }
 
         public event EventHandler MouseClick;
         public event EventHandler SelectedIndexChanged;
@@ -77,7 +81,7 @@ namespace NetSettings.Forms
         public event EventHandler MouseEnter;
         public event EventHandler MouseLeave;
 
-        event EventHandler NetSettingsCore.Common.IControl.Click
+        event EventHandler IControl.Click
         {
             add
             {
