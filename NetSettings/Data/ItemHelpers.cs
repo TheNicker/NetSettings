@@ -22,6 +22,7 @@ namespace NetSettings
                     item.FullName = String.Format("{0}.{1}", currentParent.FullName, item.name);
                 }
             }
+
             if (item.subItems != null)
                 foreach (ItemTree subItem in item.subItems)
                 {
@@ -52,35 +53,40 @@ namespace NetSettings
 
         internal static void NormalizeItemData(ItemTree aItem, ref object obj) //TODO: Can the object be changed to Color?
         {
-            if (aItem.type == "color")
+            switch (aItem.type)
             {
-                var lastCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
-                System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
-                try
-                {
-                    if (obj != null && obj is string)
-                        obj = System.Drawing.ColorTranslator.FromHtml(obj as string);
-                }
-                finally
-                {
-                    System.Threading.Thread.CurrentThread.CurrentCulture = lastCulture;
-                }
+                case "color":
+                    //TODO: Why do we need this culture lines?
+                    var lastCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+                    System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+                    try
+                    {
+                        if (obj is string htmlColor)
+                        {
+                            obj = Color.FromHtml(htmlColor);
+                        }
+                    }
+                    finally
+                    {
+                        System.Threading.Thread.CurrentThread.CurrentCulture =
+                            lastCulture; //TODO: What is the purpose of this line?
+                    }
 
 
-                //Make sure all the colors are created from (R,G,B) and not known names
-                var c = (Color)(obj);
-                obj = System.Drawing.Color.FromArgb(c.R, c.G, c.B);
+                    //TODO: Why do we need this lines?
+                    //Make sure all the colors are created from (R,G,B) and not known names
+                    var color = (Color)obj;
+                    obj = Color.FromArgb(color.R, color.G, color.B);
 
-                //TODO: Delete this lines? if no remove the System.Drawing
-                //if (aItem.value != null && aItem.value is string)
-                //    aItem.value = System.Drawing.ColorTranslator.FromHtml(aItem.value as string);
-            }
-
-            if (aItem.type == "number")
-            {
-                //normalize all our numbers to double data type
-                if (obj != null && obj is Int64)
-                    obj = (double)(Int64)obj;
+                    //TODO: Delete this lines? if no remove the System.Drawing
+                    //if (aItem.value != null && aItem.value is string)
+                    //    aItem.value = System.Drawing.ColorTranslator.FromHtml(aItem.value as string);
+                    break;
+                case "number":
+                    //normalize all our numbers to double data type
+                    if (obj != null && obj is long num)
+                        obj = (double)num;
+                    break;
             }
         }
     }

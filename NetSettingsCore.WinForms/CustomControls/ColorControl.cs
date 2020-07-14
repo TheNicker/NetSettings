@@ -5,10 +5,11 @@ using System.Drawing;
 using System.Windows.Forms;
 using NetSettingsCore.Common;
 using NetSettingsCore.Common.Interfaces;
+using DrawingColor = System.Drawing.Color;
 using Color = NetSettingsCore.Common.Classes.Color;
 using Point = NetSettingsCore.Common.Classes.Point;
 
-namespace NetSettingsCore.WinForms.Controls
+namespace NetSettingsCore.WinForms.CustomControls
 {
     internal class ColorControl : TextBox, IColorControl
     {
@@ -75,10 +76,10 @@ namespace NetSettingsCore.WinForms.Controls
             set {
                 if (!Updating)
                 {
-                    BackColor = value;
+                    base.BackColor = DrawingColor.FromArgb(value.A, value.R, value.G, value.B);
 
                     var brightness = Math.Sqrt(.241 * base.BackColor.R * base.BackColor.R + .691 * base.BackColor.G * base.BackColor.G + .068 * base.BackColor.B * base.BackColor.B);
-                    ForeColor = brightness < 130 ? ForeColor = System.Drawing.Color.White : ForeColor = System.Drawing.Color.Black;
+                    ForeColor = brightness < 130 ? ForeColor = DrawingColor.White : ForeColor = DrawingColor.Black;
 
                     RefreshName();
                 }

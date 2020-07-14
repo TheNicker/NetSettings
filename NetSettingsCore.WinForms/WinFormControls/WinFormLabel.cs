@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-//using System.Drawing;
 using System.Windows.Forms;
 using NetSettingsCore.Common;
 using NetSettingsCore.Common.Interfaces;

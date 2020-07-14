@@ -2,7 +2,7 @@
 using NetSettings.Forms;
 using NetSettings.View;
 using NetSettingsCore.Common;
-using NetSettingsCore.WinForms.Controls;
+using NetSettingsCore.WinForms.CustomControls;
 using NetSettingsCore.WinForms.WinFormControls;
 
 namespace NetSettingsCore.WinForms

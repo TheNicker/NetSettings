@@ -6,7 +6,6 @@ using NetSettings.Controls;
 using NetSettingsCore.Common;
 using NetSettingsCore.Common.Classes;
 using NetSettingsCore.Common.Interfaces;
-using NetSettingsCore.WinForms.Controls;
 using BorderStyle = NetSettingsCore.Common.BorderStyle;
 using ControlStyles = NetSettingsCore.Common.GuiElementStyles;
 using DialogResult = NetSettingsCore.Common.DialogResult;

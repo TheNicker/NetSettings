@@ -30,7 +30,7 @@ namespace NetSettings.Data
 
         public static ItemTree FromFile(string aFileName)
         {
-            string text = File.ReadAllText(aFileName);
+            var text = File.ReadAllText(aFileName);
             var root = (ItemTree)JsonConvert.DeserializeObject(text, typeof(ItemTree));
             return root;
         }

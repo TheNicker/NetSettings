@@ -23,7 +23,7 @@ namespace NetSettingsCore.Common.Classes
                 // This is the only place we have system colors value exposed
                 if (IsKnownColor)
                 {
-                    return KnownColorTable.KnownColorToArgb((KnownColor) knownColor);
+                    return KnownColorTable.KnownColorToArgb((KnownColor)knownColor);
                 }
 
                 return NotDefinedValue;
@@ -38,7 +38,7 @@ namespace NetSettingsCore.Common.Classes
         public byte B => unchecked((byte)(Value >> ARGBBlueShift));
 
         public byte A => unchecked((byte)(Value >> ARGBAlphaShift));
-        
+
         public bool IsKnownColor => (state & StateKnownColorValid) != 0;
 
         internal const int ARGBAlphaShift = 24;
@@ -351,7 +351,29 @@ namespace NetSettingsCore.Common.Classes
 
         public static Color FromHtml(string htmlColor)
         {
-            throw new NotImplementedException();
+            KnownColor knownColor;
+            Color result;
+            if (Enum.TryParse(htmlColor, out knownColor))
+            {
+                result = new Color(knownColor);
+            }
+            else
+            {
+                var values = htmlColor.Split(',');
+                switch (values.Length)
+                {
+                    case 4:
+                        result = FromArgb(byte.Parse(values[0]), byte.Parse(values[1]), byte.Parse(values[2]), byte.Parse(values[3]));
+                        break;
+                    case 3:
+                        result = FromArgb(255, byte.Parse(values[0]), byte.Parse(values[1]), byte.Parse(values[2]));
+                        break;
+                    default:
+                        throw new ArgumentException();
+                }
+            }
+
+            return result;
         }
 
         internal Color(KnownColor knownColor)
