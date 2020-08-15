@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CustomControls\ColorControl - Copy.cs" />
     <Compile Remove="CustomControls\ControlContainer.cs" />
   </ItemGroup>
 
@@ -18,9 +19,7 @@
     <Compile Update="CustomControls\ColorControl.cs" />
     <Compile Update="WinFormControls\ComboBoxDoubleClick.cs" />
     <Compile Update="WinFormControls\WinFormLabelSingleClick.cs" />
-    <Compile Update="WinFormControls\WinFormControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Update="WinFormControls\WinFormControl.cs" />
   </ItemGroup>
 
 </Project>

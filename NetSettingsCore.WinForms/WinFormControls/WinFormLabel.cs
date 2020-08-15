@@ -1,51 +1,44 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using NetSettingsCore.Common;
+using System;
 using System.Windows.Forms;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Interfaces;
-using Color = NetSettingsCore.Common.Classes.Color;
-using Point = NetSettingsCore.Common.Classes.Point;
 
 namespace NetSettingsCore.WinForms.WinFormControls
 {
-    public class WinFormLabel : Label, ILabelSingleClick
+    internal class WinFormLabel : WinFormControl, ILabelSingleClick
     {
-        private WinFormFont _winFormFont;
-        public Color BackColor { get; set; }
-        public Point Location { get; set; }
+        private readonly Label _label = new Label();
 
-        public new IFont Font
+        public WinFormLabel()
         {
-            get
-            {
-                if (_winFormFont == null)
-                {
-                    _winFormFont = new WinFormFont(base.Font);
-                }
-
-                return _winFormFont;
-
-            }
-            set
-            {
-                base.Font = new Font(value.FontFamily, value.Size, (FontStyle)value.Appearance);
-                _winFormFont = new WinFormFont(base.Font);
-            }
+            _control = _label;
         }
-        public new IList Controls { get => base.Controls; }
-        public IList<IControl> LogicalControls { get; }
-        public event EventHandler MouseClick;
-        public event EventHandler SelectedIndexChanged;
-        public event EventHandler MouseDoubleClick;
-        public event EventHandler KeyDown;
+
+        //private WinFormFont _winFormFont;
+
+        //public new IFont Font
+        //{
+        //    get
+        //    {
+        //        if (_winFormFont == null)
+        //        {
+        //            _winFormFont = new WinFormFont(_label.Font);
+        //        }
+
+        //        return _winFormFont;
+
+        //    }
+        //    set
+        //    {
+        //        base.Font = new Font(value.FontFamily, value.Size, (FontStyle)value.Appearance);
+        //        _winFormFont = new WinFormFont(base.Font);
+        //    }
+        //}
+        //public new IList Controls { get => base.Controls; }
+
         public void SetStyle(GuiElementStyles flag, bool value)
         {
-            base.SetStyle((ControlStyles)flag, value);
+            throw new NotImplementedException();
+            //_label.SetStyle sty.SetStyle((ControlStyles)flag, value);
         }
-
-        public Color ForeColor { get; set; }
-        
     }
 }

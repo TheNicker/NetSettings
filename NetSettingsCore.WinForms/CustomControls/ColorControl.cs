@@ -1,25 +1,18 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Interfaces;
+using Color = System.Drawing.Color;
 using DrawingColor = System.Drawing.Color;
-using Color = NetSettingsCore.Common.Classes.Color;
-using Point = NetSettingsCore.Common.Classes.Point;
 
 namespace NetSettingsCore.WinForms.CustomControls
 {
-    internal class ColorControl : TextBox, IColorControl
+    internal class ColorControl : TextBox
     {
-        //private IColor _color;
-        //private IColor _backColor;
 
         public ColorControl()
         {
-            //this.Font = new Font("Arial", 9, FontStyle.Bold);//TODO: Open this line
-            //this.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.Font = new Font("Arial", 9, FontStyle.Bold);//TODO: Open this line
+            this.BorderStyle = System.Windows.Forms.BorderStyle.None;
         }
 
         private void RefreshName()
@@ -30,7 +23,6 @@ namespace NetSettingsCore.WinForms.CustomControls
                 Text = "#" + base.BackColor.ToArgb().ToString("X").Substring(2, 6);
                 Updating = false;
             }
-
         }
 
         public bool DisableAutoColorName { get; set; }
@@ -69,11 +61,10 @@ namespace NetSettingsCore.WinForms.CustomControls
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        public IList Controls => base.Controls;
-        public new Color BackColor
+        public override Color BackColor
         {
-            //get => base.BackColor;
-            set {
+            set
+            {
                 if (!Updating)
                 {
                     base.BackColor = DrawingColor.FromArgb(value.A, value.R, value.G, value.B);
@@ -85,15 +76,5 @@ namespace NetSettingsCore.WinForms.CustomControls
                 }
             }
         }
-        public new Point Location { get; set; }
-        public new IFont Font { get; set; }
-
-        public IList<IControl> LogicalControls => throw new NotImplementedException();
-
-
-        public event EventHandler MouseClick;
-        public event EventHandler SelectedIndexChanged;
-        public event EventHandler MouseDoubleClick;
-        public event EventHandler KeyDown;
     }
 }

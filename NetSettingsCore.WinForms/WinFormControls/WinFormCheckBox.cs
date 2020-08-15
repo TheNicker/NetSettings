@@ -8,16 +8,15 @@ using NetSettingsCore.Common.Interfaces;
 
 namespace NetSettingsCore.WinForms.WinFormControls
 {
-    public class WinFormCheckBox : CheckBox, ICheckBox
+    internal class WinFormCheckBox : WinFormControl, ICheckBox
     {
-        public new IList Controls => base.Controls;
-        public IList<IControl> LogicalControls { get; }
-        public Color BackColor { get; set; }
-        public Point Location { get; set; }
-        public IFont Font { get; set; }
-        public event EventHandler MouseClick;
-        public event EventHandler SelectedIndexChanged;
-        public event EventHandler MouseDoubleClick;
-        public event EventHandler KeyDown;
+        private readonly CheckBox _checkBox = new CheckBox();
+
+        public WinFormCheckBox()
+        {
+            _control = _checkBox;
+        }
+
+        public bool Checked { get => _checkBox.Checked; set => _checkBox.Checked = value; }
     }
 }

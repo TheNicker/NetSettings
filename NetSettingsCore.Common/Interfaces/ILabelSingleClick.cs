@@ -6,6 +6,5 @@ namespace NetSettingsCore.Common
     public interface ILabelSingleClick : IControl //TODO: Rename to ILabel?
     {
         void SetStyle(GuiElementStyles standardDoubleClick, bool value);
-        Color ForeColor { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using NetSettingsTestCore.Controls;
 
-namespace NetSettingsTest
+namespace NetSettingsTestCore.Forms
 {
     partial class Form1
     {

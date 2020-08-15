@@ -1,9 +1,8 @@
-﻿using System;
-using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
+﻿using Avalonia;
 using Avalonia.Logging.Serilog;
+using AvaloniaApplication;
 
-namespace AvaloniaApplication
+namespace NetSettingsTestCore
 {
     class AvaloniaProgram
     {

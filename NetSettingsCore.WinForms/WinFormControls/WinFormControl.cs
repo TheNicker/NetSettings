@@ -1,58 +1,63 @@
-﻿//using NetSettings.View;
-
+﻿using NetSettingsCore.Common;
+using NetSettingsCore.Common.Classes;
+using NetSettingsCore.Common.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Classes;
-using NetSettingsCore.Common.Interfaces;
-using BorderStyle = NetSettingsCore.Common.BorderStyle;
-using DockStyle = NetSettingsCore.Common.DockStyle;
+using System.Windows.Forms;
+using DrawingPoint = System.Drawing.Point;
+using DrawingColor = System.Drawing.Color;
+using Point = NetSettingsCore.Common.Classes.Point;
 
-namespace NetSettings.Forms
+namespace NetSettingsCore.WinForms.WinFormControls
 {
-    internal class WinFormControl : System.Windows.Forms.Control, IControl
+    internal class WinFormControl : IControl
     {
-        public Color BackColor { get; set; }
-        public Point Location { get; set; }
-        public new IFont Font { get; set; }
-        public new IList Controls => base.Controls;
-        public IList<IControl> LogicalControls { get; }
+        protected Control _control;
+
+        public WinFormControl()
+        {
+            _control = new Control();
+        }
+
+        public virtual Color BackColor { get; set; }
+
+        public Point Location
+        {
+            get => new Point(_control.Location.X, _control.Location.Y);
+            set => _control.Location = new DrawingPoint(value.X, value.Y);
+        }
+
+        public IFont Font { get; set; }
+        public bool Visible { get => _control.Visible; set => _control.Visible = value; }
+        public string Text { get => _control.Text; set => _control.Text = value; }
+        public int Width { get => _control.Width; set => _control.Width = value; }
+        public int Height { get => _control.Height; set => _control.Height = value; }
+
+        public virtual object Instance => _control;
+        private readonly IList<IControl> _visualControls = new List<IControl>();
+
+        public IList VisualControl => (IList)_visualControls;
+
+        public IList<IControl> LogicalControls { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Color ForeColor { set => _control.ForeColor = DrawingColor.FromArgb(value.A, value.R, value.G, value.B); }
+
+        public IControl AddVisualControl(IControl control)
+        {
+            _visualControls.Add(control);
+            _control.Controls.Add((Control)control.Instance);
+            return control;
+        }
+
         public event EventHandler MouseClick;
         public event EventHandler SelectedIndexChanged;
         public event EventHandler MouseDoubleClick;
         public event EventHandler KeyDown;
-        //WinFormControl(System.Windows.Forms.Control control)
-        //{
-        //    Instance = control;
-        //}
-
-        //public VisualItem Tag { get; set; }
-        //public ITextBox Instance => this;//{ get; set; }
-        //public bool Multiline { get; set; }
-        //public new DockStyle Dock { get; set; }
-        //public bool ReadOnly { get; set; }
-        //public BorderStyle BorderStyle { get; set; }
-
-        //public FlatStyle FlatStyle
-        //{
-        //    get => throw new NotImplementedException(); set => throw new NotImplementedException();
-        //}
-
-        //public new IList<IGuiElement> Controls { get => base.Controls; set; }
-
-        //public new event EventHandler MouseClick;
-        //public event EventHandler SelectedIndexChanged;
-        //public new event EventHandler MouseDoubleClick;
-        //public new event EventHandler KeyDown;
-        //public new int Size { get; set; }
-        //public FontAppearance Appearance { get; set; }
-        //public string FontFamily { get; set; }
-        //public void SetStyle(GuiElementStyles standardDoubleClick, bool value)
-        //{
-        //    base.SetStyle((ControlStyles)standardDoubleClick, value);
-        //}
-
-        //public bool Checked { get; set; }
+        public event EventHandler DoubleClick;
+        public event EventHandler TextChanged;
+        public event EventHandler Leave;
+        public event EventHandler Click;
+        public event EventHandler MouseEnter;
+        public event EventHandler MouseLeave;
     }
 }

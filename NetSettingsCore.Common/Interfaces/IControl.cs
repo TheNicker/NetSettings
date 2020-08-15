@@ -9,16 +9,22 @@ namespace NetSettingsCore.Common.Interfaces
     {
         //    public void SetFont(IFont);
         //VisualItem Tag { get; set; }
-        bool Visible { get; set; }
-        string Text { get; set; }
+        bool Visible { get; set; }//TODO: Can we remove the set?
+        string Text { get; set; }//TODO: Can we remove the set?
         //IList<IControl> Controls { get; set; }
-        IList Controls { get; }//TODO: Rename to VisualControls
-        IList<IControl> LogicalControls { get; }
-        int Width { get; set; }
-        int Height { get; set; }
-        Color BackColor { set; }
-        Point Location { get; set; }
-        IFont Font { get; set; }
+        //IList Controls { get; }//TODO: Rename to VisualControls
+        //IList<IControl> VisualControl { get; set; }
+        IList VisualControl { get; }
+        IControl AddVisualControl(IControl control); //TODO: Can we remove this in favour of VisualControl?
+        IList<IControl> LogicalControls { get; set; }//TODO: Can we remove the set?
+        int Width { get; set; }//TODO: Can we remove the set?
+        int Height { get; set; }//TODO: Can we remove the set?
+        Color BackColor { set; }//TODO: Can we remove the set?
+        Color ForeColor { set; }//TODO: Do we need to add the get although it is not in use?
+        Point Location { get; set; }//TODO: Can we remove the set?
+        IFont Font { get; set; }//TODO: Can we remove the set?
+
+        object Instance { get; }
 
         #region Events
         event EventHandler DoubleClick;

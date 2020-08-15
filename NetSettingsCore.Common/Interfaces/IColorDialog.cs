@@ -1,6 +1,4 @@
-﻿using NetSettingsCore.Common.Interfaces;
-
-namespace NetSettingsCore.Common
+﻿namespace NetSettingsCore.Common.Interfaces
 {
     public interface IColorDialog : IControl
     {

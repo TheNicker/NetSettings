@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using NetSettingsCore.Common.Interfaces;
 
 namespace NetSettingsCore.Common
 {
@@ -7,7 +8,8 @@ namespace NetSettingsCore.Common
         void StartUpdate();
         void Reset();
         void EndUpdate();
-        IList Controls { get; }
+        //IList Controls { get; }
+        void AddControl(IControl control);
         void ResetPosition();
     }
 }

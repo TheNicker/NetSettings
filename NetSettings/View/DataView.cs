@@ -1,33 +1,15 @@
-﻿//using NetSettings.Controls;
+﻿using NetSettings.Controls;
 using NetSettings.Data;
-using System;
-using System.Collections.Generic;
-using NetSettings.Controls;
 using NetSettingsCore.Common;
 using NetSettingsCore.Common.Classes;
 using NetSettingsCore.Common.Interfaces;
+using System;
+using System.Collections.Generic;
 using BorderStyle = NetSettingsCore.Common.BorderStyle;
-using ControlStyles = NetSettingsCore.Common.GuiElementStyles;
+using CheckBox = NetSettingsCore.Common.ICheckBox;
 using DialogResult = NetSettingsCore.Common.DialogResult;
 using DockStyle = NetSettingsCore.Common.DockStyle;
 using FlatStyle = NetSettingsCore.Common.FlatStyle;
-//using Button = NetSettingsCore.Common.Button;
-using CheckBox = NetSettingsCore.Common.ICheckBox;
-using ComboBox = NetSettingsCore.Common.IComboBox;
-//using Control = NetSettingsCore.Common.Control;
-//using DialogResult = NetSettingsCore.Common.DialogResult;
-//using DockStyle = NetSettingsCore.Common.DockStyle;
-//using FileDialog = NetSettingsCore.Common.FileDialog;
-//using FlatStyle = NetSettingsCore.Common.FlatStyle;
-//using Font = NetSettingsCore.Common.Font;
-//using FontAppearance = NetSettingsCore.Common.FontAppearance;
-//using Label = NetSettingsCore.Common.ILabel;
-//using OpenFileDialog = NetSettingsCore.Common.OpenFileDialog;
-//using SaveFileDialog = NetSettingsCore.Common.SaveFileDialog;
-
-//using System.Windows.Forms;
-//using NetSettings.Forms;
-//using Point = Point;
 
 namespace NetSettings.View
 {
@@ -35,14 +17,14 @@ namespace NetSettings.View
     {
         private const string labelFont = "calibri"; //TODO: Rename to familyName
 
-        private Dictionary<string, Type> fStringToType; //TODO: Delete this field
+        //private Dictionary<string, Type> fStringToType; //TODO: Delete this field
 
         //Controls arrangement
         private Point fCurrentPanelPosition;
         private readonly int fNesting = 0;
         private int fCurrentRow;
 
-        private IControlContainer fDescriptionPanel;
+        private IControlContainer fDescriptionPanel; //TODO: Can we remove this from the class level and move it next to usage?
         private ITextBox fDescriptionTextBox;
         private DataViewParams fParams;
 
@@ -50,7 +32,7 @@ namespace NetSettings.View
 
         //private PreviewForm fPreviewForm;
         public IGuiProvider guiProvider { get; set; }
-        private readonly Point fLastCursorPosition;
+        private readonly Point fLastCursorPosition; //TODO: Can we delete this?
 
         private IFont fLabelNormal;
         private IFont fLabelBold;
@@ -60,16 +42,16 @@ namespace NetSettings.View
 
         public DataView()
         {
-            fStringToType = new Dictionary<string, Type>
-            {
-                {"text", typeof(ITextBox)},
-                {"bool", typeof(ICheckBox)},
-                {"menu", typeof(ILabelSingleClick)},
-                {"combo", typeof(IComboBoxDoubleClick)},
-                {"image", typeof(ITextBox)},
-                {"number", typeof(ITextBox)},
-                {"color", typeof(IColorControl)}
-            };
+            //fStringToType = new Dictionary<string, Type>
+            //{
+            //    {"text", typeof(ITextBox)},
+            //    {"bool", typeof(ICheckBox)},
+            //    {"menu", typeof(ILabelSingleClick)},
+            //    {"combo", typeof(IComboBoxDoubleClick)},
+            //    {"image", typeof(ITextBox)},
+            //    {"number", typeof(ITextBox)},
+            //    {"color", typeof(IColorControl)}
+            //};
 
             //fPreviewForm = new PreviewForm();
         }
@@ -112,11 +94,13 @@ namespace NetSettings.View
                 textBox.ReadOnly = true;
                 textBox.BorderStyle = BorderStyle.FixedSingle;
                 textBox.Font = (IFont)guiProvider.CreateGuiElement(GuiElementType.IFont, "Lucida Fax", 10f);
+                //textBox.Location = new Point(0,0);
                 //textBox.Font.FontFamily = "Lucida fax";
                 //textBox.Font.Size = 10;
 
                 fDescriptionTextBox = textBox;
-                fDescriptionPanel.Controls.Add(textBox); //.Instance
+                //fDescriptionPanel.Controls.Add(textBox);
+                fDescriptionPanel.AddControl(textBox);
                 fDescriptionPanel.EndUpdate();
             }
 
@@ -201,7 +185,8 @@ namespace NetSettings.View
             var group = new ItemControlsGroup();
             var parent = group.parentContainer = guiProvider.CreateGuiElement(GuiElementType.GuiElement) as IControl;
 
-            fParams.container.Controls.Add(parent);
+            //fParams.container.Controls.Add(parent);
+            fParams.container.AddControl(parent);
             dic.Add(parent, aVisualItem);
 
             //Add label describing the entry
@@ -209,14 +194,16 @@ namespace NetSettings.View
             var label = group.label = (ILabelSingleClick)guiProvider.CreateGuiElement(GuiElementType.Label);
             label.Font = GetLabelFont(aVisualItem);
             label.Text = aItem.displayName;
-            label.SetStyle(ControlStyles.StandardDoubleClick, !isBool);
-            parent.Controls.Add(label);
+            //label.SetStyle(ControlStyles.StandardDoubleClick, !isBool); //TODO: Do we need this doubleclick event?
+            //parent.VisualControl.Add(label);
+            parent.AddVisualControl(label);
             dic.Add(label, aVisualItem);
 
             //Add the  control itself
             var control = group.control = guiProvider.CreateGuiElement(aType) as IControl;
             //var control = group.control = Activator.CreateInstance(aType) as Control;
-            parent.Controls.Add(control);
+            //parent.VisualControl.Add(control);
+            parent.AddVisualControl(control);
             dic.Add(control, aVisualItem);
 
             //Add reference from the menu item to the control holding the values.
@@ -231,7 +218,8 @@ namespace NetSettings.View
                 //button.Tag = aVisualItem;
                 button.FlatStyle = FlatStyle.Popup;
                 //button.BackColor = SystemColors.Control; //TODO: Open this
-                parent.Controls.Add(button);
+                //parent.VisualControl.Add(button);
+                parent.AddVisualControl(button);
                 dic.Add(button, aVisualItem);
                 fCurrentRow++;
             }
@@ -242,6 +230,7 @@ namespace NetSettings.View
             l.MouseLeave += panel_MouseLeave;
             ProceeControl(aVisualItem);
         }
+
         private void ProceeControl(VisualItem aVisualItem)
         {
             PrepareControl(aVisualItem);
@@ -251,7 +240,6 @@ namespace NetSettings.View
 
         private static void PrepareControl(VisualItem aVIsualItem)
         {
-
             var label = aVIsualItem.controlsGroup.label;
             var actualControl = aVIsualItem.controlsGroup.control;
             var aItem = aVIsualItem.Item;
@@ -260,17 +248,16 @@ namespace NetSettings.View
                 case "combo":
                     string[] values = aItem.values.Split(';');
                     foreach (string v in values)
-                        (actualControl as IComboBox).AddItem(v);
+                        ((IComboBox) actualControl).AddItem(v);
                     break;
                 case "menu":
-                    (label as ILabelSingleClick).ForeColor = Color.LawnGreen;
+                    label.ForeColor = Color.LawnGreen;
                     break;
             }
         }
 
         private void ProcessEvents(VisualItem aVisualItem)
         {
-
             var t = aVisualItem.controlsGroup.control;
             var p = aVisualItem.controlsGroup.parentContainer;
             var l = aVisualItem.controlsGroup.label;
@@ -389,23 +376,23 @@ namespace NetSettings.View
             parent.BackColor = aVisualItem.PanelBackgroundColor;
 
             fCurrentPanelPosition.X = p.HorizontalMargin * fNesting;
-            parent.Location = fCurrentPanelPosition;
             fCurrentPanelPosition.Y += p.LineSpacing;
-            Point controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
+            parent.Location = fCurrentPanelPosition;
             var label = group.label;
             label.Width = p.TitleMaxWidth;
             label.Height = p.LineHeight;
+            var controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
             label.Location = controlPosition;
             controlPosition.X = p.TitleMaxWidth + p.TitleSpacing;
-            IControl control = group.control;
+            var control = group.control;
             control.Location = controlPosition;
             control.Height = p.LineHeight;
             control.Width = p.ControlMaxWidth;
-            controlPosition.X += p.ControlMaxWidth + p.ControlSpacing;
 
             //Add a default button 
             if (!isMenu)
             {
+                controlPosition.X += p.ControlMaxWidth + p.ControlSpacing;
                 var button = group.defaultButton;
                 button.Width = p.DefaultButtonWidth;
                 button.Height = p.LineHeight;
@@ -549,7 +536,7 @@ namespace NetSettings.View
                         (aControl as ITextBox).Text = (val != null ? val as string : string.Empty);
                         break;
                     case "color":
-                        aControl.BackColor = (Color?) val ?? Color.Empty; //TODO: This was IColorControl
+                        aControl.BackColor = (Color?)val ?? Color.Empty; //TODO: This was IColorControl
                         break;
                 }
                 CheckLabelColor(aVisualItem);
@@ -654,7 +641,7 @@ namespace NetSettings.View
 
         private void Combo_MouseDoubleClick(object sender, EventArgs e)
         {
-            ComboBox comboBox = sender as ComboBox;
+            var comboBox = sender as IComboBox;
             VisualItem item = GetItemFromControl(comboBox);
             SetValue(item, comboBox.SelectedItem);
         }
@@ -665,7 +652,7 @@ namespace NetSettings.View
             VisualItem item = GetItemFromControl(p);
             var dialog = guiProvider.CreateGuiElement(GuiElementType.ColorDialog) as IColorDialog;
             dialog.FullOpen = true;
-            dialog.Color = (Color) GetValue(item.Item.FullName);
+            dialog.Color = (Color)GetValue(item.Item.FullName);
             var colorControl = item.controlsGroup.control as IColorControl;
             if (dialog.ShowDialog() == DialogResult.OK)
                 SetValue(item, dialog.Color);
@@ -746,7 +733,7 @@ namespace NetSettings.View
 
         void c_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var comboBox = sender as ComboBox;
+            var comboBox = sender as IComboBox;
             var item = GetItemFromControl(comboBox);
             SetValue(item, comboBox.SelectedItem);
         }

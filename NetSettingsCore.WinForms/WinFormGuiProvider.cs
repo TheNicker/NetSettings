@@ -1,5 +1,4 @@
 ﻿using System;
-using NetSettings.Forms;
 using NetSettings.View;
 using NetSettingsCore.Common;
 using NetSettingsCore.WinForms.CustomControls;
@@ -66,10 +65,13 @@ namespace NetSettingsCore.WinForms
                     control = new WinFormButton();
                     break;
                 case GuiElementType.Color:
-                    control = new ColorControl();
+                    control = new WinFormColorControl();
                     break;
                 case GuiElementType.Combo:
                     control = new WinFormComboBox();
+                    break;
+                case GuiElementType.ColorDialog:
+                    throw new NotImplementedException("gui element creation is yet to be implemented.");
                     break;
                 default:
                     throw new NotImplementedException("gui element creation is yet to be implemented.");

@@ -24,20 +24,24 @@ namespace NetSettings.Controls
                 aTarget.MouseEnter += aTarget_MouseEnter;
                 aTarget.MouseLeave += aTarget_MouseLeave;
             }
-            foreach (IControl control in aTarget.Controls)
-                AddEvents(control);
 
+            if (aTarget.VisualControl != null) //TODO: Remove this condition!
+            {
+                foreach (IControl control in aTarget.VisualControl)
+                    AddEvents(control);//TODO: Fix this!
+            }
 
+            //TODO: Do we need this lines?
+            //foreach (IControl control in aTarget.LogicalControls)
+            //    AddEvents(control);
         }
 
         void aTarget_MouseLeave(object sender, EventArgs e)
         {
-
             if (--i < 0)
                 i = 0;
             if (i == 0)
                 MouseLeave(sender, e);
-
         }
 
         void aTarget_MouseEnter(object sender, EventArgs e)

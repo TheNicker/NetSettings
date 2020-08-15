@@ -3,26 +3,31 @@ using System.Collections;
 using System.Windows.Forms;
 using NetSettingsCore.WinForms;
 using NetSettingsCore.Common;
+using NetSettingsCore.Common.Interfaces;
 
 namespace NetSettingsTestCore.Controls
 {
     public partial class ControlContainer : ScrollableControl, IControlContainer
     {
-        IList IControlContainer.Controls => Controls;
+        //public IList Controls => Controls;
+        public void AddControl(IControl control)
+        {
+            this.Controls.Add(control.Instance as Control);
+        }
 
         public ControlContainer()
         {
-            DoubleBuffered = true;
-            AutoScroll = true;
-            SetStyle(ControlStyles.OptimizedDoubleBuffer |
-             ControlStyles.AllPaintingInWmPaint, true);
+            this.DoubleBuffered = true;
+            this.AutoScroll = true;
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer |
+                          ControlStyles.AllPaintingInWmPaint, true);
         }
 
         public void ScrollY(int delta)
         {
-            int scrollPosition = VerticalScroll.Value - delta;
-            scrollPosition = Math.Min(Math.Max(scrollPosition, VerticalScroll.Minimum), VerticalScroll.Maximum);
-            VerticalScroll.Value = scrollPosition;
+            int scrollPosition = this.VerticalScroll.Value - delta;
+            scrollPosition = Math.Min(Math.Max(scrollPosition, this.VerticalScroll.Minimum), this.VerticalScroll.Maximum);
+            this.VerticalScroll.Value = scrollPosition;
         }
 
         public void Reset()
@@ -33,7 +38,7 @@ namespace NetSettingsTestCore.Controls
 
         public void ResetPosition()
         {
-            HorizontalScroll.Value = VerticalScroll.Value = 0;
+            this.HorizontalScroll.Value = this.VerticalScroll.Value = 0;
 
         }
 

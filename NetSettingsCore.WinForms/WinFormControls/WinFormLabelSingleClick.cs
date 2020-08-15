@@ -1,16 +1,21 @@
-﻿using System.Windows.Forms;
-using NetSettings.Forms;
+﻿using System;
+using System.Windows.Forms;
 using NetSettingsCore.WinForms.WinFormControls;
 
 namespace NetSettings.Controls
 {
     //TODO: Can this be changed to internal?
     //TODO: Can this be deleted? See WinFormLabel
-    public class WinFormLabelSingleClick : WinFormLabel
+    internal class WinFormLabelSingleClick : WinFormLabel
     {
-        public WinFormLabelSingleClick(bool aAllowDoubleClick)
+        public WinFormLabelSingleClick()
         {
-            SetStyle(ControlStyles.StandardDoubleClick, aAllowDoubleClick);
+            throw new NotImplementedException("Why do we need this class?");
         }
+
+        //public WinFormLabelSingleClick(bool aAllowDoubleClick)
+        //{
+        //    SetStyle(ControlStyles.StandardDoubleClick, aAllowDoubleClick);
+        //}
     }
 }

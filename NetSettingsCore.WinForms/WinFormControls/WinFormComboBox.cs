@@ -8,20 +8,20 @@ using NetSettingsCore.Common.Interfaces;
 
 namespace NetSettingsCore.WinForms.WinFormControls
 {
-    public class WinFormComboBox : ComboBox, IComboBox
+    internal class WinFormComboBox : WinFormControl, IComboBox
     {
-        public IList Controls => base.Controls;
-        public IList<IControl> LogicalControls { get; }
-        public Color BackColor { get; set; }
-        public Point Location { get; set; }
-        public IFont Font { get; set; }
-        public event EventHandler MouseClick;
-        public event EventHandler MouseDoubleClick;
-        public event EventHandler KeyDown;
+        private readonly ComboBox _comboBox = new ComboBox();
+
+        public WinFormComboBox()
+        {
+            _control = _comboBox;
+        }
+
+        public object SelectedItem { get => _comboBox.SelectedItem; set => _comboBox.SelectedItem = value; }
 
         public void AddItem(string item)
         {
-            Items.Add(item);
+            _ = _comboBox.Items.Add(item);
         }
     }
 }

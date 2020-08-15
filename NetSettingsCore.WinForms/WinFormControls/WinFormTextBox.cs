@@ -7,45 +7,45 @@ using NetSettingsCore.Common;
 using NetSettingsCore.Common.Interfaces;
 using BorderStyle = NetSettingsCore.Common.BorderStyle;
 using DockStyle = NetSettingsCore.Common.DockStyle;
+using WinFormDockStyle = System.Windows.Forms.DockStyle;
 using Color = NetSettingsCore.Common.Classes.Color;
 using Point = NetSettingsCore.Common.Classes.Point;
 
 namespace NetSettingsCore.WinForms.WinFormControls
 {
-    public class WinFormTextBox : TextBox, ITextBox
+    internal class WinFormTextBox : WinFormControl, ITextBox
     {
-        private WinFormFont _winFormFont;
-        public new IList Controls => base.Controls;
-        public IList<IControl> LogicalControls { get; }
+        private readonly TextBox _textBox = new TextBox();
 
-        public Color BackColor { get; set; }
-        public Point Location { get; set; }
-
-        public new IFont Font
+        public WinFormTextBox()
         {
-            get
-            {
-                if (_winFormFont == null)
-                {
-                    _winFormFont = new WinFormFont(base.Font);
-                }
-
-                return _winFormFont;
-
-            }
-            set
-            {
-                base.Font = new Font(value.FontFamily, value.Size, (FontStyle)value.Appearance);
-                _winFormFont = new WinFormFont(base.Font);
-            }
+            _control = _textBox;
         }
 
-        public event EventHandler MouseClick;
-        public event EventHandler SelectedIndexChanged;
-        public event EventHandler MouseDoubleClick;
-        public event EventHandler KeyDown;
-        public ITextBox Instance { get=>this; }
-        public DockStyle Dock { get; set; }
-        public BorderStyle BorderStyle { get; set; }
+        public bool Multiline { get => _textBox.Multiline; set => _textBox.Multiline = value; }
+        public DockStyle Dock { get => (DockStyle)_textBox.Dock; set => _textBox.Dock = (System.Windows.Forms.DockStyle)value; }
+        public bool ReadOnly { get => _textBox.ReadOnly; set => _textBox.ReadOnly = value; }
+        public BorderStyle BorderStyle { get => (BorderStyle)_textBox.BorderStyle; set => _textBox.BorderStyle = (System.Windows.Forms.BorderStyle)value; }
+
+        //private WinFormFont _winFormFont;
+
+        //public new IFont Font
+        //{
+        //    get
+        //    {
+        //        if (_winFormFont == null)
+        //        {
+        //            _winFormFont = new WinFormFont(base.Font);
+        //        }
+
+        //        return _winFormFont;
+
+        //    }
+        //    set
+        //    {
+        //        base.Font = new Font(value.FontFamily, value.Size, (FontStyle)value.Appearance);
+        //        _winFormFont = new WinFormFont(base.Font);
+        //    }
+        //}
     }
 }
