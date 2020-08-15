@@ -82,7 +82,7 @@ namespace NetSettings.Data
         public Dictionary<string, object> GenerateDefaultOptionsSet()
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, ItemTree> pair in fQualifiedNames)
+            foreach (var pair in fQualifiedNames)
                 result.Add(pair.Key, pair.Value.defaultValue);
 
             return result;

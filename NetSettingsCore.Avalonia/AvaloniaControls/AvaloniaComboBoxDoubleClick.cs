@@ -4,7 +4,7 @@ using NetSettings.Forms;
 
 namespace NetSettings.WinForms.Controls
 {
-    public class AvaloniaComboBoxDoubleClick : AvaloniaComboBox
+    internal class AvaloniaComboBoxDoubleClick : AvaloniaComboBox
     {
         DateTime prevClick = DateTime.MinValue;
 

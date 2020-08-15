@@ -13,7 +13,7 @@ using Color = NetSettingsCore.Common.Classes.Color;
 namespace NetSettingsCore.Avalonia.Controls
 {
     //TODO: Uncomment all the code in this control
-    public class ColorControl : AvaloniaTextBox, IColorControl
+    internal class ColorControl : AvaloniaTextBox, IColorControl
     {
         //public ColorControl()
         //{
@@ -51,7 +51,7 @@ namespace NetSettingsCore.Avalonia.Controls
         //    }
 
         //}
-        
+
         //public bool DisableAutoColorName { get; set; }
 
         //public bool Updating { get; set; }
@@ -89,27 +89,27 @@ namespace NetSettingsCore.Avalonia.Controls
         //    return base.ProcessCmdKey(ref msg, keyData);
         //}
 
-        public IList Controls => base.Controls;
-        public new IFont Font { get; set; }
-        //public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //    public IList Controls => base.Controls;
+        //    public new IFont Font { get; set; }
+        //    //public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public IList<IControl> LogicalControls => throw new NotImplementedException();
+        //    public IList<IControl> LogicalControls => throw new NotImplementedException();
 
-        int IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        int IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Color BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public global::Avalonia.Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public global::Avalonia.Media.Color Color { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //    int IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //    int IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //    public Color BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //    public global::Avalonia.Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //    public global::Avalonia.Media.Color Color { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public event EventHandler MouseClick;
-        public event EventHandler SelectedIndexChanged;
-        public event EventHandler MouseDoubleClick;
-        public event EventHandler KeyDown;
-        public event EventHandler DoubleClick;
-        public event EventHandler TextChanged;
-        public event EventHandler Leave;
-        public event EventHandler Click;
-        public event EventHandler MouseEnter;
-        public event EventHandler MouseLeave;
+        //    public event EventHandler MouseClick;
+        //    public event EventHandler SelectedIndexChanged;
+        //    public event EventHandler MouseDoubleClick;
+        //    public event EventHandler KeyDown;
+        //    public event EventHandler DoubleClick;
+        //    public event EventHandler TextChanged;
+        //    public event EventHandler Leave;
+        //    public event EventHandler Click;
+        //    public event EventHandler MouseEnter;
+        //    public event EventHandler MouseLeave;
     }
 }

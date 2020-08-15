@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using NetSettingsCore.Avalonia.AvaloniaControls;
 using NetSettingsCore.Common;
 using FlatStyle = NetSettingsCore.Common.FlatStyle;
 using Color = NetSettingsCore.Common.Classes.Color;
@@ -12,7 +13,7 @@ using Point = NetSettingsCore.Common.Classes.Point;
 
 namespace NetSettings.Forms
 {
-    internal class AvaloniaButton : Button, IButton
+    internal class AvaloniaButton : AvaloniaControl, IButton
     {
         //WinFormControl(System.Windows.Forms.Control control)
         //{
@@ -53,45 +54,46 @@ namespace NetSettings.Forms
         //public event EventHandler MouseDoubleClick;
         //public event EventHandler KeyDown;
         //public FlatStyle FlatStyle { get; set; }
-        public new FlatStyle FlatStyle
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-        public IList Controls => throw new NotImplementedException();
-        public IFont Font { get; set; }
-        public Avalonia.Media.Color BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Text { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //public new FlatStyle FlatStyle
+        //{
+        //    get => throw new NotImplementedException();
+        //    set => throw new NotImplementedException();
+        //}
+        //public IList Controls => throw new NotImplementedException();
+        //public IFont Font { get; set; }
+        //public Avalonia.Media.Color BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //public string Text { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //public Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public IList<IControl> LogicalControls => throw new NotImplementedException();//base.LogicalChildren;
+        //public IList<IControl> LogicalControls => throw new NotImplementedException();//base.LogicalChildren;
 
-        int IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        int IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        Color IControl.BackColor { set => throw new NotImplementedException(); }
+        //int IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //int IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //Color IControl.BackColor { set => throw new NotImplementedException(); }
 
-        public event EventHandler MouseClick;
-        public event EventHandler SelectedIndexChanged;
-        public event EventHandler MouseDoubleClick;
-        public event EventHandler KeyDown;
-        public event EventHandler DoubleClick;
-        public event EventHandler TextChanged;
-        public event EventHandler Leave;
-        public event EventHandler MouseEnter;
-        public event EventHandler MouseLeave;
+        //public event EventHandler MouseClick;
+        //public event EventHandler SelectedIndexChanged;
+        //public event EventHandler MouseDoubleClick;
+        //public event EventHandler KeyDown;
+        //public event EventHandler DoubleClick;
+        //public event EventHandler TextChanged;
+        //public event EventHandler Leave;
+        //public event EventHandler MouseEnter;
+        //public event EventHandler MouseLeave;
 
-        event EventHandler IControl.Click
-        {
-            add
-            {
-                throw new NotImplementedException();
-            }
+        //event EventHandler IControl.Click
+        //{
+        //    add
+        //    {
+        //        throw new NotImplementedException();
+        //    }
 
-            remove
-            {
-                throw new NotImplementedException();
-            }
-        }
+        //    remove
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
+        public FlatStyle FlatStyle { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

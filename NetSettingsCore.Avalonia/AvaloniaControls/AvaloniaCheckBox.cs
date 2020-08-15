@@ -1,58 +1,55 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Avalonia.Controls;
-using Avalonia.LogicalTree;
-using NetSettingsCore.Avalonia.AvaloniaControls;
+﻿using Avalonia.Controls;
+using NetSettings.Forms;
 using NetSettingsCore.Common;
-using NetSettingsCore.Common.Classes;
-using IControl = NetSettingsCore.Common.Interfaces.IControl;
 
-namespace NetSettings.Forms
+namespace NetSettingsCore.Avalonia.AvaloniaControls
 {
-    public class AvaloniaCheckBox : CheckBox, ICheckBox
+    internal class AvaloniaCheckBox : AvaloniaControl, ICheckBox
     {
-        private LogicalControls _logicalControls;
+        //private LogicalControls _logicalControls;
 
         public AvaloniaCheckBox()
         {
-            _logicalControls = new LogicalControls(base.LogicalChildren);
+            //_logicalControls = new LogicalControls(base.LogicalChildren);
+            _control = new CheckBox();
         }
 
-        public new IList Controls => throw new NotImplementedException("Avalonia:CheckBox:Controls");
-        public IFont Font { get; set; }
-        public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Text { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool Checked { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
-        public IList<IControl> LogicalControls => _logicalControls;
+        //public new IList Controls => throw new NotImplementedException("Avalonia:CheckBox:Controls");
+        //public IFont Font { get; set; }
+        //public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //public string Text { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public Color BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool Checked { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        int IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        int IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //public IList<IControl> LogicalControls => _logicalControls;
 
-        public event EventHandler MouseClick;
-        public event EventHandler SelectedIndexChanged;
-        public event EventHandler MouseDoubleClick;
-        public event EventHandler KeyDown;
-        public event EventHandler DoubleClick;
-        public event EventHandler TextChanged;
-        public event EventHandler Leave;
-        public event EventHandler MouseEnter;
-        public event EventHandler MouseLeave;
+        //public Color BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //public Point Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //public bool Checked { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //int IControl.Width { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //int IControl.Height { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        event EventHandler IControl.Click
-        {
-            add
-            {
-                throw new NotImplementedException();
-            }
+        //public event EventHandler MouseClick;
+        //public event EventHandler SelectedIndexChanged;
+        //public event EventHandler MouseDoubleClick;
+        //public event EventHandler KeyDown;
+        //public event EventHandler DoubleClick;
+        //public event EventHandler TextChanged;
+        //public event EventHandler Leave;
+        //public event EventHandler MouseEnter;
+        //public event EventHandler MouseLeave;
 
-            remove
-            {
-                throw new NotImplementedException();
-            }
-        }
+        //event EventHandler IControl.Click
+        //{
+        //    add
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+
+        //    remove
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
     }
 }
