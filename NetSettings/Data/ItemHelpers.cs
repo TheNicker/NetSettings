@@ -3,32 +3,28 @@ using System;
 using System.Collections.Generic;
 using NetSettingsCore.Common;
 using NetSettingsCore.Common.Classes;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace NetSettings
 {
     internal class ItemHelpers
     {
-        public static void BuildQualifiedNames(Dictionary<string, ItemTree> aQualifiedNames, ItemTree item, ItemTree parent)
+        public static void BuildQualifiedNames(Dictionary<string, ItemTree> aQualifiedNames, ItemTree item, ItemTree parent)//TODO: Can this be changed to private?
         {
-            ItemTree currentParent = parent == null || parent.type == "root" ? null : parent;
+            var currentParent = (parent == null || parent.type == "root") ? null : parent;
             if (item.type != "root")
             {
-                if (currentParent == null)
-                {
-                    item.FullName = item.name;
-                }
-                else
-                {
-                    item.FullName = String.Format("{0}.{1}", currentParent.FullName, item.name);
-                }
+                item.FullName = currentParent == null ? item.name : $"{currentParent.FullName}.{item.name}";
             }
 
             if (item.subItems != null)
-                foreach (ItemTree subItem in item.subItems)
+            {
+                foreach (var subItem in item.subItems)
                 {
                     BuildQualifiedNames(aQualifiedNames, subItem, item);
-
                 }
+            }
 
             if (item.FullName != null)
             {
@@ -65,28 +61,30 @@ namespace NetSettings
                         {
                             obj = Color.FromHtml(htmlColor);
                         }
+                        else if (!(obj is Color))
+                        {
+                            var color = ((JObject) obj);
+                            //TODO: Choose how to handle a null case
+                            var r = (color.GetValue("R") ?? throw new InvalidOperationException()).Value<byte>();
+                            var g = color.GetValue("G")!.Value<byte>();
+                            var b = color.GetValue("B")!.Value<byte>();
+                            obj = Color.FromArgb(r,g,b);
+                        }
                     }
                     finally
                     {
-                        System.Threading.Thread.CurrentThread.CurrentCulture =
-                            lastCulture; //TODO: What is the purpose of this line?
+                        System.Threading.Thread.CurrentThread.CurrentCulture = lastCulture; //TODO: What is the purpose of this line?
                     }
-
-
-                    //TODO: Why do we need this lines?
-                    //Make sure all the colors are created from (R,G,B) and not known names
-                    var color = (Color)obj;
-                    obj = Color.FromArgb(color.R, color.G, color.B);
-
-                    //TODO: Delete this lines? if no remove the System.Drawing
-                    //if (aItem.value != null && aItem.value is string)
-                    //    aItem.value = System.Drawing.ColorTranslator.FromHtml(aItem.value as string);
                     break;
                 case "number":
                     //normalize all our numbers to double data type
                     if (obj != null && obj is long num)
-                        obj = (double)num;
+                    {
+                        obj = (double) num;
+                    }
                     break;
+                //default:
+                //    throw new NotImplementedException("aItem.type: " + aItem.type);
             }
         }
     }
