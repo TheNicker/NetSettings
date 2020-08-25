@@ -19,7 +19,8 @@ namespace NetSettingsCore.Common.Interfaces
         IList<IControl> LogicalControls { get; set; }//TODO: Can we remove the set?
         int Width { get; set; }//TODO: Can we remove the set?
         int Height { get; set; }//TODO: Can we remove the set?
-        Color BackColor { set; }//TODO: Can we remove the set?
+
+        Color BackColor { get; set; }
         Color ForeColor { set; }//TODO: Do we need to add the get although it is not in use?
         Point Location { get; set; }//TODO: Can we remove the set?
         IFont Font { get; set; }//TODO: Can we remove the set?
@@ -31,7 +32,6 @@ namespace NetSettingsCore.Common.Interfaces
         event EventHandler MouseClick;
         event EventHandler TextChanged;
         event EventHandler Leave;
-        event EventHandler SelectedIndexChanged;
         event EventHandler MouseDoubleClick;
         event EventHandler KeyDown;
         event EventHandler Click;

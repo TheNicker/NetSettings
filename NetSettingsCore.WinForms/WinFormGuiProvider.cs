@@ -74,7 +74,7 @@ namespace NetSettingsCore.WinForms
                     throw new NotImplementedException("gui element creation is yet to be implemented.");
                     break;
                 default:
-                    throw new NotImplementedException("gui element creation is yet to be implemented.");
+                    throw new NotImplementedException($"gui element {guiElementName} is not known. How did we get here?");
             }
 
             return control;

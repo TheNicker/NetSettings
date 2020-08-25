@@ -5,8 +5,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using DrawingPoint = System.Drawing.Point;
 using DrawingColor = System.Drawing.Color;
+using DrawingPoint = System.Drawing.Point;
 using Point = NetSettingsCore.Common.Classes.Point;
 
 namespace NetSettingsCore.WinForms.WinFormControls
@@ -20,7 +20,15 @@ namespace NetSettingsCore.WinForms.WinFormControls
             _control = new Control();
         }
 
-        public virtual Color BackColor { get; set; }
+        public virtual Color BackColor
+        {
+            get
+            {
+                var color = _control.BackColor;
+                return Color.FromArgb(color.A, color.R, color.G, color.B);
+            }
+            set => _control.BackColor = DrawingColor.FromArgb(value.A, value.R, value.G, value.B);
+        }
 
         public Point Location
         {
@@ -49,15 +57,58 @@ namespace NetSettingsCore.WinForms.WinFormControls
             return control;
         }
 
-        public event EventHandler MouseClick;
-        public event EventHandler SelectedIndexChanged;
-        public event EventHandler MouseDoubleClick;
-        public event EventHandler KeyDown;
-        public event EventHandler DoubleClick;
-        public event EventHandler TextChanged;
-        public event EventHandler Leave;
-        public event EventHandler Click;
-        public event EventHandler MouseEnter;
-        public event EventHandler MouseLeave;
+        public static T Cast<T>(object o)
+        {
+            return (T)o;
+        }
+
+        //TODO: Open all the events
+        public event EventHandler MouseClick
+        {
+            add => _control.MouseClick += (object sender, MouseEventArgs e) => value(sender, e);
+            remove => _control.MouseClick -= (object sender, MouseEventArgs e) => value(sender, e);
+        }
+
+        public event EventHandler MouseDoubleClick
+        {
+            add => _control.MouseDoubleClick += (object sender, MouseEventArgs e) => value(sender, e);
+            remove => _control.MouseDoubleClick -= (object sender, MouseEventArgs e) => value(sender, e);
+        }
+        public event EventHandler KeyDown
+        {
+            add => _control.KeyDown += (object sender, KeyEventArgs e) => value(sender, e);
+            remove => _control.KeyDown -= (object sender, KeyEventArgs e) => value(sender, e);
+        }
+        public event EventHandler DoubleClick
+        {
+            add => _control.DoubleClick += value;
+            remove => _control.DoubleClick -= value;
+        }
+        public event EventHandler TextChanged
+        {
+            add => _control.TextChanged += value;
+            remove => _control.TextChanged -= value;
+        }
+        public event EventHandler Leave
+        {
+            add => _control.Leave += value;
+            remove => _control.Leave -= value;
+        }
+        public event EventHandler Click
+        {
+            add => _control.Click += value;
+            remove => _control.Click -= value;
+        }
+        public event EventHandler MouseEnter
+        {
+            add => _control.MouseEnter += value;
+            remove => _control.MouseEnter -= value;
+        }
+
+        public event EventHandler MouseLeave
+        {
+            add => _control.MouseLeave += value;
+            remove => _control.MouseLeave -= value;
+        }
     }
 }

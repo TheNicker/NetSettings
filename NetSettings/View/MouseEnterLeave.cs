@@ -1,10 +1,8 @@
-﻿using System;
-using NetSettingsCore.Common;
+﻿using NetSettingsCore.Common;
 using NetSettingsCore.Common.Interfaces;
+using System;
 
-//using System.Windows.Forms;
-
-namespace NetSettings.Controls
+namespace NetSettings.View
 {
     public class MouseEnterLeave //TODO: Remove this file as this bug is created by Lior
     {
@@ -12,6 +10,7 @@ namespace NetSettings.Controls
         public event EventHandler MouseEnter = delegate { };
         public event EventHandler MouseLeave = delegate { };
         public static IControl LastEntered;
+
         public MouseEnterLeave(IGuiElement aTarget)
         {
             AddEvents(aTarget as IControl);
@@ -21,8 +20,8 @@ namespace NetSettings.Controls
         {
             if (aTarget != null)
             {
-                aTarget.MouseEnter += aTarget_MouseEnter;
-                aTarget.MouseLeave += aTarget_MouseLeave;
+                aTarget.MouseEnter += delegate(object sender, EventArgs e) { aTarget_MouseEnter(aTarget, e); };
+                aTarget.MouseLeave += delegate (object sender, EventArgs e) { aTarget_MouseLeave(aTarget, e); };
             }
 
             if (aTarget.VisualControl != null) //TODO: Remove this condition!
@@ -36,24 +35,33 @@ namespace NetSettings.Controls
             //    AddEvents(control);
         }
 
-        void aTarget_MouseLeave(object sender, EventArgs e)
+        private void aTarget_MouseLeave(object sender, EventArgs e)
         {
-            if (--i < 0)
-                i = 0;
-            if (i == 0)
-                MouseLeave(sender, e);
+            //TODO: Why do we need the lines below?
+            //if (--i < 0)
+            //{
+            //    i = 0;
+            //}
+
+            //if (i == 0)
+            //{
+            MouseLeave(sender, e);
+            //}
         }
 
-        void aTarget_MouseEnter(object sender, EventArgs e)
+        private void aTarget_MouseEnter(object sender, EventArgs e)
         {
-            if (++i == 1)
-            {
-                if (LastEntered != null)
-                    MouseLeave(LastEntered, e);
-                
-                LastEntered = sender as IControl;
-                MouseEnter(sender, e);
-            }
+            //TODO: Why do we need the lines below?
+            //if (++i == 1)
+            //{
+            //    if (LastEntered != null)
+            //    {
+            //        MouseLeave(LastEntered, e);
+            //    }
+
+            //    LastEntered = sender as IControl;
+            MouseEnter(sender, e);
+            //}
         }
     }
 }

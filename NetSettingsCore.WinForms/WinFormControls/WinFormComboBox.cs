@@ -23,5 +23,11 @@ namespace NetSettingsCore.WinForms.WinFormControls
         {
             _ = _comboBox.Items.Add(item);
         }
+
+        public event EventHandler SelectedIndexChanged
+        {
+            add => _comboBox.SelectedIndexChanged += value;
+            remove => _comboBox.SelectedIndexChanged -= value;
+        }
     }
 }

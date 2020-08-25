@@ -1,10 +1,12 @@
-﻿using NetSettings.Controls;
+﻿// ReSharper disable PossibleNullReferenceException
+using NetSettings.Controls;
 using NetSettings.Data;
 using NetSettingsCore.Common;
 using NetSettingsCore.Common.Classes;
 using NetSettingsCore.Common.Interfaces;
 using System;
 using System.Collections.Generic;
+using NetSettingsCore.View;
 using BorderStyle = NetSettingsCore.Common.BorderStyle;
 using CheckBox = NetSettingsCore.Common.ICheckBox;
 using DialogResult = NetSettingsCore.Common.DialogResult;
@@ -214,11 +216,10 @@ namespace NetSettings.View
             {
                 var button = group.defaultButton = guiProvider.CreateGuiElement(GuiElementType.Button) as IButton;
                 button.Text = "Default";
-                button.Click += button_Click;
+                button.Click += (object sender, EventArgs e) => button_Click(button, e);
                 //button.Tag = aVisualItem;
                 button.FlatStyle = FlatStyle.Popup;
-                //button.BackColor = SystemColors.Control; //TODO: Open this
-                //parent.VisualControl.Add(button);
+                button.BackColor = Color.LightGray;
                 parent.AddVisualControl(button);
                 dic.Add(button, aVisualItem);
                 fCurrentRow++;
@@ -226,6 +227,7 @@ namespace NetSettings.View
 
             //TODO: WTF?????
             MouseEnterLeave l = new MouseEnterLeave(parent);
+            //TODO: Do we need this 2 events?
             l.MouseEnter += l_MouseEnter;
             l.MouseLeave += panel_MouseLeave;
             ProceeControl(aVisualItem);
@@ -247,8 +249,11 @@ namespace NetSettings.View
             {
                 case "combo":
                     string[] values = aItem.values.Split(';');
-                    foreach (string v in values)
-                        ((IComboBox) actualControl).AddItem(v);
+                    foreach (var value in values)
+                    {
+                        (actualControl as IComboBox).AddItem(value);
+                    }
+
                     break;
                 case "menu":
                     label.ForeColor = Color.LawnGreen;
@@ -269,34 +274,37 @@ namespace NetSettings.View
                     l.DoubleClick += Menu_DoubleClick;
                     break;
                 case "bool":
-                    t.MouseClick += CheckBox_MouseClick;
-                    p.MouseClick += CheckBox_MouseClick;
-                    l.MouseClick += CheckBox_MouseClick;
+                    t.MouseClick += (sender, e) => { CheckBox_MouseClick(t, e); };
+                    p.MouseClick += (sender, e) => { CheckBox_MouseClick(t, e); };
+                    l.MouseClick += (sender, e) => { CheckBox_MouseClick(t, e); };
                     break;
                 case "text":
                     t.TextChanged += MenuSettings_TextChanged;
-                    t.Leave += DataView_Leave;
+                    t.Leave += (sender, e) => { DataView_Leave(t, e); };
                     break;
                 case "number":
                     t.TextChanged += MenuSettings_NumberChanged;
-                    t.Leave += Number_Leave;
+                    t.Leave += (sender, e) => { Number_Leave(t, e); };
                     break;
                 case "combo":
-                    t.SelectedIndexChanged += c_SelectedIndexChanged;
+                    (t as IComboBox).SelectedIndexChanged += (sender, e) => { c_SelectedIndexChanged(t, e); };
                     t.MouseDoubleClick += Combo_MouseDoubleClick;
                     break;
                 case "image":
                     t.TextChanged += MenuSettings_TextChanged;
                     t.MouseDoubleClick += MenuSettings_MouseDoubleClick;
                     t.MouseLeave += MenuSettings_MouseLeave;
-                    t.MouseEnter += MenuSettings_MouseEnter;
+                    t.MouseEnter += (object sender, EventArgs e) =>
+                    {
+                        MenuSettings_MouseEnter(t, e);
+                    };
                     break;
                 case "color":
                     t.KeyDown += ColorControl_KeyDown;
                     t.TextChanged += ColorControl_TextChanged;
-                    t.DoubleClick += MenuSettings_Click;
-                    p.Click += MenuSettings_Click;
-                    l.Click += MenuSettings_Click;
+                    t.DoubleClick += (sender, e) => { MenuSettings_Click(t, e); };
+                    p.Click += (sender, e) => { MenuSettings_Click(t, e); };
+                    l.Click += (sender, e) => { MenuSettings_Click(t, e); };
                     break;
             }
         }
@@ -363,39 +371,39 @@ namespace NetSettings.View
 
             aVisualItem.controlsGroup.Visible = true;
 
-            ItemTree aItem = aVisualItem.Item;
-            DataViewPlacement p = fParams.placement;
-            bool isMenu = aItem.type == "menu";
+            var aItem = aVisualItem.Item;
+            var dvp = fParams.placement;
+            var isMenu = aItem.type == "menu";
             //Create parent container
-            ItemControlsGroup group = aVisualItem.controlsGroup;
-            IControl parent = aVisualItem.controlsGroup.parentContainer;
+            var group = aVisualItem.controlsGroup;
+            var parent = aVisualItem.controlsGroup.parentContainer;
 
-            parent.Width = p.TitleMaxWidth + p.TitleSpacing + p.ControlMaxWidth + p.ControlSpacing + p.DefaultButtonWidth;
-            parent.Height = p.LineSpacing;
+            parent.Width = dvp.TitleMaxWidth + dvp.TitleSpacing + dvp.ControlMaxWidth + dvp.ControlSpacing + dvp.DefaultButtonWidth;
+            parent.Height = dvp.LineSpacing;
             aVisualItem.PanelBackgroundColor = isMenu ? Color.DarkBlue : fCurrentRow % 2 == 0 ? Color.White : Color.LightGray;
             parent.BackColor = aVisualItem.PanelBackgroundColor;
 
-            fCurrentPanelPosition.X = p.HorizontalMargin * fNesting;
-            fCurrentPanelPosition.Y += p.LineSpacing;
+            fCurrentPanelPosition.X = dvp.HorizontalMargin * fNesting;
+            fCurrentPanelPosition.Y += dvp.LineSpacing;
             parent.Location = fCurrentPanelPosition;
             var label = group.label;
-            label.Width = p.TitleMaxWidth;
-            label.Height = p.LineHeight;
-            var controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
+            label.Width = dvp.TitleMaxWidth;
+            label.Height = dvp.LineHeight;
+            var controlPosition = new Point(0, (dvp.LineSpacing - dvp.LineHeight) / 2);
             label.Location = controlPosition;
-            controlPosition.X = p.TitleMaxWidth + p.TitleSpacing;
+            controlPosition.X = dvp.TitleMaxWidth + dvp.TitleSpacing;
             var control = group.control;
             control.Location = controlPosition;
-            control.Height = p.LineHeight;
-            control.Width = p.ControlMaxWidth;
+            control.Height = dvp.LineHeight;
+            control.Width = dvp.ControlMaxWidth;
 
             //Add a default button 
             if (!isMenu)
             {
-                controlPosition.X += p.ControlMaxWidth + p.ControlSpacing;
+                controlPosition.X += dvp.ControlMaxWidth + dvp.ControlSpacing;
                 var button = group.defaultButton;
-                button.Width = p.DefaultButtonWidth;
-                button.Height = p.LineHeight;
+                button.Width = dvp.DefaultButtonWidth;
+                button.Height = dvp.LineHeight;
                 button.Location = controlPosition;
                 fCurrentRow++;
             }
@@ -460,7 +468,7 @@ namespace NetSettings.View
                 ? fLabelBold : fLabelNormal;
         }
 
-        void button_Click(object sender, EventArgs e)
+        private void button_Click(object sender, EventArgs e)
         {
             IControl c = sender as IControl;
             VisualItem item = GetItemFromControl(c);
@@ -468,7 +476,7 @@ namespace NetSettings.View
                 SetValue(item, item.Item.defaultValue);
         }
 
-        void l_MouseEnter(object sender, EventArgs e)
+        private void l_MouseEnter(object sender, EventArgs e)
         {
             dic.TryGetValue(sender as IControl, out var item);
             if (item != null)
@@ -485,14 +493,14 @@ namespace NetSettings.View
             }
         }
 
-        void panel_MouseLeave(object sender, EventArgs e)
+        private void panel_MouseLeave(object sender, EventArgs e)
         {
             dic.TryGetValue(sender as IControl, out var item);
             if (item != null)
             {
                 if (item.Item.type != "menu")
                 {
-                    IControl container = item.controlsGroup.parentContainer;
+                    var container = item.controlsGroup.parentContainer;
                     container.BackColor = item.PanelBackgroundColor;
 
                 }
@@ -512,7 +520,7 @@ namespace NetSettings.View
             ItemTree item = aVisualItem.Item;
             if (aVisualItem.controlsGroup != null)
             {
-                IControl aControl = aVisualItem.controlsGroup.control;
+                var aControl = aVisualItem.controlsGroup.control;
                 object val = GetValue(item);
                 switch (item.type)
                 {
@@ -524,16 +532,14 @@ namespace NetSettings.View
                         (aControl as ICheckBox).Checked = _val;
                         break;
                     case "text":
-                        (aControl as ITextBox).Text = (val != null ? (string)val : string.Empty);
+                    case "image":
+                        aControl.Text = (val != null ? val as string : string.Empty);
                         break;
                     case "number":
-                        (aControl as ITextBox).Text = (val != null ? ToDoubleString(((double)val)) : string.Empty);
+                        aControl.Text = (val != null ? ToDoubleString(((double)val)) : string.Empty);
                         break;
                     case "combo":
                         (aControl as IComboBox).SelectedItem = val;
-                        break;
-                    case "image":
-                        (aControl as ITextBox).Text = (val != null ? val as string : string.Empty);
                         break;
                     case "color":
                         aControl.BackColor = (Color?)val ?? Color.Empty; //TODO: This was IColorControl
@@ -588,19 +594,19 @@ namespace NetSettings.View
 
         private void Number_Leave(object sender, EventArgs e)
         {
-            Leave(sender);
+            Leave(sender, e);
         }
 
         void DataView_Leave(object sender, EventArgs e)
         {
-            Leave(sender);
+            Leave(sender, e);
         }
 
-        private void Leave(object sender)
+        private void Leave(object sender, EventArgs e)
         {
             var textBox = sender as ITextBox;
-            VisualItem visualItem = GetItemFromControl(textBox);
-            object value = GetValueFromControl(visualItem);
+            var visualItem = GetItemFromControl(textBox);
+            var value = GetValueFromControl(visualItem);
             SetValue(visualItem, value, ItemChangedMode.UserConfirmed);
         }
 
@@ -740,9 +746,9 @@ namespace NetSettings.View
 
         void MenuSettings_TextChanged(object sender, EventArgs e)
         {
-            var textbox = sender as ITextBox;
-            var item = GetItemFromControl(textbox);
-            SetValue(item, textbox.Text, ItemChangedMode.OnTheFly);
+            var textBox = sender as ITextBox;
+            var item = GetItemFromControl(textBox);
+            SetValue(item, textBox.Text, ItemChangedMode.OnTheFly);
 
         }
 
@@ -751,7 +757,7 @@ namespace NetSettings.View
             return GetItemFromControl(aControl as IControl);
         }
 
-        private VisualItem GetItemFromControl(IControl aControl)
+        private VisualItem GetItemFromControl(IGuiElement aControl)
         {
             return dic.GetValueOrDefault(aControl);
         }
