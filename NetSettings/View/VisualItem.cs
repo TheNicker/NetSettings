@@ -1,7 +1,8 @@
 ﻿using NetSettings.Data;
+using NetSettings.View;
 using NetSettingsCore.Common.Classes;
 
-namespace NetSettings.View
+namespace NetSettingsCore.View
 {
     public class VisualItem
     {

@@ -4,64 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace NetSettingsCore.Common.Classes
 {
-    public struct Color
+    public readonly struct Color
     {
-        private const long NotDefinedValue = 0;
-
-        internal static bool IsKnownColorSystem(KnownColor knownColor)
-            => (knownColor <= KnownColor.WindowText) || (knownColor > KnownColor.YellowGreen);
-
-        private long Value
-        {
-            get
-            {
-                if ((state & StateValueMask) != 0)
-                {
-                    return value;
-                }
-
-                // This is the only place we have system colors value exposed
-                if (IsKnownColor)
-                {
-                    return KnownColorTable.KnownColorToArgb((KnownColor)knownColor);
-                }
-
-                return NotDefinedValue;
-            }
-        }
-
-
-        public byte R => unchecked((byte)(Value >> ARGBRedShift));
-
-        public byte G => unchecked((byte)(Value >> ARGBGreenShift));
-
-        public byte B => unchecked((byte)(Value >> ARGBBlueShift));
-
-        public byte A => unchecked((byte)(Value >> ARGBAlphaShift));
-
-        public bool IsKnownColor => (state & StateKnownColorValid) != 0;
-
-        internal const int ARGBAlphaShift = 24;
-        internal const int ARGBRedShift = 16;
-        internal const int ARGBGreenShift = 8;
-        internal const int ARGBBlueShift = 0;
-        private const short StateARGBValueValid = 0x0002;
-        private const short StateKnownColorValid = 0x0001;
-        private const short StateValueMask = StateARGBValueValid;
-
-        // User supplied name of color. Will not be filled in if
-        // we map to a "knowncolor"
-        private readonly string name; // Do not rename (binary serialization)
-
-        // Standard 32bit sRGB (ARGB)
-        private readonly long value; // Do not rename (binary serialization)
-
-        // Ignored, unless "state" says it is valid
-        private readonly short knownColor; // Do not rename (binary serialization)
-
-        // State flags.
-        private readonly short state; // Do not rename (binary serialization)
-
         public static readonly Color Empty = new Color();
 
         // -------------------------------------------------------------------
@@ -349,6 +293,87 @@ namespace NetSettingsCore.Common.Classes
 
         public static Color YellowGreen => new Color(KnownColor.YellowGreen);
 
+        //
+        //  end "web" colors
+        // -------------------------------------------------------------------
+
+        // NOTE : The "zero" pattern (all members being 0) must represent
+        //      : "not set". This allows "Color c;" to be correct.
+
+        private const short StateNameValid = 0x0008;
+
+        private const short StateKnownColorValid = 0x0001;
+        private const short StateARGBValueValid = 0x0002;
+        private const short StateValueMask = StateARGBValueValid;
+        private const long NotDefinedValue = 0;
+
+        internal const int ARGBAlphaShift = 24;
+        internal const int ARGBRedShift = 16;
+        internal const int ARGBGreenShift = 8;
+        internal const int ARGBBlueShift = 0;
+        // User supplied name of color. Will not be filled in if
+        // we map to a "knowncolor"
+        private readonly string name; // Do not rename (binary serialization)
+
+        // Standard 32bit sRGB (ARGB)
+        private readonly long value; // Do not rename (binary serialization)
+
+        // Ignored, unless "state" says it is valid
+        private readonly short knownColor; // Do not rename (binary serialization)
+
+        // State flags.
+        private readonly short state; // Do not rename (binary serialization)
+        public byte R => unchecked((byte)(Value >> ARGBRedShift));
+
+        public byte G => unchecked((byte)(Value >> ARGBGreenShift));
+
+        public byte B => unchecked((byte)(Value >> ARGBBlueShift));
+
+        public byte A => unchecked((byte)(Value >> ARGBAlphaShift));
+
+        public bool IsKnownColor => (state & StateKnownColorValid) != 0;
+
+        public bool IsNamedColor => ((state & StateNameValid) != 0) || IsKnownColor;
+
+        public string Name
+        {
+            get
+            {
+                if ((state & StateNameValid) != 0)
+                {
+                    return name;
+                }
+
+                if (IsKnownColor)
+                {
+                    var tableName = KnownColorNames.KnownColorToName((KnownColor)knownColor);
+                    Debug.Assert(tableName != null, $"Could not find known color '{(KnownColor)knownColor}' in the KnownColorTable");
+
+                    return tableName;
+                }
+
+                // if we reached here, just encode the value
+                //
+                return Convert.ToString(value, 16);
+            }
+        }
+
+        public override string ToString()
+        {
+            if (IsNamedColor)
+            {
+                return nameof(Color) + " [" + Name + "]";
+            }
+            else if ((state & StateValueMask) != 0)
+            {
+                return nameof(Color) + " [A=" + A.ToString() + ", R=" + R.ToString() + ", G=" + G.ToString() + ", B=" + B.ToString() + "]";
+            }
+            else
+            {
+                return nameof(Color) + " [Empty]";
+            }
+        }
+
         public static Color FromHtml(string htmlColor)
         {
             KnownColor knownColor;
@@ -391,6 +416,27 @@ namespace NetSettingsCore.Common.Classes
             this.name = name;
             this.knownColor = unchecked((short)knownColor);
         }
+        internal static bool IsKnownColorSystem(KnownColor knownColor)
+            => (knownColor <= KnownColor.WindowText) || (knownColor > KnownColor.YellowGreen);
+
+        private long Value
+        {
+            get
+            {
+                if ((state & StateValueMask) != 0)
+                {
+                    return value;
+                }
+
+                // This is the only place we have system colors value exposed
+                if (IsKnownColor)
+                {
+                    return KnownColorTable.KnownColorToArgb((KnownColor)knownColor);
+                }
+
+                return NotDefinedValue;
+            }
+        }
 
         public static Color FromArgb(int red, int green, int blue) => FromArgb(byte.MaxValue, red, green, blue);
         private static Color FromArgb(uint argb) => new Color(argb, StateARGBValueValid, null, (KnownColor)0);
@@ -403,10 +449,10 @@ namespace NetSettingsCore.Common.Classes
             CheckByte(blue, nameof(blue));
 
             return FromArgb(
-                (uint)alpha << ARGBAlphaShift |
-                (uint)red << ARGBRedShift |
-                (uint)green << ARGBGreenShift |
-                (uint)blue << ARGBBlueShift
+                ((uint)alpha << ARGBAlphaShift) |
+                ((uint)red << ARGBRedShift) |
+                ((uint)green << ARGBGreenShift) |
+                ((uint)blue << ARGBBlueShift)
             );
         }
 

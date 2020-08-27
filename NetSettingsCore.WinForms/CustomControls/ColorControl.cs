@@ -65,6 +65,7 @@ namespace NetSettingsCore.WinForms.CustomControls
         {
             set
             {
+                base.BackColor = value;
                 if (!Updating)
                 {
                     base.BackColor = DrawingColor.FromArgb(value.A, value.R, value.G, value.B);
