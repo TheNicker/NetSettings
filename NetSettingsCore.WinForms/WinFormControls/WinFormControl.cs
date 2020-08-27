@@ -31,7 +31,11 @@ namespace NetSettings.WinForms.WinFormControls
             set => _control.BackColor = DrawingColor.FromArgb(value.A, value.R, value.G, value.B);
         }
 
-        public DockStyle Dock { get => (DockStyle)_control.Dock; set => _control.Dock = (WinFormDockStyle)value; }
+        public DockStyle Dock
+        {
+            get => Enum.Parse<DockStyle>(_control.Dock.ToString());
+            set => _control.Dock = Enum.Parse<WinFormDockStyle>(value.ToString());
+        }
 
         public Point Location
         {

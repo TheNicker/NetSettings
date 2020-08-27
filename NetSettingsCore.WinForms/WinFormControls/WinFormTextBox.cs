@@ -1,7 +1,9 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using NetSettings.Common.Interfaces;
 using BorderStyle = NetSettings.Common.Classes.BorderStyle;
-using DockStyle = NetSettings.Common.Classes.DockStyle;
+using WinFormBorderStyle = System.Windows.Forms.BorderStyle;
+using System.Collections.Generic;
 
 namespace NetSettings.WinForms.WinFormControls
 {
@@ -16,7 +18,12 @@ namespace NetSettings.WinForms.WinFormControls
 
         public bool Multiline { get => _textBox.Multiline; set => _textBox.Multiline = value; }
         public bool ReadOnly { get => _textBox.ReadOnly; set => _textBox.ReadOnly = value; }
-        public BorderStyle BorderStyle { get => (BorderStyle)_textBox.BorderStyle; set => _textBox.BorderStyle = (System.Windows.Forms.BorderStyle)value; }
+
+        public BorderStyle BorderStyle
+        {
+            get => Enum.Parse<BorderStyle>(_textBox.BorderStyle.ToString());
+            set => Enum.Parse<WinFormBorderStyle>(value.ToString());
+        }
 
         //private WinFormFont _winFormFont;
 
