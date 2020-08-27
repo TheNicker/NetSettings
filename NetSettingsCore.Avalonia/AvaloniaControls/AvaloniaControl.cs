@@ -89,6 +89,7 @@ namespace NetSettings.Avalonia.AvaloniaControls
         public int Width { get; set; }
         public int Height { get; set; }
         public Color BackColor { get; set; }
+        public DockStyle Dock { get; set; }
         public Color ForeColor { get; set; }
         public Point Location { get; set; }
         public IFont Font { get; set; }

@@ -292,10 +292,7 @@ namespace NetSettings.View
                     t.TextChanged += MenuSettings_TextChanged;
                     t.MouseDoubleClick += MenuSettings_MouseDoubleClick;
                     t.MouseLeave += MenuSettings_MouseLeave;
-                    t.MouseEnter += (object sender, EventArgs e) =>
-                    {
-                        MenuSettings_MouseEnter(t, e);
-                    };
+                    t.MouseEnter += (sender, e) => MenuSettings_MouseEnter(t, e);
                     break;
                 case "color":
                     t.KeyDown += ColorControl_KeyDown;

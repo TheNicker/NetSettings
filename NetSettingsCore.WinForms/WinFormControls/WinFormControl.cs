@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using NetSettings.Common.Classes;
 using NetSettings.Common.Interfaces;
+using DockStyle = NetSettings.Common.Classes.DockStyle;
+using WinFormDockStyle = System.Windows.Forms.DockStyle;
 using DrawingColor = System.Drawing.Color;
 using DrawingPoint = System.Drawing.Point;
 using Point = NetSettings.Common.Classes.Point;
@@ -28,6 +30,8 @@ namespace NetSettings.WinForms.WinFormControls
             }
             set => _control.BackColor = DrawingColor.FromArgb(value.A, value.R, value.G, value.B);
         }
+
+        public DockStyle Dock { get => (DockStyle)_control.Dock; set => _control.Dock = (WinFormDockStyle)value; }
 
         public Point Location
         {
@@ -61,22 +65,28 @@ namespace NetSettings.WinForms.WinFormControls
             return (T)o;
         }
 
-        //TODO: Open all the events
+        //TODO: Implement remove events
         public event EventHandler MouseClick
         {
-            add => _control.MouseClick += (object sender, MouseEventArgs e) => value(sender, e);
-            remove => _control.MouseClick -= (object sender, MouseEventArgs e) => value(sender, e);
+            add
+            {
+                _control.MouseClick += (sender, e) => value(sender, e);
+            }
+            //remove => _control.MouseClick -= (object sender, MouseEventArgs e) => value(sender, e);
+            remove => throw new NotImplementedException("Implement me: MouseClick");
         }
 
         public event EventHandler MouseDoubleClick
         {
-            add => _control.MouseDoubleClick += (object sender, MouseEventArgs e) => value(sender, e);
-            remove => _control.MouseDoubleClick -= (object sender, MouseEventArgs e) => value(sender, e);
+            add => _control.MouseDoubleClick += (sender, e) => value(sender, e);
+            //remove => _control.MouseDoubleClick -= (object sender, MouseEventArgs e) => value(sender, e);
+            remove => throw new NotImplementedException("Implement me: MouseDoubleClick");
         }
         public event EventHandler KeyDown
         {
-            add => _control.KeyDown += (object sender, KeyEventArgs e) => value(sender, e);
-            remove => _control.KeyDown -= (object sender, KeyEventArgs e) => value(sender, e);
+            add => _control.KeyDown += (sender, e) => value(sender, e);
+            //remove => _control.KeyDown -= (object sender, KeyEventArgs e) => value(sender, e);
+            remove => throw new NotImplementedException("Implement me: KeyDown");
         }
         public event EventHandler DoubleClick
         {

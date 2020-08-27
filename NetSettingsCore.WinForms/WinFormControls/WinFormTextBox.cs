@@ -15,7 +15,6 @@ namespace NetSettings.WinForms.WinFormControls
         }
 
         public bool Multiline { get => _textBox.Multiline; set => _textBox.Multiline = value; }
-        public DockStyle Dock { get => (DockStyle)_textBox.Dock; set => _textBox.Dock = (System.Windows.Forms.DockStyle)value; }
         public bool ReadOnly { get => _textBox.ReadOnly; set => _textBox.ReadOnly = value; }
         public BorderStyle BorderStyle { get => (BorderStyle)_textBox.BorderStyle; set => _textBox.BorderStyle = (System.Windows.Forms.BorderStyle)value; }
 

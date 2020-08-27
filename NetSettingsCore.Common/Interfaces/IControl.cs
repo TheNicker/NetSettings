@@ -19,7 +19,7 @@ namespace NetSettings.Common.Interfaces
         IList<IControl> LogicalControls { get; set; }//TODO: Can we remove the set?
         int Width { get; set; }//TODO: Can we remove the set?
         int Height { get; set; }//TODO: Can we remove the set?
-
+        DockStyle Dock { get; set; }
         Color BackColor { get; set; }
         Color ForeColor { set; }//TODO: Do we need to add the get although it is not in use?
         Point Location { get; set; }//TODO: Can we remove the set?
