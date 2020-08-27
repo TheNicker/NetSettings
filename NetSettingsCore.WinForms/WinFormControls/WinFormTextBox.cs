@@ -3,7 +3,6 @@ using System.Windows.Forms;
 using NetSettings.Common.Interfaces;
 using BorderStyle = NetSettings.Common.Classes.BorderStyle;
 using WinFormBorderStyle = System.Windows.Forms.BorderStyle;
-using System.Collections.Generic;
 
 namespace NetSettings.WinForms.WinFormControls
 {
