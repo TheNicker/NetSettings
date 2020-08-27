@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Windows.Forms;
-using NetSettingsCore.WinForms.WinFormControls;
 
-namespace NetSettings.Controls
+namespace NetSettings.WinForms.WinFormControls
 {
     //TODO: Can this be changed to internal?
     //TODO: Can this be deleted? See WinFormLabel

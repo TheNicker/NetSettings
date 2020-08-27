@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
-using NetSettingsTestCore.Controls;
+using NetSettingsTest.Controls;
 
-namespace NetSettings.Forms
+namespace NetSettingsTest.Forms
 {
     partial class SettingsForm
     {

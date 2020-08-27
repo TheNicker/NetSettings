@@ -1,6 +1,4 @@
-﻿using NetSettingsCore.Common;
-
-namespace NetSettings
+﻿namespace NetSettings.View
 {
     public class DataViewPlacement
     {

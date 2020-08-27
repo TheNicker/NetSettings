@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <RootNamespace>NetSettings.Common</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,10 +11,6 @@
     <Compile Remove="Interfaces\IColor.cs" />
     <Compile Remove="Interfaces\IPoint.cs" />
     <Compile Remove="Interfaces\Point.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
 </Project>

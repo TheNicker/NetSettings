@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using NetSettings.Data;
-using NetSettings.Forms;
 using NetSettings.View;
-using NetSettingsCore.Common;
-using NetSettings.View;
-using NetSettingsCore.WinForms;
+using NetSettings.WinForms;
 using Newtonsoft.Json;
 using TextBox = System.Windows.Forms.TextBox;
 
-namespace NetSettingsTestCore.Forms
+namespace NetSettingsTest.Forms
 {
     public partial class Form1 : Form
     {

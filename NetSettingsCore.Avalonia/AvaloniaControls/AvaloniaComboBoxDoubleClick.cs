@@ -1,8 +1,6 @@
 ﻿using System;
-using Avalonia.Controls;
-using NetSettings.Forms;
 
-namespace NetSettings.WinForms.Controls
+namespace NetSettings.Avalonia.AvaloniaControls
 {
     internal class AvaloniaComboBoxDoubleClick : AvaloniaComboBox
     {

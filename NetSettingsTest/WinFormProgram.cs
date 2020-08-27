@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
-using NetSettingsTestCore.Forms;
+using NetSettingsTest.Forms;
 
 namespace NetSettingsTest
 {

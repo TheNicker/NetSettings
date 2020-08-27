@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace NetSettingsCore.Common
+﻿namespace NetSettings.Common.Classes
 {
     public class ComboBoxDoubleClick
     {

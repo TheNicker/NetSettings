@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>NetSettings.Avalonia</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="**\*.xaml.cs">

@@ -2,10 +2,9 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using NetSettings.Data;
-using NetSettings.Forms;
 using NetSettings.View;
 
-namespace AvaloniaApplication
+namespace NetSettingsTest.Forms
 {
     public class App : Application
     {

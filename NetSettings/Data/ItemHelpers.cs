@@ -1,12 +1,9 @@
-﻿using NetSettings.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Classes;
-using Newtonsoft.Json;
+using NetSettings.Common.Classes;
 using Newtonsoft.Json.Linq;
 
-namespace NetSettings
+namespace NetSettings.Data
 {
     internal class ItemHelpers
     {

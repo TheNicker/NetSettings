@@ -1,10 +1,9 @@
 ﻿using System;
-using NetSettings.View;
-using NetSettingsCore.Common;
-using NetSettingsCore.WinForms.CustomControls;
-using NetSettingsCore.WinForms.WinFormControls;
+using NetSettings.Common.Classes;
+using NetSettings.Common.Interfaces;
+using NetSettings.WinForms.WinFormControls;
 
-namespace NetSettingsCore.WinForms
+namespace NetSettings.WinForms
 {
     public class WinFormGuiProvider : IGuiProvider
     {

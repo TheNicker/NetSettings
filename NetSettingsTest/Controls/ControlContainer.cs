@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Windows.Forms;
-using NetSettingsCore.WinForms;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Interfaces;
+using NetSettings.Common.Interfaces;
+using NetSettings.WinForms;
 
-namespace NetSettingsTestCore.Controls
+namespace NetSettingsTest.Controls
 {
     public partial class ControlContainer : ScrollableControl, IControlContainer
     {

@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
 using System.Windows.Forms;
-using NetSettingsCore.Common;
+using NetSettings.Common.Interfaces;
 
-namespace NetSettings.Forms
+namespace NetSettingsTest.Forms
 {
     public partial class PreviewForm : Form, IPreviewForm
     {

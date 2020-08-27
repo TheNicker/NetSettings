@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Avalonia.Controls;
 
-namespace NetSettingsCore.Avalonia
+namespace NetSettings.Avalonia
 {
     public static class ControlHelper
     {

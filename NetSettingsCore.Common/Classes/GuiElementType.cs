@@ -1,4 +1,4 @@
-﻿namespace NetSettings.View
+﻿namespace NetSettings.Common.Classes
 {
     public enum GuiElementType
     {

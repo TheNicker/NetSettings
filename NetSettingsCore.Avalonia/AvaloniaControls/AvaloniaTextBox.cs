@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Avalonia.Controls;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Classes;
-using BorderStyle = NetSettingsCore.Common.BorderStyle;
-using Color = NetSettingsCore.Common.Classes.Color;
-using DockStyle = NetSettingsCore.Common.DockStyle;
-using IControl = NetSettingsCore.Common.Interfaces.IControl;
+using NetSettings.Common.Interfaces;
+using BorderStyle = NetSettings.Common.Classes.BorderStyle;
+using DockStyle = NetSettings.Common.Classes.DockStyle;
 
-namespace NetSettingsCore.Avalonia.AvaloniaControls
+namespace NetSettings.Avalonia.AvaloniaControls
 {
     internal class AvaloniaTextBox : AvaloniaControl, ITextBox
     {

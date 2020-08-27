@@ -1,13 +1,11 @@
 ﻿//using System.Drawing;
 //using System.Drawing;
-using System.Text;
-
 //using NetSettings.Data;
 //using NetSettings.View;
 //using Color = Colourful.RGBColor;
 //using Color = Color;
 
-namespace NetSettingsCore.Common
+namespace NetSettings.Common
 {
     //public interface IDataProvider
     //{

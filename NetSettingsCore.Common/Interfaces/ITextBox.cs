@@ -1,6 +1,6 @@
-﻿using NetSettingsCore.Common.Interfaces;
+﻿using NetSettings.Common.Classes;
 
-namespace NetSettingsCore.Common
+namespace NetSettings.Common.Interfaces
 {
     public interface ITextBox : IControl
     {

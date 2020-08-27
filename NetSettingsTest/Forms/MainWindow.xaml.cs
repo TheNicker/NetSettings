@@ -2,7 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace AvaloniaApplication
+namespace NetSettingsTest.Forms
 {
     public class MainWindow : Window
     {

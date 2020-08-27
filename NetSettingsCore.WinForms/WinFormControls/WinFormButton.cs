@@ -1,8 +1,8 @@
 ﻿using System.Windows.Forms;
-using NetSettingsCore.Common;
-using FlatStyle = NetSettingsCore.Common.FlatStyle;
+using NetSettings.Common.Interfaces;
+using FlatStyle = NetSettings.Common.Classes.FlatStyle;
 
-namespace NetSettingsCore.WinForms.WinFormControls
+namespace NetSettings.WinForms.WinFormControls
 {
     internal class WinFormButton : WinFormControl, IButton
     {

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Avalonia.Collections;
 using Avalonia.LogicalTree;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Interfaces;
+using NetSettings.Common.Interfaces;
 
-namespace NetSettingsCore.Avalonia.AvaloniaControls
+namespace NetSettings.Avalonia.AvaloniaControls
 {
     class LogicalControls : List<IControl>
     {

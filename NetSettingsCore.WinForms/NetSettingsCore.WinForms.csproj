@@ -4,6 +4,7 @@
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>NetSettings.WinForms</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

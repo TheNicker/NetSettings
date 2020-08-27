@@ -1,5 +1,4 @@
-﻿using NetSettingsCore.Common;
-using NetSettingsCore.Common.Interfaces;
+﻿using NetSettings.Common.Interfaces;
 
 namespace NetSettings.View
 {

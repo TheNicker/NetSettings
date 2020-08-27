@@ -1,9 +1,5 @@
-//using NetSettings.Controls;
-//using NetSettings.Data;
-//using NetSettingsCore.Common;
-
+using NetSettings.Common.Interfaces;
 using NetSettings.Data;
-using NetSettingsCore.Common;
 
 namespace NetSettings.View
 {

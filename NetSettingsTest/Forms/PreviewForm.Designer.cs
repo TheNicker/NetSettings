@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace NetSettings.Forms
+namespace NetSettingsTest.Forms
 {
     public partial class PreviewForm
     {

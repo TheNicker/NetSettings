@@ -1,15 +1,14 @@
-﻿using NetSettingsCore.Common;
-using NetSettingsCore.Common.Classes;
-using NetSettingsCore.Common.Interfaces;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using NetSettings.Common.Classes;
+using NetSettings.Common.Interfaces;
 using DrawingColor = System.Drawing.Color;
 using DrawingPoint = System.Drawing.Point;
-using Point = NetSettingsCore.Common.Classes.Point;
+using Point = NetSettings.Common.Classes.Point;
 
-namespace NetSettingsCore.WinForms.WinFormControls
+namespace NetSettings.WinForms.WinFormControls
 {
     internal class WinFormControl : IControl
     {

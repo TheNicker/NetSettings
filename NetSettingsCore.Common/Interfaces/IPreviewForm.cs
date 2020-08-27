@@ -1,4 +1,4 @@
-﻿namespace NetSettingsCore.Common
+﻿namespace NetSettings.Common.Interfaces
 {
     public interface IPreviewForm
     {

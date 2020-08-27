@@ -1,6 +1,7 @@
 ﻿using System;
+using NetSettings.Common.Classes;
 
-namespace NetSettingsCore.Common
+namespace NetSettings.Common.Interfaces
 {
     public class IFileDialog
     {

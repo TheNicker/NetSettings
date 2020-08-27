@@ -1,17 +1,15 @@
 ﻿// ReSharper disable PossibleNullReferenceException
-using NetSettings.Controls;
+
 using NetSettings.Data;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Classes;
-using NetSettingsCore.Common.Interfaces;
 using System;
 using System.Collections.Generic;
-using NetSettingsCore.View;
-using BorderStyle = NetSettingsCore.Common.BorderStyle;
-using CheckBox = NetSettingsCore.Common.ICheckBox;
-using DialogResult = NetSettingsCore.Common.DialogResult;
-using DockStyle = NetSettingsCore.Common.DockStyle;
-using FlatStyle = NetSettingsCore.Common.FlatStyle;
+using NetSettings.Common.Classes;
+using NetSettings.Common.Interfaces;
+using BorderStyle = NetSettings.Common.Classes.BorderStyle;
+using CheckBox = NetSettings.Common.Interfaces.ICheckBox;
+using DialogResult = NetSettings.Common.Classes.DialogResult;
+using DockStyle = NetSettings.Common.Classes.DockStyle;
+using FlatStyle = NetSettings.Common.Classes.FlatStyle;
 
 namespace NetSettings.View
 {

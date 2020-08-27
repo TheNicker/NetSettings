@@ -1,4 +1,4 @@
-﻿namespace NetSettingsCore.Common
+﻿namespace NetSettings.Common.Classes
 {
     public enum DockStyle
     {

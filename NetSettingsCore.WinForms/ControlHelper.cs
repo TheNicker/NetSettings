@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace NetSettingsCore.WinForms
+namespace NetSettings.WinForms
 {
     public static class ControlHelper
     {

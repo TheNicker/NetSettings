@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace NetSettingsCore.Common.Classes
+namespace NetSettings.Common.Classes
 {
     internal static class KnownColorNames
     {

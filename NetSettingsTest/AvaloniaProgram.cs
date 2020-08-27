@@ -1,8 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Logging.Serilog;
-using AvaloniaApplication;
+using NetSettingsTest.Forms;
 
-namespace NetSettingsTestCore
+namespace NetSettingsTest
 {
     class AvaloniaProgram
     {

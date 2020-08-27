@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Avalonia.Controls;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Classes;
-using IControl = NetSettingsCore.Common.Interfaces.IControl;
+using NetSettings.Common.Classes;
+using NetSettings.Common.Interfaces;
 
-namespace NetSettingsCore.Avalonia.AvaloniaControls
+namespace NetSettings.Avalonia.AvaloniaControls
 {
     internal class AvaloniaTextBlock : AvaloniaControl, ILabelSingleClick
     {

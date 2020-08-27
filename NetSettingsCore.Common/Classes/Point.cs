@@ -1,4 +1,4 @@
-﻿namespace NetSettingsCore.Common.Classes
+﻿namespace NetSettings.Common.Classes
 {
     public class Point
     {

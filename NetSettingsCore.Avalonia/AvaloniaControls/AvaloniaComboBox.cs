@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Avalonia.Controls;
-using NetSettingsCore.Avalonia.AvaloniaControls;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Classes;
-using NetSettingsCore.Common.Interfaces;
-using IControl = NetSettingsCore.Common.Interfaces.IControl;
+using NetSettings.Common.Interfaces;
 
-namespace NetSettings.Forms
+namespace NetSettings.Avalonia.AvaloniaControls
 {
     internal class AvaloniaComboBox : AvaloniaControl, IComboBox
     {

@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using NetSettingsCore.Common.Interfaces;
-
-namespace NetSettingsCore.Common
+﻿namespace NetSettings.Common.Interfaces
 {
     public interface IControlContainer
     {

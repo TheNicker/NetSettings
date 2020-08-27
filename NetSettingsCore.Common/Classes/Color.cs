@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace NetSettingsCore.Common.Classes
+namespace NetSettings.Common.Classes
 {
     public struct Color
     {

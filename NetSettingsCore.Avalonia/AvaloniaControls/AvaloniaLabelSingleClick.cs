@@ -1,10 +1,8 @@
-﻿
-using System;
-using NetSettings.Forms;
-using NetSettingsCore.Avalonia.AvaloniaControls;
-using NetSettingsCore.Common;
+﻿using System;
+using NetSettings.Common.Classes;
+using NetSettings.Common.Interfaces;
 
-namespace NetSettings.Controls
+namespace NetSettings.Avalonia.AvaloniaControls
 {
     internal class AvaloniaLabelSingleClick : AvaloniaControl, ILabelSingleClick //TODO: Can this be changed to internal?
     {

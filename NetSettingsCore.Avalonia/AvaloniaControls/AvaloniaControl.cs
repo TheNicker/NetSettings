@@ -4,12 +4,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Avalonia.Controls;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Classes;
-using Color = NetSettingsCore.Common.Classes.Color;
-using IControl = NetSettingsCore.Common.Interfaces.IControl;
+using NetSettings.Common.Classes;
+using NetSettings.Common.Interfaces;
+using Color = NetSettings.Common.Classes.Color;
+using IControl = NetSettings.Common.Interfaces.IControl;
 
-namespace NetSettingsCore.Avalonia.AvaloniaControls
+namespace NetSettings.Avalonia.AvaloniaControls
 {
     internal class AvaloniaControl : IControl
     {

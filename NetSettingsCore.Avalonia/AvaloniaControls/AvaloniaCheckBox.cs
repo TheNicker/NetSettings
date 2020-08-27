@@ -1,8 +1,7 @@
 ﻿using Avalonia.Controls;
-using NetSettings.Forms;
-using NetSettingsCore.Common;
+using NetSettings.Common.Interfaces;
 
-namespace NetSettingsCore.Avalonia.AvaloniaControls
+namespace NetSettings.Avalonia.AvaloniaControls
 {
     internal class AvaloniaCheckBox : AvaloniaControl, ICheckBox
     {

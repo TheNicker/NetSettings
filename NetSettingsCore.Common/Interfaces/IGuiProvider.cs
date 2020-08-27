@@ -1,6 +1,6 @@
-﻿using NetSettings.View;
+﻿using NetSettings.Common.Classes;
 
-namespace NetSettingsCore.Common
+namespace NetSettings.Common.Interfaces
 {
     public interface IGuiProvider
     {

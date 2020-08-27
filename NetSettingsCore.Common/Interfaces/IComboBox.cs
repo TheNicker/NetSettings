@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NetSettingsCore.Common.Interfaces
+namespace NetSettings.Common.Interfaces
 {
     public interface IComboBox : IControl
     {

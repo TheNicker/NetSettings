@@ -1,5 +1,5 @@
-﻿using NetSettings.Data;
-using NetSettingsCore.Common.Classes;
+﻿using NetSettings.Common.Classes;
+using NetSettings.Data;
 
 namespace NetSettings.View
 {

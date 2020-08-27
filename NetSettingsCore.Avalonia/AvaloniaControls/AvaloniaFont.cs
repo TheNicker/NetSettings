@@ -1,9 +1,9 @@
 ﻿using System;
-using NetSettingsCore.Common;
-using FontStyle = Avalonia.Media.FontStyle;
+using NetSettings.Common.Classes;
+using NetSettings.Common.Interfaces;
 using Font = SharpDX.DirectWrite.Font;
 
-namespace NetSettingsCore.Avalonia.AvaloniaControls
+namespace NetSettings.Avalonia.AvaloniaControls
 {
     internal class AvaloniaFont : IFont
     {

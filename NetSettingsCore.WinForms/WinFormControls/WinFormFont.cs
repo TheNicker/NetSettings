@@ -1,7 +1,8 @@
 ﻿using System.Drawing;
-using NetSettingsCore.Common;
+using NetSettings.Common.Classes;
+using NetSettings.Common.Interfaces;
 
-namespace NetSettingsCore.WinForms.WinFormControls
+namespace NetSettings.WinForms.WinFormControls
 {
     internal class WinFormFont : IFont
     {

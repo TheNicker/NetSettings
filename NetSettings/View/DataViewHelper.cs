@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using NetSettingsCore.Common.Classes;
+using NetSettings.Common.Classes;
 
 namespace NetSettings.View
 {

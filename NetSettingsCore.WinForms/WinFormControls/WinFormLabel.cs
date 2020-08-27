@@ -1,8 +1,9 @@
-﻿using NetSettingsCore.Common;
-using System;
+﻿using System;
 using System.Windows.Forms;
+using NetSettings.Common.Classes;
+using NetSettings.Common.Interfaces;
 
-namespace NetSettingsCore.WinForms.WinFormControls
+namespace NetSettings.WinForms.WinFormControls
 {
     internal class WinFormLabel : WinFormControl, ILabelSingleClick
     {

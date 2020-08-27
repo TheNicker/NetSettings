@@ -1,4 +1,6 @@
-﻿namespace NetSettingsCore.Common
+﻿using NetSettings.Common.Classes;
+
+namespace NetSettings.Common.Interfaces
 {
     public interface IFont : IGuiElement
     {

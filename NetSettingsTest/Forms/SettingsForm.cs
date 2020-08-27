@@ -1,11 +1,10 @@
-﻿using NetSettings.Data;
-using NetSettings.View;
-using NetSettingsCore.Common;
-using NetSettingsCore.WinForms;
-using System;
+﻿using System;
 using System.Windows.Forms;
+using NetSettings.Data;
+using NetSettings.View;
+using NetSettings.WinForms;
 
-namespace NetSettings.Forms
+namespace NetSettingsTest.Forms
 {
     public partial class SettingsForm : Form
     {

@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Interfaces;
-using BorderStyle = NetSettingsCore.Common.BorderStyle;
-using DockStyle = NetSettingsCore.Common.DockStyle;
-using WinFormDockStyle = System.Windows.Forms.DockStyle;
-using Color = NetSettingsCore.Common.Classes.Color;
-using Point = NetSettingsCore.Common.Classes.Point;
+﻿using System.Windows.Forms;
+using NetSettings.Common.Interfaces;
+using BorderStyle = NetSettings.Common.Classes.BorderStyle;
+using DockStyle = NetSettings.Common.Classes.DockStyle;
 
-namespace NetSettingsCore.WinForms.WinFormControls
+namespace NetSettings.WinForms.WinFormControls
 {
     internal class WinFormTextBox : WinFormControl, ITextBox
     {

@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Media;
-using NetSettingsCore.Avalonia.AvaloniaControls;
-using NetSettingsCore.Common;
-using FlatStyle = NetSettingsCore.Common.FlatStyle;
-using Color = NetSettingsCore.Common.Classes.Color;
-using IControl = NetSettingsCore.Common.Interfaces.IControl;
-using Point = NetSettingsCore.Common.Classes.Point;
+using NetSettings.Common.Interfaces;
+using FlatStyle = NetSettings.Common.Classes.FlatStyle;
 
-namespace NetSettings.Forms
+namespace NetSettings.Avalonia.AvaloniaControls
 {
     internal class AvaloniaButton : AvaloniaControl, IButton
     {

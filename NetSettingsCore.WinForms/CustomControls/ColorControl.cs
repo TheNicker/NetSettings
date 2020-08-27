@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using Color = System.Drawing.Color;
 using DrawingColor = System.Drawing.Color;
 
-namespace NetSettingsCore.WinForms.CustomControls
+namespace NetSettings.WinForms.CustomControls
 {
     internal class ColorControl : TextBox
     {

@@ -1,9 +1,9 @@
-﻿using NetSettingsCore.Common;
-using NetSettingsCore.Common.Classes;
-using NetSettingsCore.WinForms.CustomControls;
+﻿using NetSettings.Common.Classes;
+using NetSettings.Common.Interfaces;
+using NetSettings.WinForms.CustomControls;
 using DrawingColor = System.Drawing.Color;
 
-namespace NetSettingsCore.WinForms.WinFormControls
+namespace NetSettings.WinForms.WinFormControls
 {
     internal class WinFormColorControl : WinFormControl, IColorControl
     {

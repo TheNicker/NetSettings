@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using NetSettingsCore.Common.Classes;
+using NetSettings.Common.Classes;
 
-namespace NetSettingsCore.Common.Interfaces
+namespace NetSettings.Common.Interfaces
 {
     public interface IControl : IGuiElement
     {

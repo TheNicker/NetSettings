@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Avalonia;
-using Avalonia.Media;
-using NetSettingsCore.Avalonia.AvaloniaControls;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Interfaces;
-using Color = NetSettingsCore.Common.Classes.Color;
+﻿using NetSettings.Avalonia.AvaloniaControls;
+using NetSettings.Common.Interfaces;
 
 //using SharpDX.Direct3D11;
 
-namespace NetSettingsCore.Avalonia.Controls
+namespace NetSettings.Avalonia.Controls
 {
     //TODO: Uncomment all the code in this control
     internal class ColorControl : AvaloniaTextBox, IColorControl

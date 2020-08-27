@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using NetSettingsCore.Common;
-using NetSettingsCore.Common.Classes;
-using NetSettingsCore.Common.Interfaces;
+﻿using System.Windows.Forms;
+using NetSettings.Common.Interfaces;
 
-namespace NetSettingsCore.WinForms.WinFormControls
+namespace NetSettings.WinForms.WinFormControls
 {
     internal class WinFormCheckBox : WinFormControl, ICheckBox
     {

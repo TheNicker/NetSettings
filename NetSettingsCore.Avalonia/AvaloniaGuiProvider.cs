@@ -1,13 +1,9 @@
 ﻿using System;
-using NetSettings.Forms;
-using NetSettings.View;
-using NetSettingsCore.Avalonia.AvaloniaControls;
-//using NetSettingsCore.Avalonia.AvaloniaControls;
-using NetSettingsCore.Common; //using NetSettings.WinForms.Controls;
+using NetSettings.Avalonia.AvaloniaControls;
+using NetSettings.Common.Classes;
+using NetSettings.Common.Interfaces;
 
-//using NetSettingsCore.WinForms.WinFormControls;
-
-namespace NetSettingsCore.Avalonia
+namespace NetSettings.Avalonia
 {
     public class AvaloniaGuiProvider : IGuiProvider
     {

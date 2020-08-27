@@ -1,4 +1,4 @@
-﻿namespace NetSettingsCore.Common
+﻿namespace NetSettings.Data
 {
     public enum ItemChangedMode { None, OnTheFly, UserConfirmed, Synthesized }
     public class ItemChangedArgs
