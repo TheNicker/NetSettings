@@ -59,25 +59,12 @@ namespace NetSettings.View
         public void Create(DataViewParams aParams)
         {
             guiProvider = aParams.guiProvider;
-            VerifyParameters(aParams);
+            DataView.VerifyParameters(aParams);
             fParams = aParams;
 
-            //fLabelNormal = new Font(labelFont, 10, FontAppearance.Regular);
             fLabelNormal = (IFont)guiProvider.CreateGuiElement(GuiElementType.IFont, labelFont, 10f, FontAppearance.Regular);
-            //fLabelNormal.FontFamily = labelFont;
-            //fLabelNormal.Size = 10;
-            //fLabelNormal.Appearance = FontAppearance.Regular;
-            //fLabelBold = new Font(labelFont, 10, FontAppearance.Bold);
             fLabelBold = (IFont)guiProvider.CreateGuiElement(GuiElementType.IFont, labelFont, 10f, FontAppearance.Bold);
-            //fLabelNormal.FontFamily = labelFont;
-            //fLabelNormal.Size = 10;
-            //fLabelNormal.Appearance = FontAppearance.Bold;
-            //fMenuLabel = new Font(labelFont, 12, FontAppearance.Bold);
             fMenuLabel = (IFont)guiProvider.CreateGuiElement(GuiElementType.IFont, labelFont, 12f, FontAppearance.Bold);
-            //fLabelNormal.FontFamily = labelFont;
-            //fLabelNormal.Size = 12;
-            //fLabelNormal.Appearance = FontAppearance.Bold;
-
 
             fParams.dataProvider.AddView(this);
             CreateVisualItemTree();
@@ -85,21 +72,18 @@ namespace NetSettings.View
 
             if (fDescriptionPanel != null)
             {
+                //TODO: Move this to the bottom of the screen
                 fDescriptionPanel.Reset();
                 fDescriptionPanel.StartUpdate();
-                //var textBox = new TextBox(guiProvider.CreateGuiElement("textbox"));
+
                 var textBox = (ITextBox)guiProvider.CreateGuiElement(GuiElementType.Text);
                 textBox.Multiline = true;
                 textBox.Dock = DockStyle.Fill;
                 textBox.ReadOnly = true;
                 textBox.BorderStyle = BorderStyle.FixedSingle;
                 textBox.Font = (IFont)guiProvider.CreateGuiElement(GuiElementType.IFont, "Lucida Fax", 10f);
-                //textBox.Location = new Point(0,0);
-                //textBox.Font.FontFamily = "Lucida fax";
-                //textBox.Font.Size = 10;
 
                 fDescriptionTextBox = textBox;
-                //fDescriptionPanel.Controls.Add(textBox);
                 fDescriptionPanel.AddControl(textBox);
                 fDescriptionPanel.EndUpdate();
             }
@@ -107,7 +91,7 @@ namespace NetSettings.View
             ReCreateTree();
         }
 
-        private void VerifyParameters(DataViewParams aParams)
+        private static void VerifyParameters(DataViewParams aParams)
         {
             if (aParams.container == null || aParams.dataProvider == null)
                 throw new Exception("Missing parameters, can not build data view tree");
@@ -130,8 +114,7 @@ namespace NetSettings.View
             ItemTree item = rootVisualItem.Item;
             if (item.subItems != null)
             {
-                rootVisualItem.subItems = new VisualItem[item.subItems.Length];
-                int i = 0;//TODO: Can we remove this?
+                rootVisualItem.subItems = new List<VisualItem>();
                 foreach (var subItem in item.subItems)
                 {
                     var visualItem = new VisualItem
@@ -139,7 +122,7 @@ namespace NetSettings.View
                         Item = subItem,
                         IsFiltered = true
                     };
-                    rootVisualItem.subItems[i++] = visualItem;
+                    rootVisualItem.subItems.Add(visualItem);
                     CreateVisualItemTree(visualItem);
                 }
             }
@@ -159,22 +142,25 @@ namespace NetSettings.View
             VisualItem visualItem = aRoot;
             ItemTree item = aRoot.Item;
             if (!visualItem.IsFiltered)
-                return;
-
-            //if (fStringToType.TryGetValue(item.type, out var type))
-            if (Enum.TryParse(typeof(GuiElementType), item.type, true, out var elem))
             {
-                //AddControl(aRoot, type);
-                AddControl(aRoot, elem);
+                return;
+            }
+
+            if (Enum.TryParse< GuiElementType>(item.type, true, out var elementType))
+            {
+                AddControl(aRoot, elementType);
             }
 
             //Add children
             if (visualItem.subItems != null)
+            {
                 foreach (var subItem in visualItem.subItems)
+                {
                     AddControlRecursivly(subItem);
+                }
+            }
         }
 
-        //private void AddControl(VisualItem aVisualItem, Type aType)
         private void AddControl(VisualItem aVisualItem, object aType)
         {
             ItemTree aItem = aVisualItem.Item;
@@ -185,12 +171,10 @@ namespace NetSettings.View
             var group = new ItemControlsGroup();
             var parent = group.parentContainer = guiProvider.CreateGuiElement(GuiElementType.GuiElement) as IControl;
 
-            //fParams.container.Controls.Add(parent);
             fParams.container.AddControl(parent);
             dic.Add(parent, aVisualItem);
 
             //Add label describing the entry
-
             var label = group.label = (ILabelSingleClick)guiProvider.CreateGuiElement(GuiElementType.Label);
             label.Font = GetLabelFont(aVisualItem);
             label.Text = aItem.displayName;
