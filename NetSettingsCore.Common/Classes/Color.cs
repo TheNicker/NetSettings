@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace NetSettings.Common.Classes
 {
-    public struct Color
+    public readonly struct Color
     {
         private const long NotDefinedValue = 0;
 
@@ -375,7 +375,7 @@ namespace NetSettings.Common.Classes
             return result;
         }
 
-        internal Color(KnownColor knownColor)
+        private Color(KnownColor knownColor)
         {
             value = 0;
             state = StateKnownColorValid;

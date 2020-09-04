@@ -1,20 +1,22 @@
-﻿using System;
+﻿using NetSettings.Common.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
-using NetSettings.Common.Classes;
-using NetSettings.Common.Interfaces;
+using Color = NetSettings.Common.Classes.Color;
 using DockStyle = NetSettings.Common.Classes.DockStyle;
-using WinFormDockStyle = System.Windows.Forms.DockStyle;
 using DrawingColor = System.Drawing.Color;
 using DrawingPoint = System.Drawing.Point;
 using Point = NetSettings.Common.Classes.Point;
+using WinFormDockStyle = System.Windows.Forms.DockStyle;
 
 namespace NetSettings.WinForms.WinFormControls
 {
-    internal class WinFormControl : IControl
+    public class WinFormControl : IControl
     {
         protected Control _control;
+        private WinFormFont _font;
 
         public WinFormControl()
         {
@@ -43,7 +45,16 @@ namespace NetSettings.WinForms.WinFormControls
             set => _control.Location = new DrawingPoint(value.X, value.Y);
         }
 
-        public IFont Font { get; set; }
+        public IFont Font
+        {
+            get => _font;
+            set
+            {
+                _control.Font = (Font) value.Native;
+                _font = new WinFormFont(_control.Font);
+            }
+        }
+
         public bool Visible { get => _control.Visible; set => _control.Visible = value; }
         public string Text { get => _control.Text; set => _control.Text = value; }
         public int Width { get => _control.Width; set => _control.Width = value; }
@@ -64,33 +75,26 @@ namespace NetSettings.WinForms.WinFormControls
             return control;
         }
 
-        public static T Cast<T>(object o)
-        {
-            return (T)o;
-        }
+        //public static T Cast<T>(object o)
+        //{
+        //    return (T)o;
+        //}
 
-        //TODO: Implement remove events
         public event EventHandler MouseClick
         {
-            add
-            {
-                _control.MouseClick += (sender, e) => value(sender, e);
-            }
-            //remove => _control.MouseClick -= (object sender, MouseEventArgs e) => value(sender, e);
-            remove => throw new NotImplementedException("Implement me: MouseClick");
+            add => _control.MouseClick += new MouseEventHandler(value);
+            remove => _control.MouseClick -= new MouseEventHandler(value);
         }
 
         public event EventHandler MouseDoubleClick
         {
-            add => _control.MouseDoubleClick += (sender, e) => value(sender, e);
-            //remove => _control.MouseDoubleClick -= (object sender, MouseEventArgs e) => value(sender, e);
-            remove => throw new NotImplementedException("Implement me: MouseDoubleClick");
+            add => _control.MouseDoubleClick += new MouseEventHandler(value);
+            remove => _control.MouseDoubleClick -= new MouseEventHandler(value);
         }
         public event EventHandler KeyDown
         {
-            add => _control.KeyDown += (sender, e) => value(sender, e);
-            //remove => _control.KeyDown -= (object sender, KeyEventArgs e) => value(sender, e);
-            remove => throw new NotImplementedException("Implement me: KeyDown");
+            add => _control.KeyDown -= new KeyEventHandler(value);
+            remove => _control.KeyDown -= new KeyEventHandler(value);
         }
         public event EventHandler DoubleClick
         {

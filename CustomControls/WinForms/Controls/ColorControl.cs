@@ -2,13 +2,13 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Controls
+namespace CustomControls.WinForms.Controls
 {
-    internal class ColorControl : TextBox
+    public class ColorControl : TextBox
     {
         public ColorControl()
         {
-            this.Font = new Font("Arial", 9, FontStyle.Bold);//TODO: Open this line
+            base.Font = new Font("Arial", 9, FontStyle.Bold);
             this.BorderStyle = BorderStyle.None;
         }
 

@@ -4,16 +4,16 @@ using NetSettings.Common.Interfaces;
 
 namespace NetSettings.Avalonia.AvaloniaControls
 {
-    internal class AvaloniaTextBlock : AvaloniaControl, ILabelSingleClick
+    internal class AvaloniaTextBlock : AvaloniaControl, ILabel
     {
         public AvaloniaTextBlock()
         {
         }
 
-        public void SetStyle(GuiElementStyles standardDoubleClick, bool value)
-        {
-            throw new NotImplementedException();
-        }
+        //public void SetStyle(GuiElementStyles standardDoubleClick, bool value)
+        //{
+        //    throw new NotImplementedException();
+        //}
         //private AvaloniaFont _winFormFont;
 
         //public Point Location { get; set; }
@@ -64,7 +64,7 @@ namespace NetSettings.Avalonia.AvaloniaControls
         //}
 
         //public Color ForeColor { get; set; }
-        //Color ILabelSingleClick.ForeColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //Color ILabel.ForeColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         //Color IControl.BackColor { set => throw new NotImplementedException(); }
     }
 }

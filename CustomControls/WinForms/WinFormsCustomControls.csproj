@@ -4,16 +4,12 @@
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>CustomControls.WinForms</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="CustomControls\ColorControl - Copy.cs" />
     <Compile Remove="CustomControls\ControlContainer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\NetSettingsCore.Common\NetSettingsCore.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

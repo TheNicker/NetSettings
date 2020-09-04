@@ -70,7 +70,7 @@ namespace NetSettings.WinForms
                     control = new WinFormComboBox();
                     break;
                 case GuiElementType.ColorDialog:
-                    throw new NotImplementedException("gui element creation is yet to be implemented.");
+                    control = new WinFormColorDialog();
                     break;
                 default:
                     throw new NotImplementedException($"gui element {guiElementName} is not known. How did we get here?");

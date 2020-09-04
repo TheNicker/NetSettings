@@ -1,12 +1,19 @@
-﻿using System.Drawing;
-using NetSettings.Common.Classes;
+﻿using NetSettings.Common.Classes;
 using NetSettings.Common.Interfaces;
+using System;
+using System.Drawing;
 
 namespace NetSettings.WinForms.WinFormControls
 {
     internal class WinFormFont : IFont
     {
-        public Font Instance { get; internal set; }
+        private Font _font;
+
+        public float Size => _font.Size;
+        public FontAppearance Appearance => Enum.Parse<FontAppearance>(_font.Style.ToString());
+        public string FontFamily => _font.FontFamily.ToString();
+        public MeasureUnit Unit => Enum.Parse<MeasureUnit>(_font.Unit.ToString());
+        public object Native => _font;
 
         public WinFormFont(string familyName, float emSize) :
             this(familyName, emSize, FontAppearance.Regular)
@@ -15,17 +22,13 @@ namespace NetSettings.WinForms.WinFormControls
 
         public WinFormFont(string familyName, float emSize, FontAppearance style)
         {
-            Instance = new Font(familyName, emSize, (FontStyle)style);
+            var fontStyle = Enum.Parse<FontStyle>(style.ToString(), true);
+            _font = new Font(familyName, emSize, fontStyle);
         }
 
         internal WinFormFont(Font font)
         {
-            Instance = font;
+            _font = font ?? throw new NullReferenceException();
         }
-
-        public float Size => Instance.Size;
-        public FontAppearance Appearance { get; set; }
-        public string Name { get; set; }
-        public string FontFamily { get=>Instance.Name;  }
     }
 }

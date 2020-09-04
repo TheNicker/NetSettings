@@ -2,11 +2,16 @@
 
 namespace NetSettings.Common.Interfaces
 {
-    public interface IFont : IGuiElement
+    public interface IFont : INativeGuiElement
     {
         float Size { get; }
-        FontAppearance Appearance { get; set; }
-        //string Name { get; set; }
+        FontAppearance Appearance { get;  }
         string FontFamily { get;  }
+        MeasureUnit Unit { get; }
+    }
+
+    public interface INativeGuiElement : IGuiElement
+    {
+        object Native { get; }
     }
 }

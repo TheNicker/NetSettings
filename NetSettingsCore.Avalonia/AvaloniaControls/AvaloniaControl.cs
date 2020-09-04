@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Avalonia.Controls;
 using NetSettings.Common.Classes;
 using NetSettings.Common.Interfaces;
@@ -104,5 +105,12 @@ namespace NetSettings.Avalonia.AvaloniaControls
         public event EventHandler Click;
         public event EventHandler MouseEnter;
         public event EventHandler MouseLeave;
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISite Site { get; set; }
+        public event EventHandler Disposed;
     }
 }

@@ -7,7 +7,6 @@ namespace NetSettingsTest.Controls
 {
     public partial class ControlContainer : ScrollableControl, IControlContainer
     {
-        //public IList Controls => Controls;
         public void AddControl(IControl control)
         {
             this.Controls.Add(control.Instance as Control);
@@ -15,10 +14,10 @@ namespace NetSettingsTest.Controls
 
         public ControlContainer()
         {
-            this.DoubleBuffered = true;
-            this.AutoScroll = true;
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer |
-                          ControlStyles.AllPaintingInWmPaint, true);
+            base.DoubleBuffered = true;
+            //https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.controlstyles?view=netcore-3.1
+            //this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
+            base.AutoScroll = true;
         }
 
         public void ScrollY(int delta)

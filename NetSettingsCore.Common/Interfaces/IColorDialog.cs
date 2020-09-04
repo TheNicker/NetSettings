@@ -2,9 +2,9 @@
 
 namespace NetSettings.Common.Interfaces
 {
-    public interface IColorDialog : IControl
+    public interface IColorDialog : IGuiElement
     {
-        object Color { get; set; }
+        Color Color { get; set; }
         bool FullOpen { get; set; }
         DialogResult ShowDialog();
     }

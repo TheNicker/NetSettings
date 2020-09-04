@@ -2,8 +2,8 @@
 
 namespace NetSettings.Common.Interfaces
 {
-    public interface ILabelSingleClick : IControl //TODO: Rename to ILabel?
+    public interface ILabel : IControl
     {
-        void SetStyle(GuiElementStyles standardDoubleClick, bool value);
+        //void SetStyle(GuiElementStyles standardDoubleClick, bool value);
     }
 }

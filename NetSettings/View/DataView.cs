@@ -46,7 +46,7 @@ namespace NetSettings.View
             //{
             //    {"text", typeof(ITextBox)},
             //    {"bool", typeof(ICheckBox)},
-            //    {"menu", typeof(ILabelSingleClick)},
+            //    {"menu", typeof(ILabel)},
             //    {"combo", typeof(IComboBoxDoubleClick)},
             //    {"image", typeof(ITextBox)},
             //    {"number", typeof(ITextBox)},
@@ -146,7 +146,7 @@ namespace NetSettings.View
                 return;
             }
 
-            if (Enum.TryParse< GuiElementType>(item.type, true, out var elementType))
+            if (Enum.TryParse<GuiElementType>(item.type, true, out var elementType))
             {
                 AddControl(aRoot, elementType);
             }
@@ -175,18 +175,15 @@ namespace NetSettings.View
             dic.Add(parent, aVisualItem);
 
             //Add label describing the entry
-            var label = group.label = (ILabelSingleClick)guiProvider.CreateGuiElement(GuiElementType.Label);
+            var label = group.label = (ILabel)guiProvider.CreateGuiElement(GuiElementType.Label);
             label.Font = GetLabelFont(aVisualItem);
             label.Text = aItem.displayName;
-            //label.SetStyle(ControlStyles.StandardDoubleClick, !isBool); //TODO: Do we need this doubleclick event?
-            //parent.VisualControl.Add(label);
+            //label.SetStyle(ControlStyles.StandardDoubleClick, !isBool); //TODO: Where is this double click event being used?
             parent.AddVisualControl(label);
             dic.Add(label, aVisualItem);
 
             //Add the  control itself
             var control = group.control = guiProvider.CreateGuiElement(aType) as IControl;
-            //var control = group.control = Activator.CreateInstance(aType) as Control;
-            //parent.VisualControl.Add(control);
             parent.AddVisualControl(control);
             dic.Add(control, aVisualItem);
 
@@ -198,8 +195,7 @@ namespace NetSettings.View
             {
                 var button = group.defaultButton = guiProvider.CreateGuiElement(GuiElementType.Button) as IButton;
                 button.Text = "Default";
-                button.Click += (object sender, EventArgs e) => button_Click(button, e);
-                //button.Tag = aVisualItem;
+                button.Click += (sender, e) => button_Click(button, e);
                 button.FlatStyle = FlatStyle.Popup;
                 button.BackColor = Color.LightGray;
                 parent.AddVisualControl(button);
@@ -208,14 +204,14 @@ namespace NetSettings.View
             }
 
             //TODO: WTF?????
-            MouseEnterLeave l = new MouseEnterLeave(parent);
-            //TODO: Do we need this 2 events?
+            var l = new MouseEnterLeave(parent);
+            //TODO: Do we need this 2 events? probably yes. Can we do this code nicer? Can we remove the MouseEnterLeave class?
             l.MouseEnter += l_MouseEnter;
             l.MouseLeave += panel_MouseLeave;
-            ProceeControl(aVisualItem);
+            ProcessControl(aVisualItem);
         }
 
-        private void ProceeControl(VisualItem aVisualItem)
+        private void ProcessControl(VisualItem aVisualItem)
         {
             PrepareControl(aVisualItem);
             RefreshControlValue(aVisualItem);
@@ -245,45 +241,44 @@ namespace NetSettings.View
 
         private void ProcessEvents(VisualItem aVisualItem)
         {
-            var t = aVisualItem.controlsGroup.control;
-            var p = aVisualItem.controlsGroup.parentContainer;
-            var l = aVisualItem.controlsGroup.label;
-            ItemTree aItem = aVisualItem.Item;
-            switch (aItem.type)
+            var control = aVisualItem.controlsGroup.control;
+            var parentContainer = aVisualItem.controlsGroup.parentContainer;
+            var label = aVisualItem.controlsGroup.label;
+            switch (aVisualItem.Item.type)
             {
                 //TODO: Remove all the casting in this switch
                 case "menu":
-                    l.DoubleClick += Menu_DoubleClick;
+                    label.DoubleClick += Menu_DoubleClick;
                     break;
                 case "bool":
-                    t.MouseClick += (sender, e) => { CheckBox_MouseClick(t, e); };
-                    p.MouseClick += (sender, e) => { CheckBox_MouseClick(t, e); };
-                    l.MouseClick += (sender, e) => { CheckBox_MouseClick(t, e); };
+                    control.MouseClick += (sender, e) => { CheckBox_MouseClick(control, e); };
+                    parentContainer.MouseClick += (sender, e) => { CheckBox_MouseClick(control, e); };
+                    label.MouseClick += (sender, e) => { CheckBox_MouseClick(control, e); };
                     break;
                 case "text":
-                    t.TextChanged += MenuSettings_TextChanged;
-                    t.Leave += (sender, e) => { DataView_Leave(t, e); };
+                    control.TextChanged += MenuSettings_TextChanged;
+                    control.Leave += (sender, e) => { DataView_Leave(control, e); };
                     break;
                 case "number":
-                    t.TextChanged += MenuSettings_NumberChanged;
-                    t.Leave += (sender, e) => { Number_Leave(t, e); };
+                    control.TextChanged += MenuSettings_NumberChanged;
+                    control.Leave += (sender, e) => { Number_Leave(control, e); };
                     break;
                 case "combo":
-                    (t as IComboBox).SelectedIndexChanged += (sender, e) => { c_SelectedIndexChanged(t, e); };
-                    t.MouseDoubleClick += Combo_MouseDoubleClick;
+                    (control as IComboBox).SelectedIndexChanged += (sender, e) => { c_SelectedIndexChanged(control, e); };
+                    control.MouseDoubleClick += Combo_MouseDoubleClick;
                     break;
                 case "image":
-                    t.TextChanged += MenuSettings_TextChanged;
-                    t.MouseDoubleClick += MenuSettings_MouseDoubleClick;
-                    t.MouseLeave += MenuSettings_MouseLeave;
-                    t.MouseEnter += (sender, e) => MenuSettings_MouseEnter(t, e);
+                    control.TextChanged += MenuSettings_TextChanged;
+                    control.MouseDoubleClick += MenuSettings_MouseDoubleClick;
+                    control.MouseLeave += MenuSettings_MouseLeave;
+                    control.MouseEnter += (sender, e) => MenuSettings_MouseEnter(control, e);
                     break;
                 case "color":
-                    t.KeyDown += ColorControl_KeyDown;
-                    t.TextChanged += ColorControl_TextChanged;
-                    t.DoubleClick += (sender, e) => { MenuSettings_Click(t, e); };
-                    p.Click += (sender, e) => { MenuSettings_Click(t, e); };
-                    l.Click += (sender, e) => { MenuSettings_Click(t, e); };
+                    control.KeyDown += ColorControl_KeyDown;
+                    control.TextChanged += ColorControl_TextChanged;
+                    control.DoubleClick += (sender, e) => { MenuSettings_Click(control, e); };
+                    parentContainer.Click += (sender, e) => { MenuSettings_Click(control, e); };
+                    label.Click += (sender, e) => { MenuSettings_Click(control, e); };
                     break;
             }
         }
@@ -299,15 +294,17 @@ namespace NetSettings.View
         #endregion
 
         #region ReArrange Tree
-        private void ReArrangeRecurseivly(VisualItem aRoot)
+        private void ReArrangeRecursively(VisualItem aRoot)
         {
-            VisualItem visualItem = aRoot;
-            ItemTree item = aRoot.Item;
+            var visualItem = aRoot;
             ReArrange(visualItem);
-            if (visualItem.subItems != null && (visualItem.Expanded == true || (fParams.filter != null && fParams.filter.IsEmpty() == false)))
-                foreach (VisualItem subItem in visualItem.subItems)
-                    ReArrangeRecurseivly(subItem);
-
+            if (visualItem.subItems != null && (visualItem.Expanded || (fParams.filter != null && !fParams.filter.IsEmpty())))
+            {
+                foreach (var subItem in visualItem.subItems)
+                {
+                    ReArrangeRecursively(subItem);
+                }
+            }
         }
 
         public void ReArrange()
@@ -319,7 +316,7 @@ namespace NetSettings.View
 
             HideAllControls();
             ApplyFilterRecursively(fRootVisualItem);
-            ReArrangeRecurseivly(fRootVisualItem);
+            ReArrangeRecursively(fRootVisualItem);
 
             fParams.container.EndUpdate();
         }
@@ -439,20 +436,23 @@ namespace NetSettings.View
         private IFont GetLabelFont(VisualItem aVisualItem)
         {
             if (aVisualItem.Item.type == "menu")
+            {
                 return fMenuLabel;
+            }
 
-            ItemTree item = aVisualItem.Item;
-            object val = GetValue(aVisualItem.Item);
-            return item.defaultValue != null && val != null && !item.defaultValue.Equals(val)
-                ? fLabelBold : fLabelNormal;
+            var item = aVisualItem.Item;
+            var val = GetValue(aVisualItem.Item);
+            return item.defaultValue != null && val != null && !item.defaultValue.Equals(val) ? fLabelBold : fLabelNormal;
         }
 
         private void button_Click(object sender, EventArgs e)
         {
-            IControl c = sender as IControl;
-            VisualItem item = GetItemFromControl(c);
+            var c = sender as IControl;
+            var item = GetItemFromControl(c);
             if (item != null)
+            {
                 SetValue(item, item.Item.defaultValue);
+            }
         }
 
         private void l_MouseEnter(object sender, EventArgs e)

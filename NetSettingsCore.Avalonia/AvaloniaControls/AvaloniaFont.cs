@@ -32,5 +32,11 @@ namespace NetSettings.Avalonia.AvaloniaControls
         {
             get => throw new NotImplementedException();//Instance.Name);
         }
+        //string IFont.FontFamily { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public object Native { get; set; }
+
+        public object Unit => throw new NotImplementedException();
+
+        MeasureUnit IFont.Unit => throw new NotImplementedException();
     }
 }

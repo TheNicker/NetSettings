@@ -5,7 +5,7 @@ using NetSettings.Common.Classes;
 
 namespace NetSettings.Common.Interfaces
 {
-    public interface IControl : IGuiElement
+    public interface IControl : IComponent
     {
         //    public void SetFont(IFont);
         //VisualItem Tag { get; set; }

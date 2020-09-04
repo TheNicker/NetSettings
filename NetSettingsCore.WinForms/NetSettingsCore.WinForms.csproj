@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CustomControls\WinForms\WinFormsCustomControls.csproj" />
     <ProjectReference Include="..\NetSettingsCore.Common\NetSettingsCore.Common.csproj" />
   </ItemGroup>
 
