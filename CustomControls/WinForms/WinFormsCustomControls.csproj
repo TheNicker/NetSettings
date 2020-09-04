@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace></RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="CustomControls\ColorControl - Copy.cs" />
+    <Compile Remove="CustomControls\ControlContainer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NetSettingsCore.Common\NetSettingsCore.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="CustomControls\ColorControl.cs" />
+    <Compile Update="WinFormControls\ComboBoxDoubleClick.cs" />
+    <Compile Update="WinFormControls\WinFormLabelSingleClick.cs" />
+    <Compile Update="WinFormControls\WinFormControl.cs" />
+  </ItemGroup>
+
+</Project>

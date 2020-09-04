@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Color = System.Drawing.Color;
-using DrawingColor = System.Drawing.Color;
 
-namespace NetSettings.WinForms.CustomControls
+namespace Controls
 {
     internal class ColorControl : TextBox
     {
-
         public ColorControl()
         {
             this.Font = new Font("Arial", 9, FontStyle.Bold);//TODO: Open this line
-            this.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.BorderStyle = BorderStyle.None;
         }
 
         private void RefreshName()
@@ -67,10 +64,10 @@ namespace NetSettings.WinForms.CustomControls
             {
                 if (!Updating)
                 {
-                    base.BackColor = DrawingColor.FromArgb(value.A, value.R, value.G, value.B);
+                    base.BackColor = Color.FromArgb(value.A, value.R, value.G, value.B);
 
                     var brightness = Math.Sqrt(.241 * base.BackColor.R * base.BackColor.R + .691 * base.BackColor.G * base.BackColor.G + .068 * base.BackColor.B * base.BackColor.B);
-                    ForeColor = brightness < 130 ? ForeColor = DrawingColor.White : ForeColor = DrawingColor.Black;
+                    ForeColor = brightness < 130 ? ForeColor = Color.White : ForeColor = Color.Black;
 
                     RefreshName();
                 }
