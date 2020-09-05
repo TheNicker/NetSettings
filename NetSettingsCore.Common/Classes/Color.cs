@@ -1,34 +1,39 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace NetSettings.Common.Classes
 {
     public readonly struct Color
     {
+        #region Fields / Data Members
         private const long NotDefinedValue = 0;
+        private const int ARGBAlphaShift = 24;
+        private const int ARGBRedShift = 16;
+        private const int ARGBGreenShift = 8;
+        private const int ARGBBlueShift = 0;
+        private const short StateARGBValueValid = 0x0002;
+        private const short StateKnownColorValid = 0x0001;
+        private const short StateValueMask = StateARGBValueValid;
 
-        internal static bool IsKnownColorSystem(KnownColor knownColor)
-            => (knownColor <= KnownColor.WindowText) || (knownColor > KnownColor.YellowGreen);
+        // User supplied name of color. Will not be filled in if
+        // we map to a "knowncolor"
+        private readonly string _name; // Do not rename (binary serialization)
 
-        private long Value
-        {
-            get
-            {
-                if ((state & StateValueMask) != 0)
-                {
-                    return value;
-                }
+        // Standard 32bit sRGB (ARGB)
+        private readonly long _value; // Do not rename (binary serialization)
 
-                // This is the only place we have system colors value exposed
-                if (IsKnownColor)
-                {
-                    return KnownColorTable.KnownColorToArgb((KnownColor)knownColor);
-                }
+        // Ignored, unless "state" says it is valid
+        private readonly short _knownColor; // Do not rename (binary serialization)
 
-                return NotDefinedValue;
-            }
-        }
+        // State flags.
+        private readonly short _state; // Do not rename (binary serialization)
 
+        public static readonly Color Empty = new Color();
+        #endregion Fields / Data Members
+
+        #region Properties
+        private long Value =>
+            // This is the only place we have system colors value exposed
+            (_state & StateValueMask) != 0 ? _value : IsKnownColor ? KnownColorTable.KnownColorToArgb((KnownColor)_knownColor) : NotDefinedValue;
 
         public byte R => unchecked((byte)(Value >> ARGBRedShift));
 
@@ -38,34 +43,9 @@ namespace NetSettings.Common.Classes
 
         public byte A => unchecked((byte)(Value >> ARGBAlphaShift));
 
-        public bool IsKnownColor => (state & StateKnownColorValid) != 0;
+        public bool IsKnownColor => (_state & StateKnownColorValid) != 0;
 
-        internal const int ARGBAlphaShift = 24;
-        internal const int ARGBRedShift = 16;
-        internal const int ARGBGreenShift = 8;
-        internal const int ARGBBlueShift = 0;
-        private const short StateARGBValueValid = 0x0002;
-        private const short StateKnownColorValid = 0x0001;
-        private const short StateValueMask = StateARGBValueValid;
-
-        // User supplied name of color. Will not be filled in if
-        // we map to a "knowncolor"
-        private readonly string name; // Do not rename (binary serialization)
-
-        // Standard 32bit sRGB (ARGB)
-        private readonly long value; // Do not rename (binary serialization)
-
-        // Ignored, unless "state" says it is valid
-        private readonly short knownColor; // Do not rename (binary serialization)
-
-        // State flags.
-        private readonly short state; // Do not rename (binary serialization)
-
-        public static readonly Color Empty = new Color();
-
-        // -------------------------------------------------------------------
-        //  static list of "web" colors...
-        //
+        #region static list of "web" colors...
         public static Color Transparent => new Color(KnownColor.Transparent);
 
         public static Color AliceBlue => new Color(KnownColor.AliceBlue);
@@ -347,29 +327,193 @@ namespace NetSettings.Common.Classes
         public static Color Yellow => new Color(KnownColor.Yellow);
 
         public static Color YellowGreen => new Color(KnownColor.YellowGreen);
+        #endregion web colors
+        #endregion Properties
 
-        public static Color FromHtml(string htmlColor)
+        #region Methods
+        internal static bool IsKnownColorSystem(KnownColor knownColor)
+            => (knownColor <= KnownColor.WindowText) || (knownColor > KnownColor.YellowGreen);
+
+        private static int _parse_col4(string color, int offset)
         {
-            KnownColor knownColor;
-            Color result;
-            if (Enum.TryParse(htmlColor, out knownColor))
+            char character = color[offset];
+
+            if (character >= '0' && character <= '9')
             {
-                result = new Color(knownColor);
+                return character - '0';
+            }
+            else if (character >= 'a' && character <= 'f')
+            {
+                return character + (10 - 'a');
+            }
+            else if (character >= 'A' && character <= 'F')
+            {
+                return character + (10 - 'A');
+            }
+            return -1;
+        }
+
+        private static int _parse_col8(string color, int offset)
+        {
+            return _parse_col4(color, offset) * 16 + _parse_col4(color, offset + 1);
+        }
+
+        private static Color FromHtml(string color)
+        {
+            if (color.Length == 0)
+            {
+                return new Color();
+            }
+            if (color[0] == '#')
+            {
+                color = color.Substring(1);
+            }
+
+            // If enabled, use 1 hex digit per channel instead of 2.
+            // Other sizes aren't in the HTML/CSS spec but we could add them if desired.
+            var alpha = color.Length switch
+            {
+                8 => true,
+                6 => false,
+                4 => true,
+                3 => false,
+                _ => throw new Exception("Invalid color code: " + color + ".")
+            };
+
+            var isShorthand = color.Length < 5;
+            //double r, g, b, a = 1.0;
+            int r, g, b, a = 255;
+            if (isShorthand)
+            {
+                //r = _parse_col4(color, 0) / 15.0;
+                //g = _parse_col4(color, 1) / 15.0;
+                //b = _parse_col4(color, 2) / 15.0;
+                //if (alpha)
+                //{
+                //    a = _parse_col4(color, 3) / 15.0;
+                //}
+                r = _parse_col4(color, 0);
+                g = _parse_col4(color, 1);
+                b = _parse_col4(color, 2);
+                if (alpha)
+                {
+                    a = _parse_col4(color, 3);
+                }
             }
             else
             {
-                var values = htmlColor.Split(',');
-                switch (values.Length)
+                //r = _parse_col8(color, 0) / 255.0;
+                //g = _parse_col8(color, 2) / 255.0;
+                //b = _parse_col8(color, 4) / 255.0;
+                //if (alpha)
+                //{
+                //    a = _parse_col8(color, 6) / 255.0;
+                //}
+                r = _parse_col8(color, 0);
+                g = _parse_col8(color, 2);
+                b = _parse_col8(color, 4);
+                if (alpha)
                 {
-                    case 4:
-                        result = FromArgb(byte.Parse(values[0]), byte.Parse(values[1]), byte.Parse(values[2]), byte.Parse(values[3]));
-                        break;
-                    case 3:
-                        result = FromArgb(255, byte.Parse(values[0]), byte.Parse(values[1]), byte.Parse(values[2]));
-                        break;
-                    default:
-                        throw new ArgumentException();
+                    a = _parse_col8(color, 6);
                 }
+            }
+
+            if (r < 0)
+            {
+                throw new Exception("Invalid color code: " + color + ".");
+            }
+
+            if (g < 0)
+            {
+                throw new Exception("Invalid color code: " + color + ".");
+            }
+
+            if (b < 0)
+            {
+                throw new Exception("Invalid color code: " + color + ".");
+            }
+
+            if (a < 0)
+            {
+                throw new Exception("Invalid color code: " + color + ".");
+            }
+
+            //ERR_FAIL_COND_V_MSG(r < 0, Color(), "Invalid color code: " + p_rgba + ".");
+            //ERR_FAIL_COND_V_MSG(g < 0, Color(), "Invalid color code: " + p_rgba + ".");
+            //ERR_FAIL_COND_V_MSG(b < 0, Color(), "Invalid color code: " + p_rgba + ".");
+            //ERR_FAIL_COND_V_MSG(a < 0, Color(), "Invalid color code: " + p_rgba + ".");
+
+            return Color.FromArgb(a, r, g, b);
+        }
+
+        private bool IsHtmlColorValid(string color)
+        {
+            if (color.Length == 0)
+            {
+                return false;
+            }
+            if (color[0] == '#')
+            {
+                color = color.Substring(1);
+            }
+
+            // Check if the amount of hex digits is valid.
+            int len = color.Length;
+            if (!(len == 3 || len == 4 || len == 6 || len == 8))
+            {
+                return false;
+            }
+
+            // Check if each hex digit is valid.
+            for (int i = 0; i < len; i++)
+            {
+                if (_parse_col4(color, i) == -1)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static Color Parse(string htmlColor)
+        {
+            Color result;
+            if (Enum.TryParse(htmlColor, out KnownColor knownColor))
+            {
+                result = new Color(knownColor);
+            }
+            else if (htmlColor.Split(',').Length > 1)
+            {
+                throw new NotImplementedException("");
+                if (false)
+                {
+                    var values = htmlColor.Split(',');
+                    switch (values.Length)
+                    {
+                        case 1:
+                            var value = values[0];
+                            if (value.Length == 7 && value.StartsWith("#"))
+                            {
+                                //"#E3D51C"
+                            }
+
+                            break;
+                        case 3:
+                            result = FromArgb(255, byte.Parse(values[0]), byte.Parse(values[1]), byte.Parse(values[2]));
+                            break;
+                        case 4:
+                            result = FromArgb(byte.Parse(values[0]), byte.Parse(values[1]), byte.Parse(values[2]),
+                                byte.Parse(values[3]));
+                            break;
+                        default:
+                            throw new ArgumentException();
+                    }
+                }
+            }
+            else
+            {
+                result = FromHtml(htmlColor);
             }
 
             return result;
@@ -377,21 +521,22 @@ namespace NetSettings.Common.Classes
 
         private Color(KnownColor knownColor)
         {
-            value = 0;
-            state = StateKnownColorValid;
-            name = null;
-            this.knownColor = unchecked((short)knownColor);
+            _value = 0;
+            _state = StateKnownColorValid;
+            _name = null;
+            this._knownColor = unchecked((short)knownColor);
         }
 
         private Color(long value, short state, string name, KnownColor knownColor)
         {
-            this.value = value;
-            this.state = state;
-            this.name = name;
-            this.knownColor = unchecked((short)knownColor);
+            this._value = value;
+            this._state = state;
+            this._name = name;
+            this._knownColor = unchecked((short)knownColor);
         }
 
         public static Color FromArgb(int red, int green, int blue) => FromArgb(byte.MaxValue, red, green, blue);
+
         private static Color FromArgb(uint argb) => new Color(argb, StateARGBValueValid, null, (KnownColor)0);
 
         public static Color FromArgb(int alpha, int red, int green, int blue)
@@ -411,400 +556,12 @@ namespace NetSettings.Common.Classes
 
         private static void CheckByte(int value, string name)
         {
-            void ThrowOutOfByteRange(int v, string n) =>
-                //throw new ArgumentException(SR.Format(SR.InvalidEx2BoundArgument, n, v, byte.MinValue, byte.MaxValue));
-                throw new ArgumentException("CheckByte");
-
             if (unchecked((uint)value) > byte.MaxValue)
-                ThrowOutOfByteRange(value, name);
+            {
+                throw new ArgumentException(
+                    $"Check the value of the byte. Accepted values: {byte.MinValue} - {byte.MaxValue}. Actual values: value: {value}, name: {name}.");
+            }
         }
-        //int ToArgb();
-        ////Color FromArgb(double r, double g, double b);
-        //Color FromArgb(int r, int g, int b);
-    }
-
-    [SuppressMessage("Microsoft.Design", "CA1008:EnumsShouldHaveZeroValue")]
-    //#if netcoreapp20
-    internal
-    //#else
-    //public
-    //#endif
-    enum KnownColor
-    {
-        // This enum is order dependent!!!
-        //
-        // The value of these known colors are indexes into a color array.
-        // Do not modify this enum without updating KnownColorTable.
-
-        // 0 - reserved for "not a known color"
-
-        // "System" colors
-        ActiveBorder = 1,
-        ActiveCaption,
-        ActiveCaptionText,
-        AppWorkspace,
-        Control,
-        ControlDark,
-        ControlDarkDark,
-        ControlLight,
-        ControlLightLight,
-        ControlText,
-        Desktop,
-        GrayText,
-        Highlight,
-        HighlightText,
-        HotTrack,
-        InactiveBorder,
-        InactiveCaption,
-        InactiveCaptionText,
-        Info,
-        InfoText,
-        Menu,
-        MenuText,
-        ScrollBar,
-        Window,
-        WindowFrame,
-        WindowText,
-
-        // "Web" Colors
-        Transparent,
-        AliceBlue,
-        AntiqueWhite,
-        Aqua,
-        Aquamarine,
-        Azure,
-        Beige,
-        Bisque,
-        Black,
-        BlanchedAlmond,
-        Blue,
-        BlueViolet,
-        Brown,
-        BurlyWood,
-        CadetBlue,
-        Chartreuse,
-        Chocolate,
-        Coral,
-        CornflowerBlue,
-        Cornsilk,
-        Crimson,
-        Cyan,
-        DarkBlue,
-        DarkCyan,
-        DarkGoldenrod,
-        DarkGray,
-        DarkGreen,
-        DarkKhaki,
-        DarkMagenta,
-        DarkOliveGreen,
-        DarkOrange,
-        DarkOrchid,
-        DarkRed,
-        DarkSalmon,
-        DarkSeaGreen,
-        DarkSlateBlue,
-        DarkSlateGray,
-        DarkTurquoise,
-        DarkViolet,
-        DeepPink,
-        DeepSkyBlue,
-        DimGray,
-        DodgerBlue,
-        Firebrick,
-        FloralWhite,
-        ForestGreen,
-        Fuchsia,
-        Gainsboro,
-        GhostWhite,
-        Gold,
-        Goldenrod,
-        Gray,
-        Green,
-        GreenYellow,
-        Honeydew,
-        HotPink,
-        IndianRed,
-        Indigo,
-        Ivory,
-        Khaki,
-        Lavender,
-        LavenderBlush,
-        LawnGreen,
-        LemonChiffon,
-        LightBlue,
-        LightCoral,
-        LightCyan,
-        LightGoldenrodYellow,
-        LightGray,
-        LightGreen,
-        LightPink,
-        LightSalmon,
-        LightSeaGreen,
-        LightSkyBlue,
-        LightSlateGray,
-        LightSteelBlue,
-        LightYellow,
-        Lime,
-        LimeGreen,
-        Linen,
-        Magenta,
-        Maroon,
-        MediumAquamarine,
-        MediumBlue,
-        MediumOrchid,
-        MediumPurple,
-        MediumSeaGreen,
-        MediumSlateBlue,
-        MediumSpringGreen,
-        MediumTurquoise,
-        MediumVioletRed,
-        MidnightBlue,
-        MintCream,
-        MistyRose,
-        Moccasin,
-        NavajoWhite,
-        Navy,
-        OldLace,
-        Olive,
-        OliveDrab,
-        Orange,
-        OrangeRed,
-        Orchid,
-        PaleGoldenrod,
-        PaleGreen,
-        PaleTurquoise,
-        PaleVioletRed,
-        PapayaWhip,
-        PeachPuff,
-        Peru,
-        Pink,
-        Plum,
-        PowderBlue,
-        Purple,
-        Red,
-        RosyBrown,
-        RoyalBlue,
-        SaddleBrown,
-        Salmon,
-        SandyBrown,
-        SeaGreen,
-        SeaShell,
-        Sienna,
-        Silver,
-        SkyBlue,
-        SlateBlue,
-        SlateGray,
-        Snow,
-        SpringGreen,
-        SteelBlue,
-        Tan,
-        Teal,
-        Thistle,
-        Tomato,
-        Turquoise,
-        Violet,
-        Wheat,
-        White,
-        WhiteSmoke,
-        Yellow,
-        YellowGreen,
-
-        // New system color additions in Visual Studio 2005 (.NET Framework 2.0)
-
-        ButtonFace,
-        ButtonHighlight,
-        ButtonShadow,
-        GradientActiveCaption,
-        GradientInactiveCaption,
-        MenuBar,
-        MenuHighlight
-    }
-
-    internal static class KnownColorTable
-    {
-        private static readonly uint[] s_colorTable = new uint[141]
-        {
-      16777215U,
-      4293982463U,
-      4294634455U,
-      4278255615U,
-      4286578644U,
-      4293984255U,
-      4294309340U,
-      4294960324U,
-      4278190080U,
-      4294962125U,
-      4278190335U,
-      4287245282U,
-      4289014314U,
-      4292786311U,
-      4284456608U,
-      4286578432U,
-      4291979550U,
-      4294934352U,
-      4284782061U,
-      4294965468U,
-      4292613180U,
-      4278255615U,
-      4278190219U,
-      4278225803U,
-      4290283019U,
-      4289309097U,
-      4278215680U,
-      4290623339U,
-      4287299723U,
-      4283788079U,
-      4294937600U,
-      4288230092U,
-      4287299584U,
-      4293498490U,
-      4287609995U,
-      4282924427U,
-      4281290575U,
-      4278243025U,
-      4287889619U,
-      4294907027U,
-      4278239231U,
-      4285098345U,
-      4280193279U,
-      4289864226U,
-      4294966000U,
-      4280453922U,
-      4294902015U,
-      4292664540U,
-      4294506751U,
-      4294956800U,
-      4292519200U,
-      4286611584U,
-      4278222848U,
-      4289593135U,
-      4293984240U,
-      4294928820U,
-      4291648604U,
-      4283105410U,
-      4294967280U,
-      4293977740U,
-      4293322490U,
-      4294963445U,
-      4286381056U,
-      4294965965U,
-      4289583334U,
-      4293951616U,
-      4292935679U,
-      4294638290U,
-      4292072403U,
-      4287688336U,
-      4294948545U,
-      4294942842U,
-      4280332970U,
-      4287090426U,
-      4286023833U,
-      4289774814U,
-      4294967264U,
-      4278255360U,
-      4281519410U,
-      4294635750U,
-      4294902015U,
-      4286578688U,
-      4284927402U,
-      4278190285U,
-      4290401747U,
-      4287852763U,
-      4282168177U,
-      4286277870U,
-      4278254234U,
-      4282962380U,
-      4291237253U,
-      4279834992U,
-      4294311930U,
-      4294960353U,
-      4294960309U,
-      4294958765U,
-      4278190208U,
-      4294833638U,
-      4286611456U,
-      4285238819U,
-      4294944000U,
-      4294919424U,
-      4292505814U,
-      4293847210U,
-      4288215960U,
-      4289720046U,
-      4292571283U,
-      4294963157U,
-      4294957753U,
-      4291659071U,
-      4294951115U,
-      4292714717U,
-      4289781990U,
-      4286578816U,
-      4294901760U,
-      4290547599U,
-      4282477025U,
-      4287317267U,
-      4294606962U,
-      4294222944U,
-      4281240407U,
-      4294964718U,
-      4288696877U,
-      4290822336U,
-      4287090411U,
-      4285160141U,
-      4285563024U,
-      4294966010U,
-      4278255487U,
-      4282811060U,
-      4291998860U,
-      4278222976U,
-      4292394968U,
-      4294927175U,
-      4282441936U,
-      4293821166U,
-      4294303411U,
-      uint.MaxValue,
-      4294309365U,
-      4294967040U,
-      4288335154U
-        };
-
-        //internal static Color ArgbToKnownColor(uint argb)
-        //{
-        //    for (int index = 1; index < KnownColorTable.s_colorTable.Length; ++index)
-        //    {
-        //        if ((int)KnownColorTable.s_colorTable[index] == (int)argb)
-        //            return Color.FromKnownColor((KnownColor)(index + 27));
-        //    }
-        //    return Color.FromArgb((int)argb);
-        //}
-
-
-
-        public static uint KnownColorToArgb(KnownColor color)
-        {
-            return !Color.IsKnownColorSystem(color) ? KnownColorTable.s_colorTable[(int)(color - 27)] : KnownColorTable.GetSystemColorArgb(color);
-        }
-
-        //private static unsafe ReadOnlySpan<byte> SystemColorIdTable
-        //{
-        //    get
-        //    {
-        //        return new ReadOnlySpan<byte>((void*)&\u003CPrivateImplementationDetails\u003E.\u003265182B1D4C6931DCFA70DED15DBD386810B80FF, 33);
-        //    }
-        //}
-
-        public static uint GetSystemColorArgb(KnownColor color)
-        {
-            throw new NotImplementedException("This was taken from System.Drawing");
-            //Debug.Assert(Color.IsKnownColorSystem(color));
-
-            //return color < KnownColor.Transparent
-            //    ? s_staticSystemColors[(int)color - (int)KnownColor.ActiveBorder]
-            //    : s_staticSystemColors[(int)color - (int)KnownColor.ButtonFace + (int)KnownColor.WindowText];
-        }
-
-        //private static int GetSystemColorId(KnownColor color)
-        //{
-        //    return color >= KnownColor.Transparent ? (int)KnownColorTable.SystemColorIdTable[(int)(color - 168 + 26)] : (int)KnownColorTable.SystemColorIdTable[(int)(color - 1)];
-        //}
+        #endregion Methods
     }
 }

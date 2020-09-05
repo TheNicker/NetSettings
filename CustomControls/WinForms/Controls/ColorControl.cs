@@ -9,7 +9,7 @@ namespace CustomControls.WinForms.Controls
         public ColorControl()
         {
             base.Font = new Font("Arial", 9, FontStyle.Bold);
-            this.BorderStyle = BorderStyle.None;
+            this.BorderStyle = BorderStyle.Fixed3D;
         }
 
         private void RefreshName()

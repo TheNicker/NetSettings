@@ -56,16 +56,16 @@ namespace NetSettings.Data
                     {
                         if (obj is string htmlColor)
                         {
-                            obj = Color.FromHtml(htmlColor);
+                            obj = Color.Parse(htmlColor);
                         }
                         else if (!(obj is Color))
                         {
-                            var color = ((JObject) obj);
-                            //TODO: Choose how to handle a null case
+                            var color = (JObject)obj;
+                            //TODO: Do we need to handle a null case? If yes, choose how to handle a null case
                             var r = (color.GetValue("R") ?? throw new InvalidOperationException()).Value<byte>();
                             var g = color.GetValue("G")!.Value<byte>();
                             var b = color.GetValue("B")!.Value<byte>();
-                            obj = Color.FromArgb(r,g,b);
+                            obj = Color.FromArgb(r, g, b);
                         }
                     }
                     finally
@@ -77,11 +77,11 @@ namespace NetSettings.Data
                     //normalize all our numbers to double data type
                     if (obj != null && obj is long num)
                     {
-                        obj = (double) num;
+                        obj = (double)num;
                     }
                     break;
-                //default:
-                //    throw new NotImplementedException("aItem.type: " + aItem.type);
+                    //default:
+                    //    throw new NotImplementedException("aItem.type: " + aItem.type);
             }
         }
     }

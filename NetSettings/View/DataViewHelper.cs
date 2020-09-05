@@ -40,7 +40,7 @@ namespace NetSettings.View
                     break;
                 case ColorRepresentanion.Hex:
                     string hexRepresentation = GetHexNumber(text);
-                    color = Color.FromHtml(hexRepresentation);
+                    color = Color.Parse(hexRepresentation);
                     result = true;
                     break;
                 case ColorRepresentanion.CommaSeperated:

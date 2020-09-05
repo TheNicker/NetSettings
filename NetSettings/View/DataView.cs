@@ -248,7 +248,7 @@ namespace NetSettings.View
             {
                 //TODO: Remove all the casting in this switch
                 case "menu":
-                    label.DoubleClick += Menu_DoubleClick;
+                    label.DoubleClick += (sender, e) => { Menu_DoubleClick(control, e); };
                     break;
                 case "bool":
                     control.MouseClick += (sender, e) => { CheckBox_MouseClick(control, e); };
@@ -260,7 +260,7 @@ namespace NetSettings.View
                     control.Leave += (sender, e) => { DataView_Leave(control, e); };
                     break;
                 case "number":
-                    control.TextChanged += MenuSettings_NumberChanged;
+                    control.TextChanged += (sender, e) => { MenuSettings_NumberChanged(control, e); }; 
                     control.Leave += (sender, e) => { Number_Leave(control, e); };
                     break;
                 case "combo":
@@ -275,7 +275,7 @@ namespace NetSettings.View
                     break;
                 case "color":
                     control.KeyDown += ColorControl_KeyDown;
-                    control.TextChanged += ColorControl_TextChanged;
+                    control.TextChanged += (sender, e) => { ColorControl_TextChanged(control, e); };
                     control.DoubleClick += (sender, e) => { MenuSettings_Click(control, e); };
                     parentContainer.Click += (sender, e) => { MenuSettings_Click(control, e); };
                     label.Click += (sender, e) => { MenuSettings_Click(control, e); };
@@ -285,10 +285,9 @@ namespace NetSettings.View
 
         private void Menu_DoubleClick(object sender, EventArgs e)
         {
-            VisualItem item = GetItemFromControl(sender as IControl);
-            if (item != null)
+            var item = GetItemFromControl(sender as IControl);
+            if (item != null) //TODO: Can we remove this condition?
                 item.Expanded = !item.Expanded;
-
             ReArrange();
         }
         #endregion
@@ -521,7 +520,7 @@ namespace NetSettings.View
                         (aControl as IComboBox).SelectedItem = val;
                         break;
                     case "color":
-                        aControl.BackColor = (Color?)val ?? Color.Empty; //TODO: This was IColorControl
+                        aControl.BackColor = (Color)val;
                         break;
                 }
                 CheckLabelColor(aVisualItem);
@@ -633,12 +632,12 @@ namespace NetSettings.View
 
         void MenuSettings_Click(object sender, EventArgs e)
         {
-            IControl p = sender as IControl;
-            VisualItem item = GetItemFromControl(p);
+            var p = sender as IControl;
+            var item = GetItemFromControl(p);
             var dialog = guiProvider.CreateGuiElement(GuiElementType.ColorDialog) as IColorDialog;
             dialog.FullOpen = true;
             dialog.Color = (Color)GetValue(item.Item.FullName);
-            var colorControl = item.controlsGroup.control as IColorControl;
+
             if (dialog.ShowDialog() == DialogResult.OK)
                 SetValue(item, dialog.Color);
         }
