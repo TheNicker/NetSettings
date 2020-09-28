@@ -1,4 +1,5 @@
-﻿using NetSettings.Common.Classes;
+﻿using System.Collections.Generic;
+using NetSettings.Common.Classes;
 using NetSettings.Data;
 
 namespace NetSettings.View
@@ -10,6 +11,6 @@ namespace NetSettings.View
         public bool IsFiltered;
         public ItemControlsGroup controlsGroup;
         public bool Expanded = true;
-        public VisualItem[] subItems;
+        public IList<VisualItem> subItems;
     }
 }
