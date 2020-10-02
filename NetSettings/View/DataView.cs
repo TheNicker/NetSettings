@@ -1,119 +1,133 @@
-﻿using NetSettings.Controls;
+﻿// ReSharper disable PossibleNullReferenceException
+
+using NetSettings.Data;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using NetSettings.Data;
+using NetSettings.Common.Classes;
+using NetSettings.Common.Interfaces;
+using BorderStyle = NetSettings.Common.Classes.BorderStyle;
+using CheckBox = NetSettings.Common.Interfaces.ICheckBox;
+using DialogResult = NetSettings.Common.Classes.DialogResult;
+using DockStyle = NetSettings.Common.Classes.DockStyle;
+using FlatStyle = NetSettings.Common.Classes.FlatStyle;
 
 namespace NetSettings.View
 {
     public class DataView
     {
-        const string labelFont = "calibri";
+        private const string labelFont = "calibri"; //TODO: Rename to familyName
 
-        private Dictionary<string, Type> fStringToType;
+        //private Dictionary<string, Type> fStringToType; //TODO: Delete this field
 
         //Controls arrangement
-        Point fCurrentPanelPosition;
-        int fNesting = 0;
-        int fCurrentRow;
+        private Point fCurrentPanelPosition;
+        private readonly int fNesting = 0;
+        private int fCurrentRow;
 
-        ControlContainer fDescriptionPanel;
-        TextBox fDescriptionTextBox;
-        DataViewParams fParams;
+        private IControlContainer fDescriptionPanel; //TODO: Can we remove this from the class level and move it next to usage?
+        private ITextBox fDescriptionTextBox;
+        private DataViewParams fParams;
 
-        VisualItem fRootVisualItem;
+        private VisualItem fRootVisualItem;
 
-        PreviewForm fPreviewForm;
-        Point fLastCursorPosition;
+        //private PreviewForm fPreviewForm;
+        public IGuiProvider guiProvider { get; set; }
+        private readonly Point fLastCursorPosition; //TODO: Can we delete this?
 
-        Font fLabelNormal;
-        Font fLabelBold;
-        Font fMenuLabel;
+        private IFont fLabelNormal;
+        private IFont fLabelBold;
+        private IFont fMenuLabel;
+
+        private readonly Dictionary<IGuiElement, VisualItem> dic = new Dictionary<IGuiElement, VisualItem>();
 
         public DataView()
         {
-            fStringToType = new Dictionary<string, Type>();
-            fStringToType.Add("text", typeof(TextBox));
-            fStringToType.Add("bool", typeof(CheckBox));
-            fStringToType.Add("menu", typeof(Label));
-            fStringToType.Add("combo", typeof(ComboBoxDoubleClick));
-            fStringToType.Add("image", typeof(TextBox));
-            fStringToType.Add("number", typeof(TextBox));
-            fStringToType.Add("color", typeof(ColorControl));
-            fLabelNormal = new Font(labelFont, 10, FontStyle.Regular);
-            fLabelBold = new Font(labelFont, 10, FontStyle.Bold);
-            fMenuLabel = new Font(labelFont, 12, FontStyle.Bold);
+            //fStringToType = new Dictionary<string, Type>
+            //{
+            //    {"text", typeof(ITextBox)},
+            //    {"bool", typeof(ICheckBox)},
+            //    {"menu", typeof(ILabel)},
+            //    {"combo", typeof(IComboBoxDoubleClick)},
+            //    {"image", typeof(ITextBox)},
+            //    {"number", typeof(ITextBox)},
+            //    {"color", typeof(IColorControl)}
+            //};
+
+            //fPreviewForm = new PreviewForm();
         }
+
         public void Create(DataViewParams aParams)
         {
-            VerifyParameters(aParams);
+            guiProvider = aParams.guiProvider;
+            DataView.VerifyParameters(aParams);
             fParams = aParams;
+
+            fLabelNormal = (IFont)guiProvider.CreateGuiElement(GuiElementType.IFont, labelFont, 10f, FontAppearance.Regular);
+            fLabelBold = (IFont)guiProvider.CreateGuiElement(GuiElementType.IFont, labelFont, 10f, FontAppearance.Bold);
+            fMenuLabel = (IFont)guiProvider.CreateGuiElement(GuiElementType.IFont, labelFont, 12f, FontAppearance.Bold);
+
             fParams.dataProvider.AddView(this);
             CreateVisualItemTree();
             fDescriptionPanel = fParams.descriptionContainer;
 
             if (fDescriptionPanel != null)
             {
+                //TODO: Move this to the bottom of the screen
                 fDescriptionPanel.Reset();
                 fDescriptionPanel.StartUpdate();
-                TextBox t = new TextBox();
-                t.Multiline = true;
-                t.Dock = DockStyle.Fill;
-                t.ReadOnly = true;
-                t.BorderStyle = BorderStyle.FixedSingle;
-                t.Font = new Font("Lucida fax", 10);
-                fDescriptionTextBox = t;
-                fDescriptionPanel.Controls.Add(t);
+
+                var textBox = (ITextBox)guiProvider.CreateGuiElement(GuiElementType.Text);
+                textBox.Multiline = true;
+                textBox.Dock = DockStyle.Fill;
+                textBox.ReadOnly = true;
+                textBox.BorderStyle = BorderStyle.FixedSingle;
+                textBox.Font = (IFont)guiProvider.CreateGuiElement(GuiElementType.IFont, "Lucida Fax", 10f);
+
+                fDescriptionTextBox = textBox;
+                fDescriptionPanel.AddControl(textBox);
                 fDescriptionPanel.EndUpdate();
             }
 
-            if (fPreviewForm == null)
-            {
-                fPreviewForm = new PreviewForm();
-                fPreviewForm.PreviewTimer.Tick += PreviewTimer_Tick;
-            }
             ReCreateTree();
         }
 
-        private void VerifyParameters(DataViewParams aParams)
+        private static void VerifyParameters(DataViewParams aParams)
         {
             if (aParams.container == null || aParams.dataProvider == null)
-                throw new Exception("Mising parameters, can not build data view tree");
+                throw new Exception("Missing parameters, can not build data view tree");
         }
 
         #region Recreate Tree
 
         private void CreateVisualItemTree()
         {
-            fRootVisualItem = new VisualItem();
-            fRootVisualItem.IsFiltered = true;
-            fRootVisualItem.Item = fParams.dataProvider.RootTemplate;
+            fRootVisualItem = new VisualItem
+            {
+                IsFiltered = true,
+                Item = fParams.dataProvider.RootTemplate
+            };
             CreateVisualItemTree(fRootVisualItem);
         }
 
         private void CreateVisualItemTree(VisualItem rootVisualItem)
         {
             ItemTree item = rootVisualItem.Item;
-            if (item.subitems != null)
+            if (item.subItems != null)
             {
-                rootVisualItem.subitems = new VisualItem[item.subitems.Count()];
-                int i = 0;
-                foreach (ItemTree subItem in item.subitems)
+                rootVisualItem.subItems = new List<VisualItem>();
+                foreach (var subItem in item.subItems)
                 {
-                    VisualItem visualItem = new VisualItem();
-                    rootVisualItem.subitems[i++] = visualItem;
-                    visualItem.Item = subItem;
-                    visualItem.IsFiltered = true;
+                    var visualItem = new VisualItem
+                    {
+                        Item = subItem,
+                        IsFiltered = true
+                    };
+                    rootVisualItem.subItems.Add(visualItem);
                     CreateVisualItemTree(visualItem);
                 }
-
             }
         }
+
         public void ReCreateTree()
         {
             fParams.container.StartUpdate();
@@ -122,48 +136,56 @@ namespace NetSettings.View
             ReArrange();
             fParams.container.EndUpdate();
         }
+
         private void AddControlRecursivly(VisualItem aRoot)
         {
             VisualItem visualItem = aRoot;
             ItemTree item = aRoot.Item;
             if (!visualItem.IsFiltered)
+            {
                 return;
-            Control control = fParams.container;
-            Type type;
-            if (fStringToType.TryGetValue(item.type, out type))
-                AddControl(aRoot, type);
+            }
+
+            if (Enum.TryParse<GuiElementType>(item.type, true, out var elementType))
+            {
+                AddControl(aRoot, elementType);
+            }
 
             //Add children
-            if (visualItem.subitems != null)
-                foreach (VisualItem subItem in visualItem.subitems)
+            if (visualItem.subItems != null)
+            {
+                foreach (var subItem in visualItem.subItems)
+                {
                     AddControlRecursivly(subItem);
+                }
+            }
         }
 
-        private void AddControl(VisualItem aVisualItem, Type aType)
+        private void AddControl(VisualItem aVisualItem, object aType)
         {
             ItemTree aItem = aVisualItem.Item;
 
-            bool isMenu = aItem.type == "menu";
-            bool isBool = aItem.type == "bool";
+            var isMenu = aItem.type == "menu";
+            var isBool = aItem.type == "bool";
             //Create parent container
-            ItemControlsGroup group = new ItemControlsGroup();
-            Control parent = group.parentContainer = new Control();
+            var group = new ItemControlsGroup();
+            var parent = group.parentContainer = guiProvider.CreateGuiElement(GuiElementType.GuiElement) as IControl;
 
-            fParams.container.Controls.Add(parent);
-            parent.Tag = aVisualItem;
+            fParams.container.AddControl(parent);
+            dic.Add(parent, aVisualItem);
 
             //Add label describing the entry
-
-            LabelSingleClick label = group.label = new LabelSingleClick(!isBool);
+            var label = group.label = (ILabel)guiProvider.CreateGuiElement(GuiElementType.Label);
             label.Font = GetLabelFont(aVisualItem);
-            label.Text = aItem.displayname;
-            label.Tag = aVisualItem;
-            parent.Controls.Add(label);
+            label.Text = aItem.displayName;
+            //label.SetStyle(ControlStyles.StandardDoubleClick, !isBool); //TODO: Where is this double click event being used?
+            parent.AddVisualControl(label);
+            dic.Add(label, aVisualItem);
 
             //Add the  control itself
-            Control control = group.control = Activator.CreateInstance(aType) as Control;
-            parent.Controls.Add(control);
-            control.Tag = aVisualItem;
+            var control = group.control = guiProvider.CreateGuiElement(aType) as IControl;
+            parent.AddVisualControl(control);
+            dic.Add(control, aVisualItem);
 
             //Add reference from the menu item to the control holding the values.
             aVisualItem.controlsGroup = group;
@@ -171,22 +193,25 @@ namespace NetSettings.View
             //Add a default button 
             if (!isMenu)
             {
-                Button button = group.defaultButton = new Button();
-                parent.Controls.Add(button);
+                var button = group.defaultButton = guiProvider.CreateGuiElement(GuiElementType.Button) as IButton;
                 button.Text = "Default";
-                button.Click += button_Click;
-                button.Tag = aVisualItem;
+                button.Click += (sender, e) => button_Click(button, e);
                 button.FlatStyle = FlatStyle.Popup;
-                button.BackColor = System.Drawing.SystemColors.Control;
+                button.BackColor = Color.LightGray;
+                parent.AddVisualControl(button);
+                dic.Add(button, aVisualItem);
                 fCurrentRow++;
             }
 
-            MouseEnterLeave l = new MouseEnterLeave(parent);
+            //TODO: WTF?????
+            var l = new MouseEnterLeave(parent);
+            //TODO: Do we need this 2 events? probably yes. Can we do this code nicer? Can we remove the MouseEnterLeave class?
             l.MouseEnter += l_MouseEnter;
             l.MouseLeave += panel_MouseLeave;
-            ProceeControl(aVisualItem);
+            ProcessControl(aVisualItem);
         }
-        private void ProceeControl(VisualItem aVisualItem)
+
+        private void ProcessControl(VisualItem aVisualItem)
         {
             PrepareControl(aVisualItem);
             RefreshControlValue(aVisualItem);
@@ -195,91 +220,90 @@ namespace NetSettings.View
 
         private static void PrepareControl(VisualItem aVIsualItem)
         {
-
-            Control label = aVIsualItem.controlsGroup.label;
-            Control actualControl = aVIsualItem.controlsGroup.control;
-            ItemTree aItem = aVIsualItem.Item;
+            var label = aVIsualItem.controlsGroup.label;
+            var actualControl = aVIsualItem.controlsGroup.control;
+            var aItem = aVIsualItem.Item;
             switch (aItem.type)
             {
                 case "combo":
                     string[] values = aItem.values.Split(';');
-                    foreach (string v in values)
-                        (actualControl as ComboBox).Items.Add(v);
+                    foreach (var value in values)
+                    {
+                        (actualControl as IComboBox).AddItem(value);
+                    }
+
                     break;
                 case "menu":
-                    (label as Label).ForeColor = Color.LawnGreen;
+                    label.ForeColor = Color.LawnGreen;
                     break;
             }
         }
 
         private void ProcessEvents(VisualItem aVisualItem)
         {
-
-            Control t = aVisualItem.controlsGroup.control;
-            Control p = aVisualItem.controlsGroup.parentContainer;
-            Control l = aVisualItem.controlsGroup.label;
-            ItemTree aItem = aVisualItem.Item;
-            switch (aItem.type)
+            var control = aVisualItem.controlsGroup.control;
+            var parentContainer = aVisualItem.controlsGroup.parentContainer;
+            var label = aVisualItem.controlsGroup.label;
+            switch (aVisualItem.Item.type)
             {
+                //TODO: Remove all the casting in this switch
                 case "menu":
-                    (l as Control).DoubleClick += Menu_DoubleClick;
+                    label.DoubleClick += (sender, e) => { Menu_DoubleClick(control, e); };
                     break;
                 case "bool":
-                    (t as CheckBox).MouseClick += CheckBox_MouseClick;
-                    (p as Control).MouseClick += CheckBox_MouseClick;
-                    (l as Control).MouseClick += CheckBox_MouseClick;
+                    control.MouseClick += (sender, e) => { CheckBox_MouseClick(control, e); };
+                    parentContainer.MouseClick += (sender, e) => { CheckBox_MouseClick(control, e); };
+                    label.MouseClick += (sender, e) => { CheckBox_MouseClick(control, e); };
                     break;
                 case "text":
-                    (t as TextBox).TextChanged += MenuSettings_TextChanged;
-                    (t as TextBox).Leave += DataView_Leave;
+                    control.TextChanged += MenuSettings_TextChanged;
+                    control.Leave += (sender, e) => { DataView_Leave(control, e); };
                     break;
                 case "number":
-                    (t as TextBox).TextChanged += MenuSettings_NumberChanged;
-                    (t as TextBox).Leave += Number_Leave;
+                    control.TextChanged += (sender, e) => { MenuSettings_NumberChanged(control, e); }; 
+                    control.Leave += (sender, e) => { Number_Leave(control, e); };
                     break;
                 case "combo":
-                    (t as ComboBox).SelectedIndexChanged += c_SelectedIndexChanged;
-                    (t as ComboBox).MouseDoubleClick += Combo_MouseDoubleClick;
-
+                    (control as IComboBox).SelectedIndexChanged += (sender, e) => { c_SelectedIndexChanged(control, e); };
+                    control.MouseDoubleClick += Combo_MouseDoubleClick;
                     break;
                 case "image":
-                    (t as TextBox).TextChanged += MenuSettings_TextChanged;
-                    (t as TextBox).MouseDoubleClick += MenuSettings_MouseDoubleClick;
-                    (t as TextBox).MouseLeave += MenuSettings_MouseLeave;
-                    (t as TextBox).MouseHover += MenuSettings_MouseHover;
+                    control.TextChanged += MenuSettings_TextChanged;
+                    control.MouseDoubleClick += MenuSettings_MouseDoubleClick;
+                    control.MouseLeave += MenuSettings_MouseLeave;
+                    control.MouseEnter += (sender, e) => MenuSettings_MouseEnter(control, e);
                     break;
                 case "color":
-                    (t as ColorControl).KeyDown += ColorControl_KeyDown;
-                    (t as ColorControl).TextChanged += ColorControl_TextChanged;
-                    (t as Control).DoubleClick += MenuSettings_Click;
-                    (p as Control).Click += MenuSettings_Click;
-                    (l as Control).Click += MenuSettings_Click;
+                    control.KeyDown += ColorControl_KeyDown;
+                    control.TextChanged += (sender, e) => { ColorControl_TextChanged(control, e); };
+                    control.DoubleClick += (sender, e) => { MenuSettings_Click(control, e); };
+                    parentContainer.Click += (sender, e) => { MenuSettings_Click(control, e); };
+                    label.Click += (sender, e) => { MenuSettings_Click(control, e); };
                     break;
             }
-
         }
 
         private void Menu_DoubleClick(object sender, EventArgs e)
         {
-            VisualItem item = GetItemFromControl(sender as Control);
-            if (item != null)
+            var item = GetItemFromControl(sender as IControl);
+            if (item != null) //TODO: Can we remove this condition?
                 item.Expanded = !item.Expanded;
-
             ReArrange();
         }
         #endregion
 
         #region ReArrange Tree
-        private void ReArrangeRecurseivly(VisualItem aRoot)
+        private void ReArrangeRecursively(VisualItem aRoot)
         {
-
-            VisualItem visualItem = aRoot;
-            ItemTree item = aRoot.Item;
+            var visualItem = aRoot;
             ReArrange(visualItem);
-            if (visualItem.subitems != null && (visualItem.Expanded == true || (fParams.filter != null && fParams.filter.IsEmpty() == false)))
-                foreach (VisualItem subItem in visualItem.subitems)
-                    ReArrangeRecurseivly(subItem);
-
+            if (visualItem.subItems != null && (visualItem.Expanded || (fParams.filter != null && !fParams.filter.IsEmpty())))
+            {
+                foreach (var subItem in visualItem.subItems)
+                {
+                    ReArrangeRecursively(subItem);
+                }
+            }
         }
 
         public void ReArrange()
@@ -291,7 +315,7 @@ namespace NetSettings.View
 
             HideAllControls();
             ApplyFilterRecursively(fRootVisualItem);
-            ReArrangeRecurseivly(fRootVisualItem);
+            ReArrangeRecursively(fRootVisualItem);
 
             fParams.container.EndUpdate();
         }
@@ -306,8 +330,8 @@ namespace NetSettings.View
             if (aRoot.controlsGroup != null)
                 aRoot.controlsGroup.Visible = false;
 
-            if (aRoot.subitems != null)
-                foreach (VisualItem subItem in aRoot.subitems)
+            if (aRoot.subItems != null)
+                foreach (VisualItem subItem in aRoot.subItems)
                     HideAllControlsRecursively(subItem);
         }
 
@@ -320,42 +344,41 @@ namespace NetSettings.View
                 return;
             }
 
-
             aVisualItem.controlsGroup.Visible = true;
 
-            ItemTree aItem = aVisualItem.Item;
-            DataViewPlacement p = fParams.placement;
-            bool isMenu = aItem.type == "menu";
+            var aItem = aVisualItem.Item;
+            var dvp = fParams.placement;
+            var isMenu = aItem.type == "menu";
             //Create parent container
-            ItemControlsGroup group = aVisualItem.controlsGroup;
-            Control parent = aVisualItem.controlsGroup.parentContainer;
+            var group = aVisualItem.controlsGroup;
+            var parent = aVisualItem.controlsGroup.parentContainer;
 
-            parent.Width = p.TitleMaxWidth + p.TitleSpacing + p.ControlMaxWidth + p.ControlSpacing + p.DefaultButtonWidth;
-            parent.Height = p.LineSpacing;
+            parent.Width = dvp.TitleMaxWidth + dvp.TitleSpacing + dvp.ControlMaxWidth + dvp.ControlSpacing + dvp.DefaultButtonWidth;
+            parent.Height = dvp.LineSpacing;
             aVisualItem.PanelBackgroundColor = isMenu ? Color.DarkBlue : fCurrentRow % 2 == 0 ? Color.White : Color.LightGray;
             parent.BackColor = aVisualItem.PanelBackgroundColor;
 
-            fCurrentPanelPosition.X = p.HorizontalMArgin * fNesting;
+            fCurrentPanelPosition.X = dvp.HorizontalMargin * fNesting;
+            fCurrentPanelPosition.Y += dvp.LineSpacing;
             parent.Location = fCurrentPanelPosition;
-            fCurrentPanelPosition.Y += p.LineSpacing;
-            Point controlPosition = new Point(0, (p.LineSpacing - p.LineHeight) / 2);
-            LabelSingleClick label = group.label;
-            label.Width = p.TitleMaxWidth;
-            label.Height = p.LineHeight;
+            var label = group.label;
+            label.Width = dvp.TitleMaxWidth;
+            label.Height = dvp.LineHeight;
+            var controlPosition = new Point(0, (dvp.LineSpacing - dvp.LineHeight) / 2);
             label.Location = controlPosition;
-            controlPosition.X = p.TitleMaxWidth + p.TitleSpacing;
-            Control control = group.control;
+            controlPosition.X = dvp.TitleMaxWidth + dvp.TitleSpacing;
+            var control = group.control;
             control.Location = controlPosition;
-            control.Height = p.LineHeight;
-            control.Width = p.ControlMaxWidth;
-            controlPosition.X += p.ControlMaxWidth + p.ControlSpacing;
+            control.Height = dvp.LineHeight;
+            control.Width = dvp.ControlMaxWidth;
 
             //Add a default button 
             if (!isMenu)
             {
-                Button button = group.defaultButton;
-                button.Width = p.DefaultButtonWidth;
-                button.Height = p.LineHeight;
+                controlPosition.X += dvp.ControlMaxWidth + dvp.ControlSpacing;
+                var button = group.defaultButton;
+                button.Width = dvp.DefaultButtonWidth;
+                button.Height = dvp.LineHeight;
                 button.Location = controlPosition;
                 fCurrentRow++;
             }
@@ -367,8 +390,6 @@ namespace NetSettings.View
             if (aCommit)
                 ReArrange();
         }
-
-
 
         private bool ApplyFilterRecursively(VisualItem root)
         {
@@ -386,16 +407,16 @@ namespace NetSettings.View
                     visualItem.IsFiltered = true;
                 }
                 else
-                    if (item.displayname != null)
+                    if (item.displayName != null)
                 {
-                    visualItem.IsFiltered = item.displayname.ToLower().Contains(fParams.filter.IncludeName.ToLower());
+                    visualItem.IsFiltered = item.displayName.ToLower().Contains(fParams.filter.IncludeName.ToLower());
                 }
             }
 
-            if (item.subitems != null)
+            if (item.subItems != null)
             {
                 bool isFiltered = false;
-                foreach (VisualItem subItem in visualItem.subitems)
+                foreach (VisualItem subItem in visualItem.subItems)
                     isFiltered |= ApplyFilterRecursively(subItem);
 
                 //if at least one of the childs is visible then the parent is visible as well.
@@ -403,7 +424,6 @@ namespace NetSettings.View
 
             }
             return visualItem.IsFiltered;
-
         }
 
         private void CheckLabelColor(VisualItem aVisualItem)
@@ -412,32 +432,37 @@ namespace NetSettings.View
         }
         #endregion
 
-        private Font GetLabelFont(VisualItem aVisualItem)
+        private IFont GetLabelFont(VisualItem aVisualItem)
         {
             if (aVisualItem.Item.type == "menu")
+            {
                 return fMenuLabel;
+            }
 
-            ItemTree item = aVisualItem.Item;
-            object val = GetValue(aVisualItem.Item);
-            return item.defaultvalue != null && val != null && !item.defaultvalue.Equals(val)
-                ? fLabelBold : fLabelNormal;
+            var item = aVisualItem.Item;
+            var val = GetValue(aVisualItem.Item);
+            return item.defaultValue != null && val != null && !item.defaultValue.Equals(val) ? fLabelBold : fLabelNormal;
         }
 
-        void button_Click(object sender, EventArgs e)
+        private void button_Click(object sender, EventArgs e)
         {
-            Control c = sender as Control;
-            VisualItem item = GetItemFromControl(c);
+            var c = sender as IControl;
+            var item = GetItemFromControl(c);
             if (item != null)
-                SetValue(item, item.Item.defaultvalue);
+            {
+                SetValue(item, item.Item.defaultValue);
+            }
         }
 
-        void l_MouseEnter(object sender, EventArgs e)
+        private void l_MouseEnter(object sender, EventArgs e)
         {
-            VisualItem item = (sender as Control).Tag as VisualItem;
+            dic.TryGetValue(sender as IControl, out var item);
             if (item != null)
             {
                 if (item.Item.description != null && fDescriptionTextBox != null)
+                {
                     fDescriptionTextBox.Text = item.Item.description;
+                }
 
                 if (item.Item.type != "menu")
                 {
@@ -446,14 +471,14 @@ namespace NetSettings.View
             }
         }
 
-        void panel_MouseLeave(object sender, EventArgs e)
+        private void panel_MouseLeave(object sender, EventArgs e)
         {
-            VisualItem item = (sender as Control).Tag as VisualItem;
+            dic.TryGetValue(sender as IControl, out var item);
             if (item != null)
             {
                 if (item.Item.type != "menu")
                 {
-                    Control container = item.controlsGroup.parentContainer;
+                    var container = item.controlsGroup.parentContainer;
                     container.BackColor = item.PanelBackgroundColor;
 
                 }
@@ -463,10 +488,9 @@ namespace NetSettings.View
         private void RefreshControlValueRecursivly(VisualItem aRoot)
         {
             RefreshControlValue(aRoot);
-            if (aRoot.subitems != null)
-                foreach (VisualItem subItem in aRoot.subitems)
+            if (aRoot.subItems != null)
+                foreach (VisualItem subItem in aRoot.subItems)
                     RefreshControlValueRecursivly(subItem);
-
         }
 
         private void RefreshControlValue(VisualItem aVisualItem)
@@ -474,32 +498,29 @@ namespace NetSettings.View
             ItemTree item = aVisualItem.Item;
             if (aVisualItem.controlsGroup != null)
             {
-                Control aControl = aVisualItem.controlsGroup.control;
+                var aControl = aVisualItem.controlsGroup.control;
                 object val = GetValue(item);
                 switch (item.type)
                 {
+                    //TODO: Remove all the casting of the controls unless needed
                     case "bool":
-                        bool _val = false;
+                        var _val = false;
                         if (val != null)
                             _val = (bool)val;
-                        (aControl as CheckBox).Checked = _val;
+                        (aControl as ICheckBox).Checked = _val;
                         break;
                     case "text":
-
-                        (aControl as TextBox).Text = (val != null ? (string)val : "");
+                    case "image":
+                        aControl.Text = (val != null ? val as string : string.Empty);
                         break;
                     case "number":
-                        (aControl as TextBox).Text = (val != null ? ToDoubleString(((double)val)) : "");
+                        aControl.Text = (val != null ? ToDoubleString(((double)val)) : string.Empty);
                         break;
                     case "combo":
-                        (aControl as ComboBox).SelectedItem = val;
-                        break;
-                    case "image":
-                        (aControl as TextBox).Text = (val != null ? val as string : "");
+                        (aControl as IComboBox).SelectedItem = val;
                         break;
                     case "color":
-                        (aControl as ColorControl).color = (val != null ? (Color)val : Color.Empty);
-
+                        aControl.BackColor = (Color)val;
                         break;
                 }
                 CheckLabelColor(aVisualItem);
@@ -507,25 +528,25 @@ namespace NetSettings.View
             }
         }
 
-        private void ColorControl_KeyDown(object sender, KeyEventArgs e)
+        private void ColorControl_KeyDown(object sender, EventArgs e)
         {
-            ColorControl colorControl = sender as ColorControl;
-            RefreshControlValue((colorControl.Tag as VisualItem));
+            var colorControl = sender as IColorControl;
+            RefreshControlValue(dic[colorControl]);
         }
 
         private void ColorControl_TextChanged(object sender, EventArgs e)
         {
-            ColorControl colorControl = sender as ColorControl;
+            var colorControl = sender as IColorControl;
             Color c;
-            if (NetSettings.View.DataViewHelper.TryGetColor(colorControl.Text, out c))
-                SetValue((sender as Control).Tag as VisualItem, c, ItemChangedMode.OnTheFly);
+            if (DataViewHelper.TryGetColor(colorControl.Text, out c))
+                SetValue(GetItemFromControl(sender), c, ItemChangedMode.OnTheFly);
         }
 
-        private void CheckBox_MouseClick(object sender, MouseEventArgs e)
+        private void CheckBox_MouseClick(object sender, EventArgs e)
         {
-            Control control = sender as Control;
-            VisualItem item = control.Tag as VisualItem;
-            CheckBox checkBox = item.controlsGroup.control as CheckBox;
+            var control = sender as IControl;
+            var item = GetItemFromControl(control);
+            var checkBox = item.controlsGroup.control as ICheckBox;
             if (!(control is CheckBox))
                 checkBox.Checked = !checkBox.Checked;
 
@@ -551,19 +572,19 @@ namespace NetSettings.View
 
         private void Number_Leave(object sender, EventArgs e)
         {
-            Leave(sender);
+            Leave(sender, e);
         }
 
         void DataView_Leave(object sender, EventArgs e)
         {
-            Leave(sender);
+            Leave(sender, e);
         }
 
-        private void Leave(object sender)
+        private void Leave(object sender, EventArgs e)
         {
-            TextBox textBox = sender as TextBox;
-            VisualItem visualItem = GetItemFromControl(textBox);
-            object value = GetValueFromControl(visualItem);
+            var textBox = sender as ITextBox;
+            var visualItem = GetItemFromControl(textBox);
+            var value = GetValueFromControl(visualItem);
             SetValue(visualItem, value, ItemChangedMode.UserConfirmed);
         }
 
@@ -602,26 +623,28 @@ namespace NetSettings.View
             return GetValue(item.FullName);
         }
 
-        private void Combo_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void Combo_MouseDoubleClick(object sender, EventArgs e)
         {
-            ComboBox comboBox = sender as ComboBox;
+            var comboBox = sender as IComboBox;
             VisualItem item = GetItemFromControl(comboBox);
             SetValue(item, comboBox.SelectedItem);
         }
 
         void MenuSettings_Click(object sender, EventArgs e)
         {
-            Control p = sender as Control;
-            ColorDialog dialog;
-            VisualItem item = GetItemFromControl(p);
-            ColorControl colorControl = item.controlsGroup.control as ColorControl;
-            if ((dialog = new ColorDialog() { FullOpen = true, Color = (Color)GetValue(item.Item.FullName) }).ShowDialog() == DialogResult.OK)
+            var p = sender as IControl;
+            var item = GetItemFromControl(p);
+            var dialog = guiProvider.CreateGuiElement(GuiElementType.ColorDialog) as IColorDialog;
+            dialog.FullOpen = true;
+            dialog.Color = (Color)GetValue(item.Item.FullName);
+
+            if (dialog.ShowDialog() == DialogResult.OK)
                 SetValue(item, dialog.Color);
         }
 
         private void MenuSettings_NumberChanged(object sender, EventArgs e)
         {
-            TextBox textbox = sender as TextBox;
+            var textbox = sender as ITextBox;
             VisualItem item = GetItemFromControl(textbox);
             double num;
             if (double.TryParse(textbox.Text, out num))
@@ -634,70 +657,87 @@ namespace NetSettings.View
             }
         }
 
-        void MenuSettings_MouseHover(object sender, EventArgs e)
+        private void MenuSettings_MouseEnter(object sender, EventArgs e)
         {
-            fPreviewForm.ImageName = (sender as TextBox).Text;
+            var textBox = sender as ITextBox;
+            if (!string.IsNullOrEmpty(textBox.Text))
+            {
+                guiProvider.ShowPreviewForm(null);                //TODO: Make sure this code works
+
+                //Task.Delay(500).ContinueWith(_ =>
+                //{
+                //TODO: Make sure this code works
+
+                //   textBox.Invoke((MethodInvoker)delegate
+                //{
+                //    fPreviewForm.Show();
+                //    fPreviewForm.ImageName = textBox.Text;
+                //});
+                //});
+            }
         }
 
-        void MenuSettings_MouseLeave(object sender, EventArgs e)
+
+
+        private void MenuSettings_MouseLeave(object sender, EventArgs e)
         {
-            if (Cursor.Position != fLastCursorPosition && fPreviewForm != null)
-                fPreviewForm.Hide();
+            //fPreviewForm.Hide();
+            //guiProvider.CancelPrevireRequest({ 500, 800, 600});//TODO: Make sure this code works
         }
 
-        void PreviewTimer_Tick(object sender, EventArgs e)
-        {
-            fLastCursorPosition = Cursor.Position;
-        }
-
-        public static string ChooseFile(bool aOpen, string aFilter, string aPath)
+        private string ChooseFile(bool aOpen, string aFilter, string aPath)
         {
             string strResult = null;
-            FileDialog dialog;
+            IFileDialog dialog;
             if (aOpen)
-                dialog = new OpenFileDialog();
+                dialog = guiProvider.CreateGuiElement(GuiElementType.OpenFileDialog) as IFileDialog;
             else
-                dialog = new SaveFileDialog();
+                dialog = guiProvider.CreateGuiElement(GuiElementType.SaveFileDialog) as IFileDialog;
 
             dialog.Filter = aFilter;
             dialog.InitialDirectory = aPath;
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 strResult = dialog.FileName;
-                string directory = System.IO.Path.GetDirectoryName(strResult);
+                string directory = System.IO.Path.GetDirectoryName(strResult);//TODO: Remove or what???
             }
             return strResult;
-
         }
 
-        void MenuSettings_MouseDoubleClick(object sender, MouseEventArgs e)
+        void MenuSettings_MouseDoubleClick(object sender, EventArgs e)
         {
             string imageName = ChooseFile(true, "", "");
             if (imageName != null)
             {
-                TextBox t = sender as TextBox;
-                VisualItem item = GetItemFromControl(t);
-                SetValue(item, t.Text = imageName);
+                var textBox = sender as ITextBox;
+                var item = GetItemFromControl(textBox);
+                SetValue(item, textBox.Text = imageName);
             }
         }
+
         void c_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ComboBox comboBox = sender as ComboBox;
-            VisualItem item = GetItemFromControl(comboBox);
+            var comboBox = sender as IComboBox;
+            var item = GetItemFromControl(comboBox);
             SetValue(item, comboBox.SelectedItem);
         }
 
         void MenuSettings_TextChanged(object sender, EventArgs e)
         {
-            TextBox textbox = sender as TextBox;
-            VisualItem item = GetItemFromControl(textbox);
-            SetValue(item, textbox.Text, ItemChangedMode.OnTheFly);
+            var textBox = sender as ITextBox;
+            var item = GetItemFromControl(textBox);
+            SetValue(item, textBox.Text, ItemChangedMode.OnTheFly);
 
         }
 
-        VisualItem GetItemFromControl(Control aControl)
+        private VisualItem GetItemFromControl(object aControl)
         {
-            return aControl.Tag as VisualItem;
+            return GetItemFromControl(aControl as IControl);
+        }
+
+        private VisualItem GetItemFromControl(IGuiElement aControl)
+        {
+            return dic.GetValueOrDefault(aControl);
         }
 
         public void RefreshViewFromData()
@@ -705,5 +745,4 @@ namespace NetSettings.View
             RefreshControlValueRecursivly(fRootVisualItem);
         }
     }
-
 }

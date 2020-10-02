@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
+using NetSettings.Common.Classes;
 
 namespace NetSettings.View
 {
-    enum ColorRepresentanion { None, Hex, CommaSeperated}
+    enum ColorRepresentanion { None, Hex, CommaSeperated }
     internal class DataViewHelper
     {
 
-        public static bool TryGetColor(string colorName,out Color color)
+        public static bool TryGetColor(string colorName, out Color color)
         {
             color = Color.Empty;
             ColorRepresentanion colorRep = ClassifyColor(colorName);
@@ -24,20 +19,20 @@ namespace NetSettings.View
         private static ColorRepresentanion ClassifyColor(string text)
         {
             ColorRepresentanion colorRep = ColorRepresentanion.None;
-            if (text.Contains(','))
+            if (text.Contains(","))
                 colorRep = ColorRepresentanion.CommaSeperated;
             else
                 colorRep = ColorRepresentanion.Hex;
 
-                //if (text.StartsWith("#") || text.StartsWith("$") || IsHexLetters(text)) 
-                //    colorRep = ColorRepresentanion.Hex;
-                //colorRep = ColorRepresentanion.Hex;
+            //if (text.StartsWith("#") || text.StartsWith("$") || IsHexLetters(text)) 
+            //    colorRep = ColorRepresentanion.Hex;
+            //colorRep = ColorRepresentanion.Hex;
             return colorRep;
         }
 
         private static bool TryParseColor(ref Color color, ColorRepresentanion colorRep, string text)
         {
-            bool result = false;
+            bool result;
             switch (colorRep)
             {
                 case ColorRepresentanion.None:
@@ -45,11 +40,11 @@ namespace NetSettings.View
                     break;
                 case ColorRepresentanion.Hex:
                     string hexRepresentation = GetHexNumber(text);
-                    color = ColorTranslator.FromHtml(hexRepresentation);
+                    color = Color.Parse(hexRepresentation);
                     result = true;
                     break;
                 case ColorRepresentanion.CommaSeperated:
-                    result = TryParseCommaSeperatedColor(ref color, text);
+                    result = TryParseCommaSeparatedColor(ref color, text);
                     break;
                 default:
                     result = false;
@@ -58,20 +53,19 @@ namespace NetSettings.View
             return result;
         }
 
-        private static bool TryParseCommaSeperatedColor(ref Color color, string text)
+        private static bool TryParseCommaSeparatedColor(ref Color color, string text)
         {
-            string[] numbers = null;
-            numbers = text.Split(',');
-            bool result = false;
+            var numbers = text.Split(',');
+            var result = false;
             if (numbers.Length <= 3)
             {
                 int[] rgb = new int[3];
 
-                bool foundValidComponentFound = false;
+                var foundValidComponentFound = false;
 
-                for (int i = 0; i < numbers.Length; i++)
+                for (var i = 0; i < numbers.Length; i++)
                 {
-                    string s1 = GetNumbers(numbers[i]);
+                    var s1 = GetNumbers(numbers[i]);
                     foundValidComponentFound |= (rgb[i] = int.TryParse(s1, out rgb[i]) ? rgb[i].Clamp(0, 255) : -1) != -1;
                 }
 
@@ -79,10 +73,6 @@ namespace NetSettings.View
                 {
                     color = Color.FromArgb(rgb[0] != -1 ? rgb[0] : 0, rgb[1] != -1 ? rgb[1] : 0, rgb[2] != -1 ? rgb[2] : 0);
                     result = true;
-                }
-                else
-                {
-                    result = false;
                 }
             }
             return result;
@@ -95,7 +85,6 @@ namespace NetSettings.View
             {
                 Regex regexObj = new Regex(@"([a-f]|[A-F])");
                 resultString = regexObj.Match(s).Value;// Replace(s, "");
-                
             }
             catch (ArgumentException ex)
             {
@@ -137,7 +126,7 @@ namespace NetSettings.View
             }
             catch (ArgumentException ex)
             {
-                    // Syntax error in the regular expression
+                // Syntax error in the regular expression
             }
             return resultString;
         }

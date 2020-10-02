@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>NetSettings.Common</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Interfaces\Color.cs" />
+    <Compile Remove="Interfaces\IColor.cs" />
+    <Compile Remove="Interfaces\IPoint.cs" />
+    <Compile Remove="Interfaces\Point.cs" />
+  </ItemGroup>
+
+</Project>

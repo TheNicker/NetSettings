@@ -1,9 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <StartupObject>NetSettingsTest.WinFormProgram</StartupObject>
+    <RootNamespace>NetSettingsTest</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +17,28 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\ControlContainer.cs" />
+    <Compile Update="Forms\App.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Forms\MainWindow.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Forms\PreviewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Forms\App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="Forms\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
     <None Update="Resources\GuiTemplate.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

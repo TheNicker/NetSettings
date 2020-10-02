@@ -1,34 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NetSettings.Data;
+using NetSettings.Common.Classes;
+using Newtonsoft.Json.Linq;
 
-namespace NetSettings
+namespace NetSettings.Data
 {
     internal class ItemHelpers
     {
-        public static void BuildQualifiedNames(Dictionary<string, ItemTree> aQualifiedNames, ItemTree item, ItemTree parent)
+        public static void BuildQualifiedNames(Dictionary<string, ItemTree> aQualifiedNames, ItemTree item, ItemTree parent)//TODO: Can this be changed to private?
         {
-            ItemTree currentParent = parent == null || parent.type == "root" ? null : parent;
+            var currentParent = (parent == null || parent.type == "root") ? null : parent;
             if (item.type != "root")
             {
-                if (currentParent == null)
-                {
-                    item.FullName = item.name;
-                }
-                else
-                {
-                    item.FullName = String.Format("{0}.{1}", currentParent.FullName, item.name);
-                }
+                item.FullName = currentParent == null ? item.name : $"{currentParent.FullName}.{item.name}";
             }
-            if (item.subitems != null)
-                foreach (ItemTree subItem in item.subitems)
+
+            if (item.subItems != null)
+            {
+                foreach (var subItem in item.subItems)
                 {
                     BuildQualifiedNames(aQualifiedNames, subItem, item);
-
                 }
+            }
 
             if (item.FullName != null)
             {
@@ -48,40 +41,47 @@ namespace NetSettings
 
         //public static void NormalizeItemValue(ItemTree aItem)
         //{
-           
+
         //}
 
-        internal static void NormalizeItemData(ItemTree aItem, ref object obj)
+        internal static void NormalizeItemData(ItemTree aItem, ref object obj) //TODO: Can the object be changed to Color?
         {
-            if (aItem.type == "color")
+            switch (aItem.type)
             {
-
-                var lastCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
-                System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
-                try
-                {
-                    if (obj != null && obj is string)
-                        obj = System.Drawing.ColorTranslator.FromHtml(obj as string);
-                }
-                finally
-                {
-                    System.Threading.Thread.CurrentThread.CurrentCulture = lastCulture;
-                }
-
-                
-			//Make sure all the colors are created from (R,G,B) and not known names
-                System.Drawing.Color c = (System.Drawing.Color)(obj);
-                obj = System.Drawing.Color.FromArgb(c.R, c.G, c.B);
-
-                //if (aItem.value != null && aItem.value is string)
-                //    aItem.value = System.Drawing.ColorTranslator.FromHtml(aItem.value as string);
-            }
-
-            if (aItem.type == "number")
-            {
-                //normalize all our numbers to double data type
-                if (obj != null && obj is Int64)
-                    obj = (double)(Int64)obj;
+                case "color":
+                    //TODO: Why do we need this culture lines?
+                    var lastCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+                    System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+                    try
+                    {
+                        if (obj is string htmlColor)
+                        {
+                            obj = Color.Parse(htmlColor);
+                        }
+                        else if (!(obj is Color))
+                        {
+                            var color = (JObject)obj;
+                            //TODO: Do we need to handle a null case? If yes, choose how to handle a null case
+                            var r = (color.GetValue("R") ?? throw new InvalidOperationException()).Value<byte>();
+                            var g = color.GetValue("G")!.Value<byte>();
+                            var b = color.GetValue("B")!.Value<byte>();
+                            obj = Color.FromArgb(r, g, b);
+                        }
+                    }
+                    finally
+                    {
+                        System.Threading.Thread.CurrentThread.CurrentCulture = lastCulture; //TODO: What is the purpose of this line?
+                    }
+                    break;
+                case "number":
+                    //normalize all our numbers to double data type
+                    if (obj != null && obj is long num)
+                    {
+                        obj = (double)num;
+                    }
+                    break;
+                    //default:
+                    //    throw new NotImplementedException("aItem.type: " + aItem.type);
             }
         }
     }

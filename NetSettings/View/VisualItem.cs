@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using NetSettings.Common.Classes;
 using NetSettings.Data;
 
-namespace NetSettings
+namespace NetSettings.View
 {
-    internal class VisualItem
+    public class VisualItem
     {
         public Color PanelBackgroundColor;
         public ItemTree Item;
         public bool IsFiltered;
         public ItemControlsGroup controlsGroup;
         public bool Expanded = true;
-        public VisualItem[] subitems;
+        public IList<VisualItem> subItems;
     }
 }
