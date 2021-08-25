@@ -1,101 +1,39 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E91E162C-E570-4B3C-A37B-280F8C24E7E9}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NetSettings</RootNamespace>
-    <AssemblyName>NetSettings</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\GLA\Scalpter\Scalpter\Dependencies\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Controls\ColorControl.cs">
+    <Compile Update="Controls\ColorControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\ComboBoxDoubleClick.cs">
+    <Compile Update="Controls\ComboBoxDoubleClick.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\ControlContainer.cs">
+    <Compile Update="Controls\ControlContainer.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\ControlHelper.cs" />
-    <Compile Include="Controls\LabelSingleClick.cs">
+    <Compile Update="Controls\LabelSingleClick.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\MouseEnterLeave.cs" />
-    <Compile Include="Data\ItemChangedArgs.cs" />
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="View\DataViewHelper.cs" />
-    <Compile Include="View\ItemControlsGroup.cs" />
-    <Compile Include="View\DataViewParams.cs" />
-    <Compile Include="Data\DataProvider.cs" />
-    <Compile Include="Data\Filter.cs" />
-    <Compile Include="Data\Item.cs" />
-    <Compile Include="Data\ItemHelpers.cs" />
-    <Compile Include="View\DataView.cs" />
-    <Compile Include="View\DataViewPlacement.cs" />
-    <Compile Include="Forms\PreviewForm.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Forms\SettingsForm.cs">
+    <Compile Update="Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SettingsForm.Designer.cs">
+    <Compile Update="Forms\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\VisualItem.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <EmbeddedResource Include="Forms\SettingsForm.resx">
+    <EmbeddedResource Update="Forms\SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
