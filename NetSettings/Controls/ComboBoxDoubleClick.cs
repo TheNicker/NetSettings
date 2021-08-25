@@ -13,6 +13,7 @@ namespace NetSettings
 
         protected override void OnMouseClick(MouseEventArgs e)
         {
+            this.DroppedDown = true;
             if (DateTime.Now.AddMilliseconds(-500) < prevClick)
             {
                 prevClick = DateTime.MinValue;
