@@ -36,6 +36,8 @@ namespace NetSettingsTest
             fData = new DataProvider(ItemTree.FromFile(SettingsFilePath));
             fData.ItemChanged += fData_ItemChanged;
 
+            LoadSettings();
+            fData.DataBinding = fUserSettings;
             //Create manually view[1]
             fDataViewParams = new DataViewParams
             {
@@ -91,8 +93,6 @@ namespace NetSettingsTest
             Save();
         }
 
-
-
         private void button1_Click(object sender, EventArgs e)
         {
             //fCreationParameters.root.fRootTemplate.ToFile(SettingsFilePath);
@@ -101,12 +101,6 @@ namespace NetSettingsTest
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             fView.SetFilter(new Filter { IncludeName = (sender as TextBox).Text });
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            LoadSettings();
-            fData.DataBinding = fUserSettings;
         }
     }
 }
