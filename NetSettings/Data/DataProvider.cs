@@ -110,7 +110,8 @@ namespace NetSettings.Data
                 {
                     ChangedMode = ItemChangedMode.Synthesized,
                     Key = key,
-                    Val = GetValueOrDefault(key)
+                    Val = GetValueOrDefault(key) ,
+                    type = fQualifiedNames[key].type
                 });
         }
 
