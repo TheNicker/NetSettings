@@ -4,12 +4,13 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Netsettings\Netsettings.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <Compile Update="Form1.cs">
       <SubType>Form</SubType>
