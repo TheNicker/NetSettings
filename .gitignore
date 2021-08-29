@@ -4,3 +4,15 @@
 /NetSettingsTest/obj/
 /NetSettings.v12.suo
 /.vs/
+/x64/
+/CliAdapter/x64/
+/CliAdapter/Debug/
+/Debug
+/Win32Example/Debug
+/Win32Example/x64
+/GuiProxy/Bin
+/GuiProxy/Obj
+/CliAdapter/CliAdapter.vcxproj.user
+/GuiProxy/GuiProxy.csproj.user
+/Win32Example/Win32Example.vcxproj.user
+/packages

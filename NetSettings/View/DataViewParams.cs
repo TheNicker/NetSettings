@@ -13,7 +13,8 @@ namespace NetSettings.View
         public ControlContainer container { get; set; }
         public ControlContainer descriptionContainer { get; set; }
         public DataProvider dataProvider { get; set; }
+        public DataViewPlacement placement = new DataViewPlacement();
         internal Filter filter;
-        internal DataViewPlacement placement = new DataViewPlacement();
+
     }
 }

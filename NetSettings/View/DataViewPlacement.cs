@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NetSettings
 {
-    internal class DataViewPlacement
+    public class DataViewPlacement
     {
         public int LineSpacing = 30;
         public int TitleMaxWidth = 150;
