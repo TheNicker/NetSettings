@@ -99,7 +99,7 @@ namespace NetSettings.View
             }
             catch (ArgumentException ex)
             {
-                // Syntax error in the regular expression
+                _ = ex;  // Syntax error in the regular expression
             }
             return !String.IsNullOrEmpty(resultString);
         }
@@ -112,8 +112,9 @@ namespace NetSettings.View
                 Regex regexObj = new Regex(@"([a-f]+|[A-F]+|[0-9]+)+");
                 resultString = regexObj.Match(s).Value;
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException  ex)
             {
+                _ = ex;
                 // Syntax error in the regular expression
             }
             if (resultString.Length > 6)
@@ -137,7 +138,7 @@ namespace NetSettings.View
             }
             catch (ArgumentException ex)
             {
-                    // Syntax error in the regular expression
+                _ = ex;
             }
             return resultString;
         }

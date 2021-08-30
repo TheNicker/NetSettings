@@ -16,3 +16,5 @@
 /GuiProxy/GuiProxy.csproj.user
 /Win32Example/Win32Example.vcxproj.user
 /packages
+/StandardSettingsForm/obj
+/StandardSettingsForm/bin

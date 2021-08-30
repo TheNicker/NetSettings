@@ -22,18 +22,6 @@
     <Compile Update="Controls\LabelSingleClick.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="Forms\SettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Forms\SettingsForm.Designer.cs">
-      <DependentUpon>SettingsForm.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Forms\SettingsForm.resx">
-      <DependentUpon>SettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

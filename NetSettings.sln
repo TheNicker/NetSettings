@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CPPBindings", "CPPBindings"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuiProxy", "GuiProxy\GuiProxy.csproj", "{522A78A5-D7F4-43E4-96F0-19A4E2CC0F5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandardSettingsForm", "StandardSettingsForm\StandardSettingsForm.csproj", "{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,18 @@ Global
 		{522A78A5-D7F4-43E4-96F0-19A4E2CC0F5A}.Release|x64.Build.0 = Release|Any CPU
 		{522A78A5-D7F4-43E4-96F0-19A4E2CC0F5A}.Release|x86.ActiveCfg = Release|x86
 		{522A78A5-D7F4-43E4-96F0-19A4E2CC0F5A}.Release|x86.Build.0 = Release|x86
+		{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}.Debug|x64.Build.0 = Debug|Any CPU
+		{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}.Debug|x86.Build.0 = Debug|Any CPU
+		{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}.Release|x64.ActiveCfg = Release|Any CPU
+		{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}.Release|x64.Build.0 = Release|Any CPU
+		{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}.Release|x86.ActiveCfg = Release|Any CPU
+		{62BDC40B-0DAA-4C63-8A9E-5BDA6CCBB3CE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

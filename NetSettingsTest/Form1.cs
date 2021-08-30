@@ -84,7 +84,7 @@ namespace NetSettingsTest
         {
             if (changedArgs.ChangedMode == ItemChangedMode.UserConfirmed)
             {
-                int k = 0;
+                
             }
         }
 

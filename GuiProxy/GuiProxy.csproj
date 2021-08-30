@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
@@ -21,7 +21,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\Netsettings\Netsettings.csproj" />
+    <ProjectReference Include="..\StandardSettingsForm\StandardSettingsForm.csproj" />
   </ItemGroup>
 
 </Project>

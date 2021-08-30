@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Netsettings\Netsettings.csproj" />
+    <ProjectReference Include="..\StandardSettingsForm\StandardSettingsForm.csproj" />
   </ItemGroup>
   
   <ItemGroup>
