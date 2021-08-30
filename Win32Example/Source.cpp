@@ -1,8 +1,10 @@
 #include <Windows.h>
 #include <sstream>
 #include <iostream>
+#include <filesystem>
 
 #include "../CliAdapter/GuiProvider.h"
+#include "../CliAdapter/Platform.h"
 
 static void MessageLoop()
 {
@@ -56,8 +58,15 @@ void* getAddress(std::function<T(U...)> f) {
 
 int main()
 {
-    std::wstring templateFilePath = L"f:/Development/NetSettings/x64/Debug/Resources/GuiTemplate.json";
-    std::wstring userSettingsFilePath = L"f:/Development/NetSettings/x64/Debug/Resources/userSettings.json";
+    wchar_t ownPth[MAX_PATH];
+    GetModuleFileName(GetModuleHandle(nullptr), ownPth, (sizeof(ownPth) / sizeof(ownPth[0])));
+    auto folderPath = std::filesystem::path(ownPth).remove_filename();
+    auto templatePath = folderPath / L"Resources/GuiTemplate.json";
+    auto userSettingsPath = folderPath / L"userSettings.json";
+
+    
+    std::wstring templateFilePath = templatePath.wstring();
+    std::wstring userSettingsFilePath = userSettingsPath.wstring();
     
     GuiCreateParams params;
     

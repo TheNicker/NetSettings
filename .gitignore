@@ -9,10 +9,12 @@
 /CliAdapter/Debug/
 /Debug
 /Win32Example/Debug
+/Win32Example/Release
 /Win32Example/x64
 /GuiProxy/Bin
 /GuiProxy/Obj
 /CliAdapter/CliAdapter.vcxproj.user
+/CliAdapter/Release
 /GuiProxy/GuiProxy.csproj.user
 /Win32Example/Win32Example.vcxproj.user
 /packages
