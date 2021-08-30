@@ -48,7 +48,7 @@ namespace GuiProxy
         {
             ItemChangedEventArgs args;
             args.key = changedArgs.Key;
-            args.value = changedArgs.Val.ToString();
+            args.value = changedArgs.Val != null ? changedArgs.Val.ToString() : "";
             args.mode = changedArgs.ChangedMode;
             args.type = changedArgs.type;
             OnItemChanged(args);
