@@ -14,7 +14,7 @@ static void MessageLoop()
     {
         if (bRet == -1)
         {
-            // handle the error and possibly exit
+            exit(-1);
         }
         else
         {
@@ -56,6 +56,12 @@ void* getAddress(std::function<T(U...)> f) {
     return fnPointer != nullptr ? reinterpret_cast<void*>(*fnPointer) : nullptr;
 }
 
+BOOL WINAPI CtrlHandler(DWORD dwType)
+{
+    PostQuitMessage(0);
+    return TRUE;
+}
+
 int main()
 {
     wchar_t ownPth[MAX_PATH];
@@ -78,17 +84,10 @@ int main()
     netsettings_Create(&params);
     netsettings_SetVisible(true);
     
+    SetConsoleCtrlHandler(CtrlHandler, TRUE);
+
     MessageLoop();
 }
-
-
-//int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
-//
-//{
-//    
-//   
-//}
-
 
 
 
