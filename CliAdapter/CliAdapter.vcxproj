@@ -320,11 +320,6 @@
     <ClInclude Include="Platform.h" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\NetSettings\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\GuiProxy\GuiProxy.csproj">
       <Project>{522a78a5-d7f4-43e4-96f0-19a4e2cc0f5a}</Project>
     </ProjectReference>
