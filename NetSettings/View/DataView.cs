@@ -34,6 +34,7 @@ namespace NetSettings.View
         Font fLabelNormal;
         Font fLabelBold;
         Font fMenuLabel;
+        object fValueAtEnter;
 
         public DataView()
         {
@@ -44,6 +45,7 @@ namespace NetSettings.View
             fStringToType.Add("combo", typeof(ComboBoxDoubleClick));
             fStringToType.Add("image", typeof(TextBox));
             fStringToType.Add("number", typeof(TextBox));
+            fStringToType.Add("integral", typeof(TextBox));
             fStringToType.Add("color", typeof(ColorControl));
             fLabelNormal = new Font(labelFont, 10, FontStyle.Regular);
             fLabelBold = new Font(labelFont, 10, FontStyle.Bold);
@@ -231,11 +233,18 @@ namespace NetSettings.View
                     break;
                 case "text":
                     (t as TextBox).TextChanged += MenuSettings_TextChanged;
-                    (t as TextBox).Leave += DataView_Leave;
+                    (t as TextBox).Leave += TextBox_Leave;
+                    (t as TextBox).Enter += TextBox_Enter;
                     break;
                 case "number":
                     (t as TextBox).TextChanged += MenuSettings_NumberChanged;
-                    (t as TextBox).Leave += Number_Leave;
+                    (t as TextBox).Leave += TextBox_Leave;
+                    (t as TextBox).Enter += TextBox_Enter;
+                    break;
+                case "integral":
+                    (t as TextBox).TextChanged += MenuSettings_IntegralChanged;
+                    (t as TextBox).Leave += TextBox_Leave;
+                    (t as TextBox).Enter += TextBox_Enter;
                     break;
                 case "combo":
                     (t as ComboBox).SelectedIndexChanged += c_SelectedIndexChanged;
@@ -491,6 +500,9 @@ namespace NetSettings.View
                     case "number":
                         (aControl as TextBox).Text = (val != null ? ToDoubleString(((double)val)) : "");
                         break;
+                    case "integral":
+                        (aControl as TextBox).Text = (val != null ? val.ToString() : "");
+                        break;
                     case "combo":
                         (aControl as ComboBox).SelectedItem = val;
                         break;
@@ -545,46 +557,61 @@ namespace NetSettings.View
                     if (double.TryParse(aVisualItem.controlsGroup.control.Text, out value))
                         result = value;
                     break;
+                case "integral":
+                    int val;
+                    if (int.TryParse(aVisualItem.controlsGroup.control.Text, out val))
+                        result = val;
+                    break;
             }
             return result;
         }
 
-        private void Number_Leave(object sender, EventArgs e)
+        private void TextBox_Enter(object sender, EventArgs e)
         {
-            Leave(sender);
+            fValueAtEnter = GetValueFromControl(sender as Control);
         }
 
-        void DataView_Leave(object sender, EventArgs e)
+        private object GetValueFromControl(Control control)
         {
-            Leave(sender);
+            VisualItem visualItem = GetItemFromControl(control);
+            return GetValueFromControl(visualItem);
         }
 
-        private void Leave(object sender)
+        private void TextBox_Leave(object sender, EventArgs e)
         {
             TextBox textBox = sender as TextBox;
             VisualItem visualItem = GetItemFromControl(textBox);
             object value = GetValueFromControl(visualItem);
-            SetValue(visualItem, value, ItemChangedMode.UserConfirmed);
+
+            if (value != null && value.Equals(fValueAtEnter) == false)
+                SetValue(visualItem, value, ItemChangedMode.UserConfirmed, true);
+
+            fValueAtEnter = null;
         }
 
-        private void SetValue(VisualItem aVisualItem, object aVal, ItemChangedMode aMode = ItemChangedMode.UserConfirmed)
+
+        private void SetValue(VisualItem aVisualItem, object aVal, ItemChangedMode aMode = ItemChangedMode.UserConfirmed, bool forceAssignment = false)
         {
 
             if (aVisualItem != null)
             {
-                fParams.dataProvider.SetValue(
-                    new ItemChangedArgs()
-                    {
-                        sender = this,
-                        ChangedMode = aMode,
-                        Key = aVisualItem.Item.FullName,
-                        Val = aVal,
-                        type = aVisualItem.Item.type
-                    });
+                object oldValue = fParams.dataProvider.GetValue(aVisualItem.Item.FullName);
 
+                if (aVal.Equals(oldValue) == false || forceAssignment == true)
+                {
+                    fParams.dataProvider.SetValue(
+                        new ItemChangedArgs()
+                        {
+                            sender = this,
+                            ChangedMode = aMode,
+                            Key = aVisualItem.Item.FullName,
+                            Val = aVal,
+                            type = aVisualItem.Item.type
+                        });
 
-                // Get the data back from the DataProvider
-                RefreshControlValue(aVisualItem);
+                    // Get the data back from the DataProvider
+                    RefreshControlValue(aVisualItem);
+                }
             }
         }
 
@@ -628,11 +655,20 @@ namespace NetSettings.View
             if (double.TryParse(textbox.Text, out num))
             {
                 // check if user is inserting the decimal point of a number while trying to define the fractional part of a number
-                // if yes don't update the number yet since the parsing from string to double will omit the decimal point.
+                // if yes don't update the number yet, since the parsing from string to double will omit the decimal point.
                 string testString = ToDoubleString(num);
                 if (testString == textbox.Text)
                     SetValue(item, num, ItemChangedMode.OnTheFly);
             }
+        }
+
+        private void MenuSettings_IntegralChanged(object sender, EventArgs e)
+        {
+            TextBox textbox = sender as TextBox;
+            VisualItem item = GetItemFromControl(textbox);
+            int num;
+            if (int.TryParse(textbox.Text, out num))
+				SetValue(item, num, ItemChangedMode.OnTheFly);
         }
 
         void MenuSettings_MouseHover(object sender, EventArgs e)
