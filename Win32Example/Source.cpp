@@ -49,6 +49,40 @@ void OnItemChanged(ItemChangedArgs* argsPtr)
     int k = 0;
 }
 
+
+
+int mainFunction()
+{
+    wchar_t ownPth[MAX_PATH];
+    GetModuleFileName(GetModuleHandle(nullptr), ownPth, (sizeof(ownPth) / sizeof(ownPth[0])));
+    auto folderPath = std::filesystem::path(ownPth).remove_filename();
+    auto templatePath = folderPath / L"Resources/GuiTemplate.json";
+    auto userSettingsPath = folderPath / L"userSettings.json";
+
+
+    std::wstring templateFilePath = templatePath.wstring();
+    std::wstring userSettingsFilePath = userSettingsPath.wstring();
+
+    GuiCreateParams params;
+
+    params.callback = &OnItemChanged;
+    params.templateFilePath = templateFilePath.c_str();
+    params.userSettingsFilePath = userSettingsFilePath.c_str();
+
+
+    netsettings_Create(&params);
+    netsettings_SetVisible(true);
+
+    MessageLoop();
+    return 0;
+}
+
+INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+    PSTR lpCmdLine, INT nCmdShow)
+{
+    return mainFunction();
+}
+
 BOOL WINAPI CtrlHandler(DWORD dwType)
 {
     PostQuitMessage(0);
@@ -57,29 +91,8 @@ BOOL WINAPI CtrlHandler(DWORD dwType)
 
 int main()
 {
-    wchar_t ownPth[MAX_PATH];
-    GetModuleFileName(GetModuleHandle(nullptr), ownPth, (sizeof(ownPth) / sizeof(ownPth[0])));
-    auto folderPath = std::filesystem::path(ownPth).remove_filename();
-    auto templatePath = folderPath / L"Resources/GuiTemplate.json";
-    auto userSettingsPath = folderPath / L"userSettings.json";
-
-    
-    std::wstring templateFilePath = templatePath.wstring();
-    std::wstring userSettingsFilePath = userSettingsPath.wstring();
-    
-    GuiCreateParams params;
-    
-    params.callback = &OnItemChanged;
-    params.templateFilePath = templateFilePath.c_str();
-    params.userSettingsFilePath = userSettingsFilePath.c_str();
-
-
-    netsettings_Create(&params);
-    netsettings_SetVisible(true);
-    
     SetConsoleCtrlHandler(CtrlHandler, TRUE);
-
-    MessageLoop();
+    return mainFunction();
 }
 
 
