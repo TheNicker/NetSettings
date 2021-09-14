@@ -49,13 +49,6 @@ void OnItemChanged(ItemChangedArgs* argsPtr)
     int k = 0;
 }
 
-template<typename T, typename... U>
-void* getAddress(std::function<T(U...)> f) {
-    typedef T(fnType)(U...);
-    fnType** fnPointer = f.template target<fnType*>();
-    return fnPointer != nullptr ? reinterpret_cast<void*>(*fnPointer) : nullptr;
-}
-
 BOOL WINAPI CtrlHandler(DWORD dwType)
 {
     PostQuitMessage(0);

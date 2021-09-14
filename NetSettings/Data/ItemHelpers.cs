@@ -1,36 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NetSettings.Data;
+using Newtonsoft.Json.Linq;
 
 namespace NetSettings
 {
     internal class ItemHelpers
     {
+        public static char QualifiedNameSeperator = '/';
         public static void BuildQualifiedNames(Dictionary<string, ItemTree> aQualifiedNames, ItemTree item, ItemTree parent)
         {
             ItemTree currentParent = parent == null || parent.type == "root" ? null : parent;
-            if (item.type != "root")
+
+            if (currentParent == null)
             {
-                if (currentParent == null)
-                {
-                    item.FullName = item.name;
-                }
-                else
-                {
-                    item.FullName = String.Format("{0}.{1}", currentParent.FullName, item.name);
-                }
+                item.FullName = item.name;
             }
+            else
+            {
+                item.FullName = String.Format("{0}{1}{2}", currentParent.FullName, QualifiedNameSeperator, item.name);
+            }
+
             if (item.subitems != null)
+            {
                 foreach (ItemTree subItem in item.subitems)
-                {
                     BuildQualifiedNames(aQualifiedNames, subItem, item);
+            }
 
-                }
-
-            if (item.FullName != null)
+            if (item.FullName != null && item.type != "menu")
             {
                 aQualifiedNames.Add(item.FullName, item);
             }
@@ -46,10 +43,7 @@ namespace NetSettings
             }
         }
 
-        //public static void NormalizeItemValue(ItemTree aItem)
-        //{
-           
-        //}
+
 
         internal static void NormalizeItemData(ItemTree aItem, ref object obj)
         {

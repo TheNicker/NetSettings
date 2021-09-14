@@ -8,7 +8,11 @@
 
 using namespace System;
 
-ItemChangedCallbackType gCallBackToUnManaged = nullptr;
+namespace
+{
+	ItemChangedCallbackType gCallBackToUnManaged = nullptr;
+	void* userData = nullptr;
+}
 
 static void CallBackFromManaged(GuiProxy::GuiProvider::ItemChangedEventArgs item)
 {
@@ -21,6 +25,7 @@ static void CallBackFromManaged(GuiProxy::GuiProvider::ItemChangedEventArgs item
 	ItemChangedArgs args;
 
 	msclr::interop::marshal_context context;
+	args.userData = userData;
 	args.key = context.marshal_as<const wchar_t*>(k);
 	args.val = context.marshal_as<const wchar_t*>(v);
 	args.changedMode = static_cast<ItemChangedMode>(m);
@@ -29,17 +34,11 @@ static void CallBackFromManaged(GuiProxy::GuiProvider::ItemChangedEventArgs item
 	gCallBackToUnManaged(&args);
 }
 
-void netsettings_GuiProviderTest()
-{
-
-	int k = 0;
-}
-
-
-
 void netsettings_Create(GuiCreateParams* createParams)
 {
 	
+	userData = createParams->userData;
+
 	GuiProxy::GuiProvider::CreateParams^ managedCreateParams = gcnew GuiProxy::GuiProvider::CreateParams();
 	managedCreateParams->templateFilePath = gcnew String(createParams->templateFilePath);
 	managedCreateParams->userSettingsFilePath = gcnew String(createParams->userSettingsFilePath);
@@ -54,6 +53,12 @@ void netsettings_SetVisible(bool visible)
 {
 	GuiProxy::GuiProvider::SetVisible(visible);
 }
+
+void netsettings_SaveUserSettings()
+{
+	GuiProxy::GuiProvider::SaveUserSettings();
+}
+
 
 
 

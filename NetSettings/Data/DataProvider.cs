@@ -17,7 +17,7 @@ namespace NetSettings.Data
 
         private List<DataView> fBoundViews;
 
-        internal ItemTree RootTemplate { get { return fRootTemplate; } }
+        public ItemTree RootTemplate { get { return fRootTemplate; } }
 
         public Dictionary<string, object> DataBinding
         {

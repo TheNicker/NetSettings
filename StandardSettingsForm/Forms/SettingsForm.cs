@@ -34,7 +34,8 @@ namespace NetSettings.Forms
             c.container = controlContainer1;
             c.descriptionContainer = controlContainer2;
             
-            c.placement.TitleMaxWidth = 200;
+            c.placement.TitleMaxWidth = 250;
+            c.placement.ControlMaxWidth = 150;
             fMenuSettings.Create(c);
             this.MouseWheel += SettingsForm_MouseWheel;
             c.dataProvider.ItemChanged += root_ItemChanged;
@@ -64,22 +65,28 @@ namespace NetSettings.Forms
             }
         }
 
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
+        //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        //{
             
-            if (keyData == Keys.Escape || keyData == Keys.Enter)
-            {
-                if (keyData == Keys.Escape)
-                    Close();
-                return true;
-            }
-            return base.ProcessCmdKey(ref msg, keyData);
-        }
+        //    if (keyData == Keys.Escape || keyData == Keys.Enter)
+        //    {
+        //        if (keyData == Keys.Escape)
+        //            Close();
+        //        return true;
+        //    }
+        //    return base.ProcessCmdKey(ref msg, keyData);
+        //}
 
         private void btnSave_Click(object sender, EventArgs e)
         {
             btnSave.Enabled = false;
             OnSave();
+        }
+
+        private void SettingsForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+                this.Hide();
         }
     }
 }

@@ -47,7 +47,6 @@
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Cursor = System.Windows.Forms.Cursors.HSplit;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
@@ -64,7 +63,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(529, 883);
+            this.splitContainer1.Size = new System.Drawing.Size(580, 883);
             this.splitContainer1.SplitterDistance = 61;
             this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 0;
@@ -116,8 +115,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.controlContainer2);
-            this.splitContainer2.Size = new System.Drawing.Size(529, 816);
-            this.splitContainer2.SplitterDistance = 693;
+            this.splitContainer2.Size = new System.Drawing.Size(580, 816);
+            this.splitContainer2.SplitterDistance = 687;
             this.splitContainer2.SplitterWidth = 6;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -128,7 +127,7 @@
             this.controlContainer1.Location = new System.Drawing.Point(0, 0);
             this.controlContainer1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.controlContainer1.Name = "controlContainer1";
-            this.controlContainer1.Size = new System.Drawing.Size(529, 693);
+            this.controlContainer1.Size = new System.Drawing.Size(580, 687);
             this.controlContainer1.TabIndex = 0;
             this.controlContainer1.Text = "controlContainer1";
             // 
@@ -139,7 +138,7 @@
             this.controlContainer2.Location = new System.Drawing.Point(0, 0);
             this.controlContainer2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.controlContainer2.Name = "controlContainer2";
-            this.controlContainer2.Size = new System.Drawing.Size(529, 117);
+            this.controlContainer2.Size = new System.Drawing.Size(580, 123);
             this.controlContainer2.TabIndex = 0;
             this.controlContainer2.Text = "controlContainer2";
             // 
@@ -147,13 +146,15 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(529, 883);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(580, 883);
             this.Controls.Add(this.splitContainer1);
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "SettingsForm";
             this.Text = "SettingsForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsForm_FormClosing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SettingsForm_KeyDown);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);

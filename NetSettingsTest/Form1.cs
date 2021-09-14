@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using NetSettings.Data;
 using NetSettings.Forms;
 using NetSettings.View;
-using Newtonsoft.Json;
+
 
 namespace NetSettingsTest
 {
@@ -36,8 +31,7 @@ namespace NetSettingsTest
             fData = new DataProvider(ItemTree.FromFile(SettingsFilePath));
             fData.ItemChanged += fData_ItemChanged;
 
-            LoadSettings();
-            fData.DataBinding = fUserSettings;
+
             //Create manually view[1]
             fDataViewParams = new DataViewParams
             {
@@ -45,6 +39,9 @@ namespace NetSettingsTest
                 descriptionContainer = controlContainer1,
                 dataProvider = fData
             };
+
+            LoadSettings();
+            fData.DataBinding = fUserSettings;
             fView.Create(fDataViewParams);
 
             //Create view[2] with predefined 'SettingsForm' from the same data provider
@@ -55,12 +52,7 @@ namespace NetSettingsTest
 
         private void Save()
         {
-            string text = JsonConvert.SerializeObject(fUserSettings, new JsonSerializerSettings()
-            {
-                Formatting = Formatting.Indented
-            });
-
-            File.WriteAllText(UserPath, text);
+            UserDataSerializer.SaveToFile(fData.RootTemplate, fData.DataBinding, UserPath);
         }
 
         private void LoadSettings()
@@ -73,10 +65,8 @@ namespace NetSettingsTest
             }
             else
             {
-                string text = File.ReadAllText(UserPath);
-                fUserSettings = JsonConvert.DeserializeObject<Dictionary<string, object>>(text);
+                fUserSettings  = UserDataSerializer.LoadFromFile(UserPath);
             }
-
         }
 
 
